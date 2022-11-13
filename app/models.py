@@ -31,6 +31,7 @@ class OFC(BaseModel):
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='ofcs', verbose_name='Город')
     address = models.CharField(max_length=256, null=True, blank=True, unique=True, verbose_name='Адрес')
     code = models.CharField(max_length=32, null=True, blank=True, verbose_name='Код')
+    is_active = models.BooleanField(default=True, verbose_name='Активность')
 
     class Meta:
         verbose_name = 'ЦФЗ(Центр Формирования Заказа)'
@@ -235,6 +236,30 @@ class Executor(BaseModel):
         if self.patronymic:
             full_name += ' ' + self.patronymic
         return full_name if full_name else ' - '
+
+
+class ArchiveFile(models.Model):
+    class TypeChoices(models.TextChoices):
+        SALARY = 'salary', 'Зарплата'
+        EXECUTOR = 'executor', 'Исполнитель'
+        CITY = 'city', 'Город'
+        OFC = 'ofc', 'ЦФЗ'
+        TRANSPORT = 'transport', 'Транспорт'
+
+    file = models.FileField(upload_to='archive_files', verbose_name='Файл')
+    type = models.CharField(max_length=64, choices=TypeChoices.choices, null=True, blank=True, verbose_name='Тип')
+    description = models.TextField(null=True, blank=True, verbose_name='Описание')
+
+    class Meta:
+        verbose_name = 'Архивный файл'
+        verbose_name_plural = 'Архивные файлы'
+        ordering = ['-pk']
+
+    def __str__(self):
+        return f'{self.pk} - {self.type}'
+
+    def get_absolute_url(self):
+        pass
 
 
 class Profile(BaseModel):
