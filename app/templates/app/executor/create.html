@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Создать исполнителя
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="pagetitle">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-6">
+                <h1>Создать</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'app:executor_list' %}">Исполнители</a></li>
+                        <li class="breadcrumb-item active">Создать</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div><!-- End Page Title -->
+{% endblock %}
+
+{% block content %}
+    <form class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Создание исполнителя</h5>
+                    <span class="text-end d-block">Общие данные</span>
+                    <hr>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Фамилия</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Имя</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Отчество</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Пол</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" name="" id="">
+                                {% for gender in genders %}
+                                    <option value="{{ gender.0 }}">{{ gender.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Гражданство</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" name="" id="">
+                                <option value="">Не выбрано</option>
+                                {% for citizenship in citizenships %}
+                                    <option value="{{ citizenship.pk }}">{{ citizenship.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Тип гражданства</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" name="" id="">
+                                <option value="">Не выбрано</option>
+                                {% for citizenship_type in citizenship_types %}
+                                    <option value="{{ citizenship_type.pk }}">{{ citizenship_type.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Номер телефона</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputEmail" class="col-sm-3 col-form-label">Email</label>
+                        <div class="col-sm-9">
+                            <input type="email" class="form-control">
+                        </div>
+                    </div>
+                    <hr>
+                    <span class="text-end d-block">Личные документы</span>
+                    <hr>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">ИНН</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Серия</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Дата выдачи</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Место выдачи</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Образование</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Дата мед. ком.</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Создание исполнителя</h5>
+                    <span class="text-end d-block">Данные как исполнителя</span>
+                    <hr>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">ID</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Дата заключения</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Дата расторжения</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Роль</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" name="" id="">
+                                {% for role in roles %}
+                                    <option value="{{ role.0 }}">{{ role.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">Куратор</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" name="" id="">
+                                <option value="">Не выбрано</option>
+                                {% for curator in curators %}
+                                    <option value="{{ curator.pk }}">{{ curator.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputText" class="col-sm-3 col-form-label">ЦФЗ</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" name="" id="">
+                                <option value="">Не выбрано</option>
+                                {% for ofc in ofcs %}
+                                    <option value="{{ ofc.pk }}">{{ ofc.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form><!-- End General Form Elements -->
+
+{% endblock %}

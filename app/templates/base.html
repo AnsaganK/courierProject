@@ -1,0 +1,438 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>{% block title %}{% endblock %} | проект "Курьер"</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="{% static 'app/img/favicon.png' %}" rel="icon">
+    <link href="{% static 'app/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'app/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'app/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'app/vendor/quill/quill.snow.css' %}" rel="stylesheet">
+    <link href="{% static 'app/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+    <link href="{% static 'app/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+    <link href="{% static 'app/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'app/css/style.css' %}" rel="stylesheet">
+
+    <!-- My styles (Refactor) -->
+    <style>
+        @font-face {
+            font-family: 'FontName bold';
+            src: url({% static 'app/font/oregano/Oregano-Regular.ttf' %});
+        }
+
+        .oregano_style {
+            font-family: 'Oregano-Regular' !important;
+        }
+    </style>
+    <!-- =======================================================
+    * Template Name: NiceAdmin - v2.4.1
+    * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+</head>
+
+<body>
+
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+        <a href="{% url 'app:home' %}" class="logo d-flex align-items-center">
+            <img src="{% static 'app/img/large_icon.png' %}" alt="">
+            <span class="d-none d-lg-block"><span style="color: #F5814F"
+                                                  class="oregano_style">Courier</span>Project</span>
+        </a>
+        <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+    <div class="search-bar">
+        <form class="search-form d-flex align-items-center" method="POST" action="#">
+            <input type="text" name="query" placeholder="Поиск" title="Enter search keyword">
+            <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+        </form>
+    </div><!-- End Search Bar -->
+
+    <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+
+            <li class="nav-item d-block d-lg-none">
+                <a class="nav-link nav-icon search-bar-toggle " href="#">
+                    <i class="bi bi-search"></i>
+                </a>
+            </li><!-- End Search Icon-->
+
+            <li class="nav-item dropdown">
+
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge bg-primary badge-number">4</span>
+                </a><!-- End Notification Icon -->
+
+
+            </li><!-- End Notification Nav -->
+
+            <li class="nav-item dropdown">
+
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                    <i class="bi bi-chat-left-text"></i>
+                    <span class="badge bg-success badge-number">3</span>
+                </a><!-- End Messages Icon -->
+
+
+            </li><!-- End Messages Nav -->
+
+            <li class="nav-item dropdown pe-3">
+
+                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                    <img src="../static/app/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+                    <span class="d-none d-md-block dropdown-toggle ps-2">И. Иванов</span>
+                </a><!-- End Profile Iamge Icon -->
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                    <li class="dropdown-header">
+                        <h6>Иван Иванов</h6>
+                        <span>Куратор</span>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                            <i class="bi bi-person"></i>
+                            <span>Профиль</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                            <i class="bi bi-gear"></i>
+                            <span>Настройки</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+                            <i class="bi bi-question-circle"></i>
+                            <span>Нужна помощь?</span>
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="{% url 'logout' %}">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Выход</span>
+                        </a>
+                    </li>
+
+                </ul><!-- End Profile Dropdown Items -->
+            </li><!-- End Profile Nav -->
+
+        </ul>
+    </nav><!-- End Icons Navigation -->
+
+</header><!-- End Header -->
+
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+        <hr>
+        <li class="nav-heading">Основное</li>
+        <hr>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path != '/' %}collapsed{% endif %}" href="{% url 'app:home' %}">
+                <i class="bi bi-grid"></i>
+                <span>Главная</span>
+            </a>
+        </li><!-- End Dashboard Nav -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#">
+                <i class="bi bi-calculator"></i>
+                <span>Калькулятор</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link
+
+
+
+
+
+
+
+
+
+
+                    {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}{% else %}collapsed{% endif %}"
+               data-bs-target="#forms-service-nav"
+               data-bs-toggle="collapse" href="#">
+                <i class="bi bi-person-badge"></i>
+                <span>Упр. персонал</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="forms-service-nav"
+                class="nav-content
+
+
+
+
+
+
+
+
+
+
+                        {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}{% else %}collapse{% endif %} "
+                data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="{% url 'app:curator_list' %}"
+                       class="{% if '/staff/curator' in request.path %}active{% endif %}">
+                        <i class="bi bi-circle"></i><span>Кураторы</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'app:admin_list' %}"
+                       class="{% if '/staff/admin' in request.path %}active{% endif %}">
+                        <i class="bi bi-circle"></i><span>Админы</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/executor' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:executor_list' %}">
+                <i class="bi bi-people"></i>
+                <span>Исполнители</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/bicycle' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:bicycle_list' %}">
+                <i class="bi bi-bicycle"></i>
+                <span>Велосипеды</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/city' in request.path or '/OFC' in request.path %}{% else %}collapsed{% endif %}"
+               data-bs-target="#forms-nav"
+               data-bs-toggle="collapse" href="#">
+                <i class="bi bi-cursor-fill"></i>
+                <span>Места</span><i class="bi bi-chevron-down ms-auto"></i>
+            </a>
+            <ul id="forms-nav" class="nav-content
+                    {% if '/city' in request.path or '/OFC' in request.path %}{% else %}collapse{% endif %} "
+                data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="{% url 'app:city_list' %}" class="{% if '/city' in request.path %}active{% endif %}">
+                        <i class="bi bi-circle"></i><span>Города</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'app:ofc_list' %}" class="{% if '/OFC' in request.path %}active{% endif %}">
+                        <i class="bi bi-circle"></i><span>ЦФЗ</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <hr>
+        <li class="nav-heading">Прочее</li>
+        <hr>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#">
+                <i class="bx bx-money"></i>
+                <span>Файлы ЗП</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#">
+                <i class="bx bx-archive"></i>
+                <span>Архив</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/citizenship' != request.path %}collapsed{% endif %}"
+               href="{% url 'app:citizenship_list' %}">
+                <i class="bx bxs-flag-alt"></i>
+                <span>Гражданства</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/citizenship/type' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:citizenship_type_list' %}">
+                <i class="bx bx-command"></i>
+                <span>Типы гражданства</span>
+            </a>
+        </li>
+    </ul>
+
+</aside><!-- End Sidebar-->
+
+<main id="main" class="main">
+
+    {% block breadcrumb %}
+
+    {% endblock %}
+
+    <section class="section dashboard">
+        <div class="row">
+            <!-- Django Messages -->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert
+                        alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}
+                        alert-dismissible fade show" role="alert" style="width: fit-content">
+                            <i class="bi bi-{% if message.tags == 'error' %}exclamation-octagon{% else %}check-circle{{ message.tags }}{% endif %} me-1"></i>
+                            {{ message|striptags|safe }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </section>
+
+</main><!-- End #main -->
+
+<!-- ======= Footer ======= -->
+{#<footer id="footer" class="footer">#}
+{#    <div class="copyright">#}
+{#        &copy; Copyright <strong><span>CourierProject</span></strong>. All Rights Reserved#}
+{#    </div>#}
+{#    <div class="credits">#}
+{#        <!-- All the links in the footer should remain intact. -->#}
+{#        <!-- You can delete the links only if you purchased the pro version. -->#}
+{#        <!-- Licensing information: https://bootstrapmade.com/license/ -->#}
+{#        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->#}
+{#        Developed by <a href="https://github.com/AnsaganK">Kabdolla Ansagan</a>#}
+{#    </div>#}
+{#</footer><!-- End Footer -->#}
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script src="{% static 'app/vendor/apexcharts/apexcharts.min.js' %}"></script>
+<script src="{% static 'app/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'app/vendor/chart.js/chart.min.js' %}"></script>
+<script src="{% static 'app/vendor/echarts/echarts.min.js' %}"></script>
+<script src="{% static 'app/vendor/quill/quill.min.js' %}"></script>
+<script src="{% static 'app/vendor/simple-datatables/simple-datatables.js' %}"></script>
+<script src="{% static 'app/vendor/tinymce/tinymce.min.js' %}"></script>
+<script src="{% static 'app/vendor/php-email-form/validate.js' %}"></script>
+
+<!-- Template Main JS File -->
+<script src="{% static 'app/js/main.js' %}"></script>
+<script>
+    function objectUpdate(elem) {
+        let name = elem.dataset.name;
+        let update_url = elem.dataset.updateUrl;
+
+        let update_form = document.getElementById('update_form');
+        update_form.setAttribute('action', update_url);
+
+        let update_input = document.getElementById('update_input');
+        update_input.value = name;
+    }
+
+    function objectDelete(elem) {
+        let name = elem.dataset.name;
+        let delete_url = elem.dataset.deleteUrl;
+
+        let delete_link = document.getElementById('delete_link');
+        let delete_span = document.getElementById('delete_span');
+
+        delete_span.innerHTML = name;
+        delete_link.setAttribute('href', delete_url);
+    }
+</script>
+
+<script>
+    function userUpdate(elem) {
+        let update_url = elem.dataset.updateUrl;
+        let update_form = document.getElementById('update_form');
+        update_form.setAttribute('action', update_url);
+
+        let last_name_input = document.getElementById('last_name_input');
+        let first_name_input = document.getElementById('first_name_input');
+        let patronymic_input = document.getElementById('patronymic_input');
+        let email_input = document.getElementById('email_input');
+        let phone_number_input = document.getElementById('phone_number_input');
+        let username_input = document.getElementById('username_input');
+        let password_input = document.getElementById('password_input');
+        let role_select = document.getElementById('role_select');
+
+        let last_name = elem.dataset.lastName;
+        let first_name = elem.dataset.firstName;
+        let patronymic = elem.dataset.patronymic;
+        let email = elem.dataset.email;
+        let phone_number = elem.dataset.phoneNumber;
+        let username = elem.dataset.username;
+        let password = elem.dataset.password;
+        let role = elem.dataset.role;
+
+        last_name_input.value = last_name;
+        first_name_input.value = first_name;
+        patronymic_input.value = patronymic;
+        email_input.value = email;
+        phone_number_input.value = phone_number;
+        username_input.value = username;
+        password_input.value = password;
+        role_select.value = role;
+    }
+
+    function OFCUpdate(elem) {
+        let update_url = elem.dataset.updateUrl;
+        let update_form = document.getElementById('update_form');
+        update_form.setAttribute('action', update_url);
+
+        let address_input = document.getElementById('address_input');
+        let code_input = document.getElementById('code_input');
+        let city_select = document.getElementById('city_select');
+
+        let address = elem.dataset.address;
+        let code = elem.dataset.code;
+        let city_id = elem.dataset.cityId;
+
+        address_input.value = address;
+        code_input.value = code;
+        city_select.value = city_id;
+
+    }
+</script>
+{% block script %}
+
+{% endblock %}
+</body>
+
+</html>

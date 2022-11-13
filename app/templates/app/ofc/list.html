@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Список ЦФЗ
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="pagetitle">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-6">
+                <h1>ЦФЗ</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item active">ЦФЗ</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-auto">
+                <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#create_modal">
+                    <i class="bi bi-plus"></i>
+                    Добавить ЦФЗ
+                </a>
+            </div>
+        </div>
+    </div><!-- End Page Title -->
+{% endblock %}
+
+{% block content %}
+    <!-- Create City Modal -->
+    <div class="modal fade" id="create_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+                <form action="{% url 'app:ofc_create' %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Добавить ЦФЗ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Адрес</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="address" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Код</label>
+                            <div class="col-sm-10">
+                                <input id="update_input" type="text" name="code" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Город</label>
+                            <div class="col-sm-10">
+                                <select class="form-select" name="city" id="">
+                                    {% for city in cities %}
+                                        <option value="{{ city.pk }}">{{ city.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-success">Создать</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- Update City Modal -->
+    <div class="modal fade" id="update_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="" id="update_form" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Изменить ЦФЗ</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Адрес</label>
+                            <div class="col-sm-10">
+                                <input id="address_input" type="text" name="address" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Код</label>
+                            <div class="col-sm-10">
+                                <input id="code_input" type="text" name="code" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Город</label>
+                            <div class="col-sm-10">
+                                <select id="city_select" class="form-select" name="city">
+                                    {% for city in cities %}
+                                        <option value="{{ city.pk }}">{{ city.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-success">Создать</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- Delete City Modal -->
+    <div class="modal fade" id="delete_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Удалить ЦФЗ: <span id="delete_span"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <a href="#" id="delete_link" class="btn btn-danger">Удалить</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        {% if ofcs %}
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Адрес</th>
+                    <th scope="col">Код</th>
+                    <th scope="col">Город</th>
+                    <th scope="col">Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for ofc in ofcs %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ ofc.address }}</td>
+                        <td>{{ ofc.code|default:' - ' }}</td>
+                        <td>{{ ofc.city.name }}</td>
+                        <td>
+                            <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
+                               data-update-url="{% url 'app:ofc_update' ofc.pk %}"
+                               data-address="{{ ofc.address|default:'' }}"
+                               data-code="{{ ofc.code|default:'' }}"
+                               data-city-id="{{ ofc.city.id }}"
+                               class="me-3"
+                               onclick="OFCUpdate(this)">
+                                <i class="bi bi-gear text-primary"></i>
+                            </a>
+                            <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
+                               data-delete-url="{% url 'app:ofc_delete' ofc.pk %}"
+                               data-name="{{ ofc.address }}"
+                               onclick="objectDelete(this)">
+                                <i class="bi bi-trash text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <span class="mt-3 text-black-50 text-center d-block">
+                Данные не найдены
+            </span>
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+{% block script %}
+    <script>
+
+    </script>
+{% endblock %}

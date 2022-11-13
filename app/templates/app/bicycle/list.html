@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Велосипеды
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="pagetitle">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-6">
+                <h1>Велосипеды</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item active">Велосипеды</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-auto">
+                <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#create_modal">
+                    <i class="bi bi-plus"></i>
+                    Добавить велосипед
+                </a>
+            </div>
+        </div>
+    </div><!-- End Page Title -->
+{% endblock %}
+
+{% block content %}
+    <!-- Create Bicycle Modal -->
+    <div class="modal fade" id="create_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{% url 'app:bicycle_create' %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Добавить велосипед</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Код #</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="code" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-success">Создать</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- Update Bicycle Modal -->
+    <div class="modal fade" id="update_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="" id="update_form" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Изменить велосипед</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Код #</label>
+                            <div class="col-sm-10">
+                                <input id="update_input" type="text" name="code" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-success">Создать</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- Delete Bicycle Modal -->
+    <div class="modal fade" id="delete_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Удалить велосипед #<span id="delete_span"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <a href="#" id="delete_link" class="btn btn-danger">Удалить</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        {% if bicycles %}
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Код</th>
+                    <th scope="col">Исполнитель</th>
+                    <th scope="col">Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for bicycle in bicycles %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ bicycle.code }}</td>
+                        <td> -</td>
+                        <td>
+                            <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
+                               data-update-url="{% url 'app:bicycle_update' bicycle.code %}"
+                               data-name="{{ bicycle.code }}"
+                               class="me-3"
+                               onclick="objectUpdate(this)">
+                                <i class="bi bi-gear text-primary"></i>
+                            </a>
+                            <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
+                               data-delete-url="{% url 'app:bicycle_delete' bicycle.code %}"
+                               data-name="{{ bicycle.code }}"
+                               onclick="objectDelete(this)">
+                                <i class="bi bi-trash text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <span class="mt-3 text-black-50 text-center d-block">
+                Данные не найдены
+            </span>
+        {% endif %}
+    </div>
+{% endblock %}

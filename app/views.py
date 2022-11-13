@@ -1,0 +1,442 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.shortcuts import render, get_object_or_404, redirect, reverse
+
+from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
+    CitizenshipForm, CitizenshipTypeForm, OFCForm
+from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType
+from utils import show_form_errors, get_generated_password, get_paginator
+
+
+#
+#                               Flat page views
+#
+@login_required
+def home(request):
+    city_count = City.objects.count()
+    ofc_count = OFC.objects.count()
+
+    curator_count = Profile.objects.filter(role=Profile.RoleChoices.CURATOR).count()
+    curator_with_teams_count = User.objects.exclude(executors=None).count()
+
+    executor_count = Executor.objects.count()
+
+    bicycle_count = Bicycle.objects.count()
+    bicycle_used_count = 0
+    return render(request, 'app/page/home.html', {
+        'city_count': city_count,
+        'ofc_count': ofc_count,
+
+        'curator_count': curator_count,
+        'curator_with_teams_count': curator_with_teams_count,
+
+        'executor_count': executor_count,
+
+        'bicycle_count': bicycle_count
+    })
+
+
+#
+#                               City views
+#
+@login_required
+def city_create(request):
+    if request.method == 'POST':
+        form = CityForm(request.POST)
+        if form.is_valid():
+            city = form.save()
+            messages.success(request, f'Город "{city.name}" успешно добавлен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:city_list'))
+
+
+@login_required
+def city_list(request):
+    cities = City.objects.all()
+    return render(request, 'app/city/list.html', {
+        'cities': cities
+    })
+
+
+@login_required
+def city_detail(request, pk):
+    city = get_object_or_404(City, pk=pk)
+    return render(request, 'app/city/detail.html', {
+        'city': city
+    })
+
+
+@login_required
+def city_update(request, pk):
+    city = get_object_or_404(City, pk=pk)
+    if request.method == 'POST':
+        form = CityForm(request.POST, instance=city)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Город "{city.name}" успешно изменен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:city_list'))
+
+
+@login_required
+def city_delete(request, pk):
+    city = get_object_or_404(City, pk=pk)
+    name = city.name
+    city.delete()
+    messages.success(request, f'Город "{name}" успешно удален')
+    return redirect(reverse('app:city_list'))
+
+
+#
+#                               OFC views
+#
+@login_required
+def ofc_create(request):
+    if request.method == 'POST':
+        form = OFCForm(request.POST)
+        if form.is_valid():
+            ofc = form.save()
+            messages.success(request, f'ЦФЗ "{ofc.address}" создано')
+        else:
+            show_form_errors(request, form.errors)
+        return redirect(reverse('app:ofc_list'))
+    return redirect(reverse('app:ofc_list'))
+
+
+@login_required
+def ofc_list(request):
+    ofcs = OFC.objects.select_related('city').all()
+    ofcs = get_paginator(request, ofcs)
+    cities = City.objects.all()
+    return render(request, 'app/ofc/list.html', {
+        'ofcs': ofcs,
+        'cities': cities
+    })
+
+
+@login_required
+def ofc_detail(request, pk):
+    ofc = get_object_or_404(OFC, pk=pk)
+    return render(request, 'app/ofc/detail.html', {
+        'ofc': ofc
+    })
+
+
+@login_required
+def ofc_update(request, pk):
+    ofc = get_object_or_404(OFC, pk=pk)
+    if request.method == 'POST':
+        form = OFCForm(request.POST, instance=ofc)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'ЦФЗ "{ofc.address}" изменено')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:ofc_list'))
+
+
+@login_required
+def ofc_delete(request, pk):
+    ofc = get_object_or_404(OFC, pk=pk)
+    address = ofc.address
+    ofc.delete()
+    messages.success(request, f'ЦФЗ "{address}" удалено')
+    return redirect(reverse('app:ofc_list'))
+
+
+#
+#                               Staff views
+#
+@login_required
+def user_create(request):
+    if request.method == 'POST':
+        user_form = UserCreateForm(request.POST)
+        if user_form.is_valid():
+            user = user_form.save()
+            profile_form = ProfileCreateForm(request.POST, instance=user.profile)
+            if profile_form.is_valid():
+                profile = profile_form.save()
+                messages.success(request, f'{profile.get_role_display()} создан')
+            else:
+                show_form_errors(request, profile_form.errors)
+        else:
+            show_form_errors(request, user_form.errors)
+    return redirect(reverse('app:curator_list'))
+
+
+@login_required
+def curator_list(request):
+    curators = User.objects.filter(profile__role=Profile.RoleChoices.CURATOR)
+    roles = Profile.RoleChoices.choices
+    password = get_generated_password()
+    return render(request, 'app/staff/curator/list.html', {
+        'curators': curators,
+        'password': password,
+        'roles': roles
+    })
+
+
+@login_required
+def admin_list(request):
+    admins = User.objects.filter(profile__role=Profile.RoleChoices.ADMIN)
+    roles = Profile.RoleChoices.choices
+    password = get_generated_password()
+    return render(request, 'app/staff/admin/list.html', {
+        'admins': admins,
+        'password': password,
+        'roles': roles
+    })
+
+
+@login_required
+def user_detail(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    return render(request, 'app/staff/curator/detail.html', {
+        'user': user
+    })
+
+
+@login_required
+def user_update(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        password = request.POST['password']
+        user_form = UserUpdateForm(request.POST, instance=user)
+        profile_form = ProfileForm(request.POST, instance=user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save(commit=False)
+            user.set_password(password)
+            user.save()
+            profile = profile_form.save(commit=False)
+            profile.password1 = password
+            profile.save()
+            messages.success(request, f'Профиль пользователя "{user.username}" успешно изменен')
+        else:
+            messages.error(request, 'Ошибка при изменении')
+
+    return redirect(reverse('app:curator_list'))
+
+
+@login_required
+def user_delete(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    username = user.username
+    user.delete()
+    messages.success(request, f'Пользователь "{username}" успешно удален')
+    return redirect(reverse('app:curator_list'))
+
+
+#
+#                               Executor views
+#
+@login_required
+def executor_create(request):
+    if request.method == 'POST':
+        pass
+    genders = Executor.GenderChoices.choices
+    citizenships = Citizenship.objects.all()
+    citizenship_types = CitizenshipType.objects.all()
+    ofcs = OFC.objects.all()
+    roles = Executor.RoleChoices.choices
+    curators = User.objects.filter(profile__role=Profile.RoleChoices.CURATOR)
+    return render(request, 'app/executor/create.html', {
+        'genders': genders,
+        'citizenships': citizenships,
+        'citizenship_types': citizenship_types,
+        'ofcs': ofcs,
+        'roles': roles,
+        'curators': curators
+    })
+
+
+@login_required
+def executor_list(request):
+    executors = Executor.objects.all()
+    return render(request, 'app/executor/list.html', {
+        'executors': executors
+    })
+
+
+@login_required
+def executor_detail(request, code):
+    executor = get_object_or_404(Executor, code=code)
+    return render(request, 'app/executor/detail.html', {
+        'executor': executor
+    })
+
+
+@login_required
+def executor_update(request, code):
+    pass
+
+
+@login_required
+def executor_delete(request, code):
+    pass
+
+
+@login_required
+def executor_salary_calculator(request):
+    pass
+
+
+#
+#                                   Bicycle views
+#
+@login_required
+def bicycle_create(request):
+    if request.method == 'POST':
+        form = BicycleForm(request.POST)
+        if form.is_valid():
+            bicycle = form.save()
+            messages.success(request, f'Велосипед "{bicycle.code}" создан')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:bicycle_list'))
+
+
+@login_required
+def bicycle_list(request):
+    bicycles = Bicycle.objects.all()
+    return render(request, 'app/bicycle/list.html', {
+        'bicycles': bicycles
+    })
+
+
+@login_required
+def bicycle_detail(request, code):
+    bicycle = get_object_or_404(Bicycle, code=code)
+    return render(request, 'app/bicycle/detail.html', {
+        'bicycle': bicycle
+    })
+
+
+@login_required
+def bicycle_update(request, code):
+    bicycle = get_object_or_404(Bicycle, code=code)
+    if request.method == 'POST':
+        form = BicycleForm(request.POST, instance=bicycle)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Велосипед "{bicycle.code}" изменен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:bicycle_list'))
+
+
+@login_required
+def bicycle_delete(request, code):
+    bicycle = get_object_or_404(Bicycle, code=code)
+    code = bicycle.code
+    bicycle.delete()
+    messages.success(request, f'Велосипед "{code}" удален')
+    return redirect(reverse('app:bicycle_list'))
+
+
+#
+#                                   Citizenship views
+#
+@login_required
+def citizenship_create(request):
+    if request.method == 'POST':
+        form = CitizenshipForm(request.POST)
+        if form.is_valid():
+            citizenship = form.save()
+            messages.success(request, f'Гражданство "{citizenship.name}" создано')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:citizenship_list'))
+
+
+@login_required
+def citizenship_list(request):
+    citizenships = Citizenship.objects.all()
+    return render(request, 'app/citizenship/list.html', {
+        'citizenships': citizenships
+    })
+
+
+@login_required
+def citizenship_detail(request, pk):
+    citizenship = get_object_or_404(Citizenship, pk=pk)
+    return render(request, 'app/citizenship/detail.html', {
+        'citizenship': citizenship
+    })
+
+
+@login_required
+def citizenship_update(request, pk):
+    citizenship = get_object_or_404(Citizenship, pk=pk)
+    if request.method == 'POST':
+        form = CitizenshipForm(request.POST, instance=citizenship)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Гражданство "{citizenship.name}" изменено')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:citizenship_list'))
+
+
+@login_required
+def citizenship_delete(request, pk):
+    citizenship = get_object_or_404(Citizenship, pk=pk)
+    name = citizenship.name
+    citizenship.delete()
+    messages.success(request, f'Гражданство "{name}" удалено')
+    return redirect(reverse('app:citizenship_list'))
+
+
+#
+#                                   Citizenship type views
+#
+@login_required
+def citizenship_type_create(request):
+    if request.method == 'POST':
+        form = CitizenshipTypeForm(request.POST)
+        if form.is_valid():
+            citizenship_type = form.save()
+            messages.success(request, f'Тип гражданства "{citizenship_type.name}" создан')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:citizenship_type_list'))
+
+
+@login_required
+def citizenship_type_list(request):
+    citizenship_types = CitizenshipType.objects.all()
+    return render(request, 'app/citizenship_type/list.html', {
+        'citizenship_types': citizenship_types
+    })
+
+
+@login_required
+def citizenship_type_detail(request, pk):
+    citizenship_type = get_object_or_404(CitizenshipType, pk=pk)
+    return render(request, 'app/citizenship_type/detail.html', {
+        'citizenship_type': citizenship_type
+    })
+
+
+@login_required
+def citizenship_type_update(request, pk):
+    citizenship_type = get_object_or_404(CitizenshipType, pk=pk)
+    if request.method == 'POST':
+        form = CitizenshipTypeForm(request.POST, instance=citizenship_type)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Тип гражданства "{citizenship_type.name}" изменен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:citizenship_type_list'))
+
+
+@login_required
+def citizenship_type_delete(request, pk):
+    citizenship_type = get_object_or_404(CitizenshipType, pk=pk)
+    name = citizenship_type.name
+    citizenship_type.delete()
+    messages.success(request, f'Тип гражданства "{name}" удален')
+    return redirect(reverse('app:citizenship_type_list'))
