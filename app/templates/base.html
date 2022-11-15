@@ -192,6 +192,7 @@
 
 
 
+
                     {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}{% else %}collapsed{% endif %}"
                data-bs-target="#forms-service-nav"
                data-bs-toggle="collapse" href="#">
@@ -200,6 +201,7 @@
             </a>
             <ul id="forms-service-nav"
                 class="nav-content
+
 
 
 
@@ -272,7 +274,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#">
+            <a class="nav-link {% if '/archive' not in request.path %}collapsed{% endif %}" href="{% url 'app:archive_file_list' %}">
                 <i class="bx bx-archive"></i>
                 <span>Архив</span>
             </a>

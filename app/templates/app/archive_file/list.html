@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Список файлов
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="pagetitle">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-6">
+                <h1>Архив</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item active">Архив</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-auto">
+                <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#create_modal">
+                    <i class="bi bi-plus"></i>
+                    Добавить файл
+                </a>
+            </div>
+        </div>
+    </div><!-- End Page Title -->
+{% endblock %}
+
+{% block content %}
+    <!-- Create Archive File Modal -->
+    <div class="modal fade" id="create_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{% url 'app:archive_file_create' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Добавить файл</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Файл</label>
+                            <div class="col-sm-10">
+                                <input type="file" name="file" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Описание</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" style="height: 100px"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Тип</label>
+                            <div class="col-sm-10">
+                                <select class="form-select" name="type" id="">
+                                    {% for type in types %}
+                                        <option value="{{ type.0 }}">{{ type.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-success">Создать</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- Update Archive File Modal -->
+    <div class="modal fade" id="update_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="" id="update_form" method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title">Изменить данные файла</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Описание</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" style="height: 100px"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputText" class="col-sm-2 col-form-label">Тип</label>
+                            <div class="col-sm-10">
+                                <select class="form-select" name="type" id="">
+                                    {% for type in types %}
+                                        <option value="{{ type.0 }}">{{ type.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-success">Создать</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- Delete Archive File Modal -->
+    <div class="modal fade" id="delete_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Удалить файл: <span id="delete_span"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <a href="#" id="delete_link" class="btn btn-danger">Удалить</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        {% if archive_files %}
+            <table class="table table-bordered text-center">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Файл</th>
+                    <th scope="col">Тип</th>
+                    <th scope="col">Дата создания</th>
+                    <th scope="col">Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for archive_file in archive_files %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ archive_file.filename }}</td>
+                        <td>{{ archive_file.get_type_display }}</td>
+                        <td>{{ archive_file.created_at }}</td>
+                        <td>
+                            <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
+                               data-update-url="{% url 'app:archive_file_update' archive_file.pk %}"
+                               data-name="{{ archive_file.filename }}"
+                               class="me-3"
+                               onclick="objectUpdate(this)">
+                                <i class="bi bi-gear text-primary"></i>
+                            </a>
+                            <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
+                               data-delete-url="{% url 'app:archive_file_delete' archive_file.pk %}"
+                               data-name="{{ archive_file.filename }}"
+                               onclick="objectDelete(this)">
+                                <i class="bi bi-trash text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <span class="mt-3 text-black-50 text-center d-block">
+                Данные не найдены
+            </span>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
-    CitizenshipForm, CitizenshipTypeForm, OFCForm
-from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType
+    CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm
+from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile
 from utils import show_form_errors, get_generated_password, get_paginator
 
 
@@ -440,3 +440,58 @@ def citizenship_type_delete(request, pk):
     citizenship_type.delete()
     messages.success(request, f'Тип гражданства "{name}" удален')
     return redirect(reverse('app:citizenship_type_list'))
+
+
+#
+#                                   ArchiveFile views
+#
+@login_required
+def archive_file_create(request):
+    if request.method == 'POST':
+        form = ArchiveFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            archive_file = form.save()
+            messages.success(request, f'Файл "{archive_file.filename}" создан')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:archive_file_list'))
+
+
+@login_required
+def archive_file_list(request):
+    archive_files = ArchiveFile.objects.all()
+    types = ArchiveFile.TypeChoices.choices
+    return render(request, 'app/archive_file/list.html', {
+        'archive_files': archive_files,
+        'types': types
+    })
+
+
+@login_required
+def archive_file_detail(request, pk):
+    archive_file = get_object_or_404(ArchiveFile, pk=pk)
+    return render(request, 'app/archive_file/detail.html', {
+        'archive_file': archive_file
+    })
+
+
+@login_required
+def archive_file_update(request, pk):
+    archive_file = get_object_or_404(ArchiveFile, pk=pk)
+    if request.method == 'POST':
+        form = ArchiveFileUpdateForm(request.POST, instance=archive_file)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Данные файла "{archive_file.filename}" изменен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:archive_file_list'))
+
+
+@login_required
+def archive_file_delete(request, pk):
+    archive_file = get_object_or_404(ArchiveFile, pk=pk)
+    pk = archive_file.pk
+    archive_file.delete()
+    messages.success(request, f'Архивный файл "{pk}" удален')
+    return redirect(reverse('app:archive_file_list'))

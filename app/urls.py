@@ -56,6 +56,11 @@ urlpatterns = [
     path('citizenship/type/<int:pk>/update', views.citizenship_type_update, name='citizenship_type_update'),
     path('citizenship/type/<int:pk>/delete', views.citizenship_type_delete, name='citizenship_type_delete'),
 
+    path('archive', views.archive_file_list, name='archive_file_list'),
+    path('archive/create', views.archive_file_create, name='archive_file_create'),
+    path('archive/<int:pk>', views.archive_file_detail, name='archive_file_detail'),
+    path('archive/<int:pk>/update', views.archive_file_update, name='archive_file_update'),
+    path('archive/<int:pk>/delete', views.archive_file_delete, name='archive_file_delete'),
 
     path('calculate', views.home, name='calculate'),
 ]

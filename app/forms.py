@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from app.models import Profile, City, Bicycle, Citizenship, CitizenshipType, OFC
+from app.models import Profile, City, Bicycle, Citizenship, CitizenshipType, OFC, ArchiveFile
 
 
 #
@@ -79,3 +79,18 @@ class OFCForm(forms.ModelForm):
     class Meta:
         model = OFC
         fields = ['address', 'code', 'city']
+
+
+#
+#                           ArchiveFile Forms
+#
+class ArchiveFileForm(forms.ModelForm):
+    class Meta:
+        model = ArchiveFile
+        fields = ['file', 'description', 'type']
+
+
+class ArchiveFileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = ArchiveFile
+        fields = ['description', 'type']

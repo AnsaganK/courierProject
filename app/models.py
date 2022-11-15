@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
@@ -238,7 +240,7 @@ class Executor(BaseModel):
         return full_name if full_name else ' - '
 
 
-class ArchiveFile(models.Model):
+class ArchiveFile(BaseModel):
     class TypeChoices(models.TextChoices):
         SALARY = 'salary', 'Зарплата'
         EXECUTOR = 'executor', 'Исполнитель'
@@ -260,6 +262,10 @@ class ArchiveFile(models.Model):
 
     def get_absolute_url(self):
         pass
+
+    @property
+    def filename(self):
+        return os.path.basename(self.file.name)
 
 
 class Profile(BaseModel):
