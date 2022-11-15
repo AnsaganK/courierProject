@@ -1,6 +1,7 @@
 venv/
 .idea/
 __pycache__/
+media/
 constants.py
 db.sqlite3-journal
 *.py[cod]
