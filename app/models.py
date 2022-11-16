@@ -193,12 +193,14 @@ class Executor(BaseModel):
         MALE = 'MALE', 'Мужской'
         FEMALE = 'FEMALE', 'Женский'
 
-    code = models.CharField(max_length=64, unique=True, db_index=True, null=True, blank=True,
-                            verbose_name='Идентификатор')
+    code = models.CharField(max_length=64, db_index=True, null=True, blank=True,
+                            verbose_name='Код ')
+    executor_id = models.CharField(max_length=64, unique=True, db_index=True, null=True, blank=True,
+                                   verbose_name='Идентификатор')
     role = models.CharField(max_length=128, choices=RoleChoices.choices, default=RoleChoices.COURIER,
                             verbose_name='Роль')
     last_name = models.CharField(max_length=128, null=True, blank=True, verbose_name='Фамилия')
-    first_name = models.CharField(max_length=128, verbose_name='Имя')
+    first_name = models.CharField(max_length=128, null=True, blank=True, verbose_name='Имя')
     patronymic = models.CharField(max_length=128, null=True, blank=True, verbose_name='Отчество')
     citizenship = models.ForeignKey(Citizenship, on_delete=models.DO_NOTHING, null=True, blank=True,
                                     related_name='executors', verbose_name='Гражданство')
@@ -218,7 +220,8 @@ class Executor(BaseModel):
 
     curator = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='executors',
                                 verbose_name='Куратор')
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name='Активен')
+    is_terminated = models.BooleanField(default=False, verbose_name='Расторгнут')
 
     class Meta:
         verbose_name = 'Исполнитель'

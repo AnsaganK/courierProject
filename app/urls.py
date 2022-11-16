@@ -56,6 +56,7 @@ urlpatterns = [
     path('citizenship/type/<int:pk>/update', views.citizenship_type_update, name='citizenship_type_update'),
     path('citizenship/type/<int:pk>/delete', views.citizenship_type_delete, name='citizenship_type_delete'),
 
+    # Archive files
     path('archive', views.archive_file_list, name='archive_file_list'),
     path('archive/create', views.archive_file_create, name='archive_file_create'),
     path('archive/<int:pk>', views.archive_file_detail, name='archive_file_detail'),

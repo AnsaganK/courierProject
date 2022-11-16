@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from app.models import Profile, City, Bicycle, Citizenship, CitizenshipType, OFC, ArchiveFile
+from app.models import Profile, City, Bicycle, Citizenship, CitizenshipType, OFC, ArchiveFile, Executor
 
 
 #
@@ -89,8 +89,16 @@ class ArchiveFileForm(forms.ModelForm):
         model = ArchiveFile
         fields = ['file', 'description', 'type']
 
-
 class ArchiveFileUpdateForm(forms.ModelForm):
     class Meta:
         model = ArchiveFile
         fields = ['description', 'type']
+
+
+#
+#                           Executor Forms
+#
+class ExecutorForm(forms.ModelForm):
+    class Meta:
+        model = Executor
+        fields = '__all__'
