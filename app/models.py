@@ -197,7 +197,7 @@ class ExecutorFile(BaseModel):
 
     @property
     def filename(self):
-        return self.file.name
+        return os.path.basename(self.file.name)
 
 
 class Executor(BaseModel):
@@ -209,8 +209,8 @@ class Executor(BaseModel):
         MALE = 'MALE', 'Мужской'
         FEMALE = 'FEMALE', 'Женский'
 
-    code = models.CharField(max_length=64, db_index=True, null=True, blank=True,
-                            verbose_name='Код ')
+    # code = models.CharField(max_length=64, db_index=True, null=True, blank=True,
+    #                         verbose_name='Код ')
     executor_id = models.CharField(max_length=64, unique=True, db_index=True, null=True, blank=True,
                                    verbose_name='Идентификатор')
     role = models.CharField(max_length=128, choices=RoleChoices.choices, default=RoleChoices.COURIER,

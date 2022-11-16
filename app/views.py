@@ -5,7 +5,8 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
     CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorFileForm
-from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile
+from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorFile
+from app.tasks import create_executors_for_file_task
 from utils import show_form_errors, get_generated_password, get_paginator
 
 
@@ -295,6 +296,22 @@ def executor_file_create(request):
             messages.success(request, f'Файл "{executor_file.filename}" сохранен')
         else:
             show_form_errors(request, form.errors)
+    return redirect(reverse('app:executor_file_list'))
+
+
+@login_required
+def executor_file_list(request):
+    executor_files = ExecutorFile.objects.all()
+    return render(request, 'app/executor/file/list.html', {
+        'executor_files': executor_files
+    })
+
+
+@login_required
+def executor_file_parse(request, pk):
+    executor_file = get_object_or_404(ExecutorFile, pk=pk)
+    create_executors_for_file_task.delay(pk)
+    messages.success(request, f'Начата выгрузка исполнителей из файла "{executor_file.filename}" ')
     return redirect(reverse('app:executor_list'))
 
 
