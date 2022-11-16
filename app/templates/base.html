@@ -193,6 +193,8 @@
 
 
 
+
+
                     {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}{% else %}collapsed{% endif %}"
                data-bs-target="#forms-service-nav"
                data-bs-toggle="collapse" href="#">
@@ -201,6 +203,8 @@
             </a>
             <ul id="forms-service-nav"
                 class="nav-content
+
+
 
 
 
@@ -274,7 +278,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if '/archive' not in request.path %}collapsed{% endif %}" href="{% url 'app:archive_file_list' %}">
+            <a class="nav-link {% if '/archive' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:archive_file_list' %}">
                 <i class="bx bx-archive"></i>
                 <span>Архив</span>
             </a>
@@ -430,6 +435,21 @@
         code_input.value = code;
         city_select.value = city_id;
 
+    }
+
+    function archiveFileUpdate(elem) {
+        let update_url = elem.dataset.updateUrl;
+        let update_form = document.getElementById('update_form');
+        update_form.setAttribute('action', update_url);
+
+        let description_textarea = document.getElementById('description_textarea');
+        let type_select = document.getElementById('type_select');
+
+        let description = elem.dataset.description;
+        let type = elem.dataset.type;
+
+        description_textarea.value = description;
+        type_select.value = type;
     }
 </script>
 {% block script %}
