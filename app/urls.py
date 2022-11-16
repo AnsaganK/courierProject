@@ -14,6 +14,9 @@ urlpatterns = [
     path('staff/<int:pk>/update', views.user_update, name='user_update'),
     path('staff/<int:pk>/delete', views.user_delete, name='user_delete'),
 
+    # Executor Files
+    path('executor/file/create', views.executor_file_create, name='executor_file_create'),
+
     # Executors
     path('executor', views.executor_list, name='executor_list'),
     path('executor/create', views.executor_create, name='executor_create'),

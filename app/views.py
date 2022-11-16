@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
-    CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm
+    CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorFileForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile
 from utils import show_form_errors, get_generated_password, get_paginator
 
@@ -281,6 +281,21 @@ def executor_delete(request, code):
 @login_required
 def executor_salary_calculator(request):
     pass
+
+
+#
+#                                   Executor File views
+#
+@login_required
+def executor_file_create(request):
+    if request.method == 'POST':
+        form = ExecutorFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            executor_file = form.save()
+            messages.success(request, f'Файл "{executor_file.filename}" сохранен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:executor_list'))
 
 
 #

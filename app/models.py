@@ -181,7 +181,23 @@ class SalaryFile(BaseModel):
 
 
 class ExecutorFile(BaseModel):
-    pass
+    file = models.FileField(upload_to='executor_list_files', null=True, blank=True,
+                            verbose_name='Файл со списком исполнителей')
+
+    class Meta:
+        verbose_name = 'Файл со списком исполнителей'
+        verbose_name_plural = 'Файлы со списком исполнителей'
+        ordering = ['-pk']
+
+    def __str__(self):
+        return self.file.name
+
+    def get_absolute_url(self):
+        pass
+
+    @property
+    def filename(self):
+        return self.file.name
 
 
 class Executor(BaseModel):
