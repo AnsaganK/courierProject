@@ -65,6 +65,7 @@
                 <tr>
                     <th>#</th>
                     <th>Название</th>
+                    <th>Дата загрузки</th>
                     <th>Действия</th>
                 </tr>
                 </thead>
@@ -73,6 +74,7 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ file.filename }}</td>
+                        <td>{{ file.created_at }}</td>
                         <td>
                             <a href="{% url 'app:executor_file_parse' file.pk %}" class="me-3" title="Выгрузить исполнителей">
                                 <i class="bi bi-play-fill text-success"></i>
