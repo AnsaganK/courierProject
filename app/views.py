@@ -16,6 +16,10 @@ from utils import show_form_errors, get_generated_password, get_paginator
 #
 @login_required
 def home(request):
+    Executor.objects.all().delete()
+    City.objects.all().delete()
+    OFC.objects.all().delete()
+
     city_count = City.objects.count()
     ofc_count = OFC.objects.count()
 

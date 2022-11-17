@@ -71,7 +71,7 @@ def _save_executor(data: dict):
         executor[0].save()
     executor = executor[0]
     del data['executor_id']
-    executor = Executor.objects.filter(pk=executor.id).update(**data)
+    Executor.objects.filter(pk=executor.id).update(**data)
 
 
 # Refactor
@@ -163,7 +163,7 @@ def _check_and_save_attribute(executor: dict, value, cell_value):
         executor['INN'] = cell_value
     if 'Уточнение' in value:
         executor['note'] = cell_value
-    if 'Подразделение' in value:
+    if 'Подразделение' in value and cell_value:
         ofc = OFC.objects.get_or_create(address=cell_value)
         if ofc[1]:
             ofc[0].save()
