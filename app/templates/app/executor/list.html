@@ -67,7 +67,7 @@
                         <th class="text-start">{{ executor.executor_id }}</th>
                         <td class="text-start">{{ executor.get_full_name }}</td>
                         <td class="text-start">{{ executor.birth_date }}</td>
-                        <td class="text-start">{{ executor.OFC }}</td>
+                        <td class="text-start">{{ executor.OFC|default:'-' }}</td>
                         <td>{{ executor.INN|default:'-' }}</td>
                         <td>
                             <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
