@@ -136,7 +136,7 @@
             <table class="table table-bordered text-center">
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
+{#                    <th scope="col">#</th>#}
                     <th scope="col">Адрес</th>
                     <th scope="col">Код</th>
                     <th scope="col">Город</th>
@@ -146,7 +146,7 @@
                 <tbody>
                 {% for ofc in ofcs %}
                     <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
+{#                        <th scope="row">{{ forloop.counter }}</th>#}
                         <td>{{ ofc.address }}</td>
                         <td>{{ ofc.code|default:' - ' }}</td>
                         <td>{{ ofc.city.name }}</td>
@@ -171,6 +171,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% include 'include/paginataion.html' with page=ofcs %}
         {% else %}
             <span class="mt-3 text-black-50 text-center d-block">
                 Данные не найдены

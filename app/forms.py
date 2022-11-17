@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from app.models import Profile, City, Bicycle, Citizenship, CitizenshipType, OFC, ArchiveFile, Executor, ExecutorFile
+from app.models import Profile, City, Bicycle, Citizenship, CitizenshipType, OFC, ArchiveFile, Executor
 
 
 #
@@ -103,12 +103,3 @@ class ExecutorForm(forms.ModelForm):
     class Meta:
         model = Executor
         fields = '__all__'
-
-
-#
-#                           ExecutorFile Forms
-#
-class ExecutorFileForm(forms.ModelForm):
-    class Meta:
-        model = ExecutorFile
-        fields = ['file']

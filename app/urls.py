@@ -26,12 +26,18 @@ urlpatterns = [
     path('executor/<str:code>/update', views.executor_update, name='executor_update'),
     path('executor/<str:code>/delete', views.executor_delete, name='executor_delete'),
 
+
     # Cities
     path('city', views.city_list, name='city_list'),
     path('city/create', views.city_create, name='city_create'),
     path('city/<int:pk>', views.city_detail, name='city_detail'),
     path('city/<int:pk>/update', views.city_update, name='city_update'),
     path('city/<int:pk>/delete', views.city_delete, name='city_delete'),
+
+    # City Files
+    path('city/file', views.city_file_list, name='city_file_list'),
+    path('city/file/create', views.city_file_create, name='city_file_create'),
+    path('city/file/<int:pk>/parse', views.city_file_parse, name='city_file_parse'),
 
     # Cities
     path('OFC', views.ofc_list, name='ofc_list'),

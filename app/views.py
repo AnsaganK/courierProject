@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
-    CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorFileForm
-from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorFile
-from app.tasks import create_executors_for_file_task
+    CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm
+from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile
+from app.service.file import get_file_data
+from app.tasks import create_executors_for_file_task, create_cities_for_file_task
 from utils import show_form_errors, get_generated_password, get_paginator
 
 
@@ -91,6 +92,36 @@ def city_delete(request, pk):
     return redirect(reverse('app:city_list'))
 
 
+@login_required
+def city_file_create(request):
+    if request.method == 'POST':
+        form = ArchiveFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = form.save(commit=False)
+            file.type = ArchiveFile.TypeChoices.CITY
+            file.save()
+            messages.success(request, f'Файл "{file.filename}" сохранен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:city_file_list'))
+
+
+@login_required
+def city_file_list(request):
+    files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.CITY)
+    return render(request, 'app/city/file/list.html', {
+        'files': files
+    })
+
+
+@login_required
+def city_file_parse(request, pk):
+    file = get_object_or_404(ArchiveFile, pk=pk)
+    create_cities_for_file_task.delay(pk)
+    messages.success(request, f'Начата выгрузка городов из файла "{file.filename}" ')
+    return redirect(reverse('app:city_file_list'))
+
+
 #
 #                               OFC views
 #
@@ -110,7 +141,7 @@ def ofc_create(request):
 @login_required
 def ofc_list(request):
     ofcs = OFC.objects.select_related('city').all()
-    ofcs = get_paginator(request, ofcs)
+    ofcs = get_paginator(request, ofcs, 25)
     cities = City.objects.all()
     return render(request, 'app/ofc/list.html', {
         'ofcs': ofcs,
@@ -290,10 +321,12 @@ def executor_salary_calculator(request):
 @login_required
 def executor_file_create(request):
     if request.method == 'POST':
-        form = ExecutorFileForm(request.POST, request.FILES)
+        form = ArchiveFileForm(request.POST, request.FILES)
         if form.is_valid():
-            executor_file = form.save()
-            messages.success(request, f'Файл "{executor_file.filename}" сохранен')
+            file = form.save(commit=False)
+            file.type = ArchiveFile.TypeChoices.EXECUTOR
+            file.save()
+            messages.success(request, f'Файл "{file.filename}" сохранен')
         else:
             show_form_errors(request, form.errors)
     return redirect(reverse('app:executor_file_list'))
@@ -301,17 +334,17 @@ def executor_file_create(request):
 
 @login_required
 def executor_file_list(request):
-    executor_files = ExecutorFile.objects.all()
+    files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.EXECUTOR)
     return render(request, 'app/executor/file/list.html', {
-        'executor_files': executor_files
+        'files': files
     })
 
 
 @login_required
 def executor_file_parse(request, pk):
-    executor_file = get_object_or_404(ExecutorFile, pk=pk)
+    file = get_object_or_404(ArchiveFile, pk=pk)
     create_executors_for_file_task.delay(pk)
-    messages.success(request, f'Начата выгрузка исполнителей из файла "{executor_file.filename}" ')
+    messages.success(request, f'Начата выгрузка исполнителей из файла "{file.filename}" ')
     return redirect(reverse('app:executor_list'))
 
 

@@ -3,20 +3,24 @@ from openpyxl.reader.excel import load_workbook
 from openpyxl.utils import get_column_letter
 
 
-def get_file_data(file):
+def get_file_data(file) -> list[dict]:
     workbook = load_workbook(file)
     worksheet = workbook.active
-    columns = get_columns(worksheet)
-    data = get_data(worksheet, columns)
+    columns = _get_columns(worksheet)
+    print('Columns: ', columns)
+    data = _get_data(worksheet, columns)
     return data
 
 
-def get_active_page(file):
-    workbook = openpyxl.load_workbook(file)
-    return workbook.active
+def get_executor_file_data(file):
+    workbook = load_workbook(file)
+    worksheet = workbook.active
+    columns = _get_columns(worksheet)
+    data = _set_executor_data(worksheet, columns)
+    return data
 
 
-def get_columns(worksheet) -> dict:
+def _get_columns(worksheet) -> dict:
     max_column = worksheet.max_column
 
     columns = {}
@@ -30,7 +34,21 @@ def get_columns(worksheet) -> dict:
     return columns
 
 
-def get_data(worksheet, columns):
+def _get_data(worksheet, columns):
+    data = []
+    max_row = worksheet.max_row
+    for row in range(2, max_row + 1):
+        data_item = {}
+        for column_letter in columns:
+            value = columns[column_letter].get('value')
+            cell_value = worksheet[f'{column_letter}{row}'].value
+            data_item[value] = cell_value
+        data.append(data_item)
+    print(data)
+    return data
+
+
+def _set_executor_data(worksheet, columns):
     max_row = worksheet.max_row
     for row in range(2, max_row + 1):
         executor = {}

@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from app.models import City, OFC, Transport, AdditionalReason, Tariff, Bicycle, Citizenship, Executor, Profile, \
-    ExecutorFile
+from app.models import City, OFC, Transport, AdditionalReason, Tariff, Bicycle, Citizenship, Executor, Profile
 
 
 @admin.register(City)
@@ -43,9 +42,6 @@ class CitizenshipAdmin(admin.ModelAdmin):
 class ExecutorAdmin(admin.ModelAdmin):
     list_display = ['pk']
 
-@admin.register(ExecutorFile)
-class ExecutorFileAdmin(admin.ModelAdmin):
-    list_display = ['pk']
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):

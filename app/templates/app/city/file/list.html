@@ -1,24 +1,23 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Файлы со списком исполнителей
+    Файлы со списком городов
 {% endblock %}
 
 {% block breadcrumb %}
     <div class="pagetitle">
         <div class="row justify-content-between align-items-center">
             <div class="col-6">
-                <h1>Файлы со списком исполнителей</h1>
+                <h1>Файлы со списком городов</h1>
                 <nav>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'app:executor_list' %}">Исполнители</a></li>
-                        <li class="breadcrumb-item active">Загруженные файлы</li>
+                        <li class="breadcrumb-item"><a href="{% url 'app:city_list' %}">Города</a></li>
+                        <li class="breadcrumb-item active">Файлы</li>
                     </ol>
                 </nav>
             </div>
             <div class="col-auto">
-
                 <a href="#" class="btn btn-success mb-2" data-bs-toggle="modal" data-bs-target="#create_modal">
                     <i class="bi bi-arrow-down"></i>
                     Загрузить Excel список
@@ -34,7 +33,7 @@
         <div class="modal-dialog modal-dialog-centered">
 
             <div class="modal-content">
-                <form action="{% url 'app:executor_file_create' %}" method="post" enctype="multipart/form-data">
+                <form action="{% url 'app:city_file_create' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="modal-header">
                         <h5 class="modal-title">Добавить файл</h5>
@@ -74,7 +73,8 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ file.filename }}</td>
                         <td>
-                            <a href="{% url 'app:executor_file_parse' file.pk %}" class="me-3" title="Выгрузить исполнителей">
+                            <a href="{% url 'app:city_file_parse' file.pk %}" class="me-3"
+                               title="Выгрузить исполнителей">
                                 <i class="bi bi-play-fill text-success"></i>
                             </a>
                             <a href="{{ file.file.url }}" class="me-3" title="Скачать файл">
