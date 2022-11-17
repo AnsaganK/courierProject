@@ -3,7 +3,7 @@ from openpyxl.reader.excel import load_workbook
 from openpyxl.utils import get_column_letter
 
 
-def get_file_data(file) -> list[dict]:
+def get_file_data(file):
     workbook = load_workbook(file)
     worksheet = workbook.active
     columns = _get_columns(worksheet)
