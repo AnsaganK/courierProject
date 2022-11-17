@@ -58,12 +58,10 @@ def _set_executor_data(worksheet, columns):
     max_row = worksheet.max_row
     for row in range(2, max_row + 1):
         executor = {}
-        # executor = Executor.objects.create()
         for column_letter in columns:
             value = columns[column_letter].get('value')
             cell_value = worksheet[f'{column_letter}{row}'].value
             _check_and_save_attribute(executor, value, cell_value)
-        # executor.save()
         _save_executor(executor)
 
 
@@ -73,8 +71,8 @@ def _save_executor(data: dict):
         executor[0].save()
     executor = executor[0]
     del data['executor_id']
-    print(data)
     executor = Executor.objects.filter(pk=executor.id).update(**data)
+
 
 # Refactor
 def _check_and_save_attribute(executor: dict, value, cell_value):
@@ -116,8 +114,6 @@ def _check_and_save_attribute(executor: dict, value, cell_value):
     if 'Партнер' in value:
         executor['partner'] = cell_value
     if 'Тип гражданства' in value:
-        print(type(cell_value))
-        print(cell_value)
         executor['citizenship_type'] = CitizenshipType.objects.filter(
             name__icontains='еаэс').first() if cell_value == 1 else CitizenshipType.objects.exclude(
             name__icontains='еаэс').first()
@@ -139,7 +135,7 @@ def _check_and_save_attribute(executor: dict, value, cell_value):
 
     if 'Образование' in value:
         executor['education'] = cell_value
-    if 'Пол' in value:
+    if 'Пол' in value and cell_value:
         executor[
             'gender'] = Executor.GenderChoices.MALE if 'мужской' in cell_value.lower() else Executor.GenderChoices.FEMALE
     if 'Серия и номер паспорта':

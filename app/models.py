@@ -187,6 +187,7 @@ class Executor(BaseModel):
         COLLECTOR = 'COLLECTOR', 'Сборщик'
 
     class GenderChoices(models.TextChoices):
+        NOT_CHOSEN = 'NOT_CHOSEN', 'Не выбрано'
         MALE = 'MALE', 'Мужской'
         FEMALE = 'FEMALE', 'Женский'
 
@@ -206,7 +207,8 @@ class Executor(BaseModel):
     INN = models.CharField(max_length=32, null=True, blank=True, verbose_name='ИНН')
     phone_number = models.CharField(max_length=32, null=True, blank=True, verbose_name='Телефон')
     email = models.EmailField(null=True, blank=True, verbose_name='Почта')
-    gender = models.CharField(max_length=32, choices=GenderChoices.choices, verbose_name='Пол')
+    gender = models.CharField(max_length=32, choices=GenderChoices.choices, default=GenderChoices.NOT_CHOSEN,
+                              verbose_name='Пол')
     birth_date = models.DateField(null=True, blank=True, verbose_name='Дата рождения')
     main_contract = models.CharField(max_length=128, null=True, blank=True, verbose_name='Основной контракт')
 
