@@ -31,13 +31,32 @@
 {% endblock %}
 
 {% block content %}
+    <div class="modal fade" id="delete_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Удалить ЦФЗ: <span id="delete_span"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <a href="#" id="delete_link" class="btn btn-danger">Удалить</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <div class="col">
         {% if executors %}
+            {% include 'include/paginataion.html' with page=executors %}
+            <span class="text-black-50">Всего исполнителей: {{ count }}</span>
             <table class="table table-bordered text-center">
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
+                    <th scope="col">ID</th>
                     <th scope="col">Название</th>
+                    <th scope="col">Дата рожд.</th>
+                    <th scope="col">ЦФЗ</th>
                     <th scope="col">ИНН</th>
                     <th scope="col">Действия</th>
                 </tr>
@@ -45,9 +64,11 @@
                 <tbody>
                 {% for executor in executors %}
                     <tr>
-                        <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ executor.full_name }}</td>
-                        <td></td>
+                        <th class="text-start">{{ executor.executor_id }}</th>
+                        <td class="text-start">{{ executor.get_full_name }}</td>
+                        <td class="text-start">{{ executor.birth_date }}</td>
+                        <td class="text-start">{{ executor.OFC }}</td>
+                        <td>{{ executor.INN|default:'-' }}</td>
                         <td>
                             <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
                                data-update-url=""
@@ -57,8 +78,8 @@
                                 <i class="bi bi-gear text-primary"></i>
                             </a>
                             <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
-                               data-delete-url=""
-                               data-city-name=""
+                               data-delete-url="{% url 'app:executor_delete' executor.pk %}"
+                               data-name="{{ executor.get_full_name }}"
                                onclick="objectDelete(this)">
                                 <i class="bi bi-trash text-danger"></i>
                             </a>
@@ -67,6 +88,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% include 'include/paginataion.html' with page=executors %}
             </div>
         {% else %}
             <span class="mt-3 text-black-50 text-center d-block">

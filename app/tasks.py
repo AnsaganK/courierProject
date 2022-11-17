@@ -1,7 +1,7 @@
 from celery import shared_task
 
 from app.models import ArchiveFile, City, OFC
-from app.service.file import get_file_data
+from app.service.file import get_file_data, get_executor_file_data
 
 
 @shared_task
@@ -32,4 +32,4 @@ def create_cities_for_file_task(pk: int):
 @shared_task
 def create_executors_for_file_task(pk: int):
     file = ArchiveFile.objects.get(pk=pk)
-    data = get_file_data(file.file)
+    data = get_executor_file_data(file.file)

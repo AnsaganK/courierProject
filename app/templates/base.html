@@ -41,6 +41,28 @@
         .oregano_style {
             font-family: 'Oregano-Regular' !important;
         }
+
+        .active > .page-link, .page-link.active {
+            z-index: 3;
+            color: var(--bs-pagination-active-color);
+            background-color: #f58555;
+            border-color: #f58555;
+        }
+
+        .active .page-link{
+            background-color: #f58555 !important;
+            color: #fff !important;
+        }
+        .page-link {
+            color: #f58555;
+        }
+
+        .page-link:hover {
+            z-index: 2;
+            color:#f58555;
+            background-color: var(--bs-pagination-hover-bg);
+            border-color: var(--bs-pagination-hover-border-color);
+        }
     </style>
     <!-- =======================================================
     * Template Name: NiceAdmin - v2.4.1
@@ -196,6 +218,8 @@
 
 
 
+
+
                     {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}{% else %}collapsed{% endif %}"
                data-bs-target="#forms-service-nav"
                data-bs-toggle="collapse" href="#">
@@ -204,6 +228,8 @@
             </a>
             <ul id="forms-service-nav"
                 class="nav-content
+
+
 
 
 

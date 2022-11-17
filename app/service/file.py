@@ -1,6 +1,11 @@
+import datetime
+from datetime import datetime
+
 import openpyxl
 from openpyxl.reader.excel import load_workbook
 from openpyxl.utils import get_column_letter
+
+from app.models import Executor, CitizenshipType, Citizenship, OFC
 
 
 def get_file_data(file):
@@ -48,79 +53,123 @@ def _get_data(worksheet, columns):
     return data
 
 
+# Refactor
 def _set_executor_data(worksheet, columns):
     max_row = worksheet.max_row
     for row in range(2, max_row + 1):
         executor = {}
+        # executor = Executor.objects.create()
         for column_letter in columns:
             value = columns[column_letter].get('value')
             cell_value = worksheet[f'{column_letter}{row}'].value
             _check_and_save_attribute(executor, value, cell_value)
-        print(executor)
+        # executor.save()
+        _save_executor(executor)
 
 
-def _check_and_save_attribute(executor, value, cell_value):
+def _save_executor(data: dict):
+    executor = Executor.objects.get_or_create(executor_id=data.get('executor_id'))
+    if executor[1]:
+        executor[0].save()
+    executor = executor[0]
+    del data['executor_id']
+    print(data)
+    executor = Executor.objects.filter(pk=executor.id).update(**data)
+
+# Refactor
+def _check_and_save_attribute(executor: dict, value, cell_value):
+    columns = ['Наименование', 'Код', 'Фамилия', 'Имя', 'Отчество', 'ID', 'Роль', 'Расторгнут', 'Основной договор',
+               'Дата расторжения договора', 'Дата заключения договора', 'Партнер', 'Тип гражданства', 'Телефон',
+               'Эл почта',
+               'Дата медкомиссии', 'Гражданство', 'Дата рождения', 'Образование', 'Пол', 'Серия и номер паспорта',
+               'Дата выдачи паспорта', 'Место выдачи паспорта', 'Вакцинирован против COVID19',
+               'Дата вакцинации COVID19',
+               'Вторая дата вакцинации COVID19', 'Медотвод', 'Дата окончания медотвода', 'Физическое лицо', 'ИНН',
+               'Уточнение',
+               'Подразделение']
+
     if 'Наименование' in value:
-        executor['full_name'] = cell_value
+        pass
+        # executor['full_name'] = cell_value
     if 'Фамилия' in value:
         executor['last_name'] = cell_value
     if 'Имя' in value:
         executor['first_name'] = cell_value
     if 'Отчество' in value:
         executor['patronymic'] = cell_value
-    if 'ID' in value:
-        executor['ID'] = cell_value
+    if 'ID' == value:
+        print(cell_value)
+        executor['executor_id'] = cell_value
     if 'Роль' in value:
-        executor['role'] = cell_value
+        if 'курьер' in cell_value.lower():
+            executor['role'] = Executor.RoleChoices.COURIER
+        else:
+            executor['role'] = Executor.RoleChoices.COLLECTOR
     if 'Расторгнут' in value:
-        executor['is_terminated'] = cell_value
+        executor['is_terminated'] = True if 'да' in cell_value.lower() else False
     if 'Основной договор' in value:
-        executor['base_dogovor'] = cell_value
-
-    if 'Дата расторжения договора' in value:
-        executor['date_terminated'] = cell_value
+        executor['main_contract'] = cell_value
+    if 'Дата расторжения договора' in value and cell_value:
+        executor['date_terminated'] = datetime.strptime(cell_value, '%d.%m.%Y')
     if 'Дата заключения договора' in value:
-        executor['date_created'] = cell_value
+        executor['date_conclusion'] = datetime.strptime(cell_value, '%d.%m.%Y')
     if 'Партнер' in value:
         executor['partner'] = cell_value
     if 'Тип гражданства' in value:
-        executor['citizenship_type'] = cell_value
+        print(type(cell_value))
+        print(cell_value)
+        executor['citizenship_type'] = CitizenshipType.objects.filter(
+            name__icontains='еаэс').first() if cell_value == 1 else CitizenshipType.objects.exclude(
+            name__icontains='еаэс').first()
     if 'Телефон' in value:
         executor['phone_number'] = cell_value
     if 'Эл почта' in value:
-        executor['email'] = cell_value
-    if 'Дата медкомиссии' in value:
-        executor['date_med'] = cell_value
-    if 'Гражданство' in value:
-        executor['citizenship'] = cell_value
-    if 'Дата рождения' in value:
-        executor['birth_date'] = cell_value
+        executor['email'] = cell_value.strip()
+    if 'Дата медкомиссии' in value and cell_value:
+        executor['med_exam_date'] = datetime.strptime(cell_value, '%d.%m.%Y')
+    if 'Гражданство' in value and cell_value:
+        citizenship = Citizenship.objects.get_or_create(name=cell_value)
+        if citizenship[1]:
+            citizenship[0].save()
+        citizenship = citizenship[0]
+        executor['citizenship'] = citizenship
+
+    if 'Дата рождения' in value and cell_value:
+        executor['birth_date'] = datetime.strptime(cell_value, '%d.%m.%Y')
 
     if 'Образование' in value:
         executor['education'] = cell_value
     if 'Пол' in value:
-        executor['gender'] = cell_value
-    if 'Серия и номер паспорта' in value:
-        executor['serial_number'] = cell_value
-    if 'Дата выдачи паспорта' in value:
-        executor['date_passport'] = cell_value
-
+        executor[
+            'gender'] = Executor.GenderChoices.MALE if 'мужской' in cell_value.lower() else Executor.GenderChoices.FEMALE
+    if 'Серия и номер паспорта':
+        executor['passport_series'] = str(cell_value).strip() if cell_value else cell_value
+    if 'Дата выдачи паспорта' in value and cell_value:
+        executor['passport_date'] = datetime.strptime(cell_value, '%d.%m.%Y')
     if 'Место выдачи паспорта' in value:
-        executor['place_passport'] = cell_value
+        executor['passport_place'] = cell_value
     if 'Вакцинирован против COVID19' in value:
-        executor['covid19'] = cell_value
+        pass
+        # executor['covid19'] = cell_value
     if 'Вторая дата вакцинации COVID19' in value:
-        executor['covid19_2'] = cell_value
+        pass
+        # executor['covid19_2'] = cell_value
     if 'Медотвод' in value:
-        executor['medotvod'] = cell_value
+        pass
+        # executor['medotvod'] = cell_value
 
     if 'Дата окончания медотвода' in value:
-        executor['date_medotvod'] = cell_value
+        pass
+        # executor['date_medotvod'] = cell_value
     if 'Физическое лицо' in value:
-        executor['phys'] = cell_value
+        executor['individual'] = cell_value
     if 'ИНН' in value:
         executor['INN'] = cell_value
     if 'Уточнение' in value:
-        executor['Note'] = cell_value
+        executor['note'] = cell_value
     if 'Подразделение' in value:
-        executor['OFC'] = cell_value
+        ofc = OFC.objects.get_or_create(address=cell_value)
+        if ofc[1]:
+            ofc[0].save()
+        ofc = ofc[0]
+        executor['OFC'] = ofc

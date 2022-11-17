@@ -30,7 +30,8 @@ class City(BaseModel):
 
 
 class OFC(BaseModel):
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='ofcs', verbose_name='Город')
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True, related_name='ofcs',
+                             verbose_name='Город')
     address = models.CharField(max_length=256, null=True, blank=True, unique=True, verbose_name='Адрес')
     code = models.CharField(max_length=32, null=True, blank=True, verbose_name='Код')
     is_active = models.BooleanField(default=True, verbose_name='Активность')
@@ -207,9 +208,10 @@ class Executor(BaseModel):
     email = models.EmailField(null=True, blank=True, verbose_name='Почта')
     gender = models.CharField(max_length=32, choices=GenderChoices.choices, verbose_name='Пол')
     birth_date = models.DateField(null=True, blank=True, verbose_name='Дата рождения')
+    main_contract = models.CharField(max_length=128, null=True, blank=True, verbose_name='Основной контракт')
 
     OFC = models.ForeignKey(OFC, on_delete=models.DO_NOTHING, null=True, blank=True, verbose_name='ЦфЗ')
-    education = models.CharField(max_length=64, null=True, blank=True, verbose_name='Образование')
+    education = models.CharField(max_length=256, null=True, blank=True, verbose_name='Образование')
 
     transport = models.ForeignKey(Transport, on_delete=models.DO_NOTHING, null=True, blank=True,
                                   related_name='executors', verbose_name='Транспорт')
@@ -218,6 +220,17 @@ class Executor(BaseModel):
                                 verbose_name='Куратор')
     is_active = models.BooleanField(default=True, verbose_name='Активен')
     is_terminated = models.BooleanField(default=False, verbose_name='Расторгнут')
+    date_terminated = models.DateField(null=True, blank=True, verbose_name='Дата расторжения')
+    date_conclusion = models.DateField(null=True, blank=True, verbose_name='Дата заключения')
+    partner = models.CharField(max_length=128, null=True, blank=True, verbose_name='Партнер')
+
+    passport_series = models.CharField(max_length=256, null=True, blank=True, verbose_name='Серия и номер паспорта')
+    passport_date = models.DateField(null=True, blank=True, verbose_name='Дата выдачи паспорта')
+    passport_place = models.CharField(max_length=256, null=True, blank=True, verbose_name='Место выдачи паспорта')
+
+    med_exam_date = models.DateField(null=True, blank=True, verbose_name='Дата медкомиссии')
+    individual = models.CharField(max_length=256, null=True, blank=True, verbose_name='Физическое лицо')
+    note = models.TextField(null=True, blank=True, verbose_name='Примечание')
 
     class Meta:
         verbose_name = 'Исполнитель'
@@ -225,7 +238,7 @@ class Executor(BaseModel):
         ordering = ['-pk']
 
     def __str__(self):
-        return
+        return self.get_full_name
 
     @property
     def get_full_name(self):

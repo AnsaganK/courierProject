@@ -287,8 +287,11 @@ def executor_create(request):
 @login_required
 def executor_list(request):
     executors = Executor.objects.all()
+    count = executors.count()
+    executors = get_paginator(request, executors, 50)
     return render(request, 'app/executor/list.html', {
-        'executors': executors
+        'executors': executors,
+        'count': count
     })
 
 
@@ -306,8 +309,12 @@ def executor_update(request, code):
 
 
 @login_required
-def executor_delete(request, code):
-    pass
+def executor_delete(request, pk):
+    executor = get_object_or_404(Executor, pk=pk)
+    full_name = executor.get_full_name
+    executor.delete()
+    messages.success(request, f'Исполнитель "{full_name}" удален')
+    return redirect(reverse('app:executor_list'))
 
 
 @login_required
