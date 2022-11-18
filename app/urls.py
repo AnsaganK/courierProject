@@ -22,7 +22,7 @@ urlpatterns = [
     # Executors
     path('executor', views.executor_list, name='executor_list'),
     path('executor/create', views.executor_create, name='executor_create'),
-    path('executor/<int:pk>', views.executor_detail, name='executor_detail'),
+    path('executor/<path:executor_id>', views.executor_detail, name='executor_detail'),
     path('executor/<int:pk>/update', views.executor_update, name='executor_update'),
     path('executor/<int:pk>/delete', views.executor_delete, name='executor_delete'),
 

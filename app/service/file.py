@@ -138,7 +138,7 @@ def _check_and_save_attribute(executor: dict, value, cell_value):
     if 'Пол' in value and cell_value:
         executor[
             'gender'] = Executor.GenderChoices.MALE if 'мужской' in cell_value.lower() else Executor.GenderChoices.FEMALE
-    if 'Серия и номер паспорта':
+    if 'Серия и номер паспорта' in value and cell_value:
         executor['passport_series'] = str(cell_value).strip() if cell_value else cell_value
     if 'Дата выдачи паспорта' in value and cell_value:
         executor['passport_date'] = datetime.strptime(cell_value, '%d.%m.%Y')

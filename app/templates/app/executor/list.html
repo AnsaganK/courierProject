@@ -64,7 +64,11 @@
                 <tbody>
                 {% for executor in executors %}
                     <tr>
-                        <th class="text-start">{{ executor.executor_id }}</th>
+                        <th class="text-start">
+                            <a href="{{ executor.get_absolute_url }}">
+                                {{ executor.executor_id }}
+                            </a>
+                        </th>
                         <td class="text-start">{{ executor.get_full_name }}</td>
                         <td class="text-start">{{ executor.birth_date }}</td>
                         <td class="text-start">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>

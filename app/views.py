@@ -296,8 +296,8 @@ def executor_list(request):
 
 
 @login_required
-def executor_detail(request, code):
-    executor = get_object_or_404(Executor, code=code)
+def executor_detail(request, executor_id):
+    executor = get_object_or_404(Executor, executor_id=executor_id)
     return render(request, 'app/executor/detail.html', {
         'executor': executor
     })

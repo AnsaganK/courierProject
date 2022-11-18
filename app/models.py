@@ -5,6 +5,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from django.shortcuts import reverse
+
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -252,6 +254,9 @@ class Executor(BaseModel):
         if self.patronymic:
             full_name += ' ' + self.patronymic
         return full_name if full_name else ' - '
+
+    def get_absolute_url(self):
+        return reverse('app:executor_detail', args=[self.executor_id])
 
 
 class ArchiveFile(BaseModel):
