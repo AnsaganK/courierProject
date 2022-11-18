@@ -60,7 +60,7 @@ class Period(BaseModel):
         ordering = ['-pk']
 
     def __str__(self):
-        return f'{self.start_date.strftime("%d/%m/%Y")} - {self.final_date.strftime("%d/%m/%Y")}'
+        return f'{self.start_date.strftime("%d.%m.%Y")} - {self.final_date.strftime("%d.%m.%Y")}'
 
     def get_absolute_url(self):
         pass
@@ -285,6 +285,24 @@ class ArchiveFile(BaseModel):
     @property
     def filename(self):
         return os.path.basename(self.file.name)
+
+
+class ExecutorHours(BaseModel):
+    ofc = models.ForeignKey(OFC, on_delete=models.DO_NOTHING, related_name='executor_hours', verbose_name='ЦФЗ')
+    executor = models.ForeignKey(Executor, on_delete=models.DO_NOTHING, related_name='executor_hours',
+                                 verbose_name='Исполнитель')
+    period = models.ForeignKey(Period, on_delete=models.DO_NOTHING, related_name='executor_hours',
+                               verbose_name='Период')
+
+    hour = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Часы')
+
+    class Meta:
+        verbose_name = ''
+        verbose_name_plural = ''
+        ordering = ['-pk']
+
+    def __str__(self):
+        return f'{self.executor.get_full_name} - {self.period}'
 
 
 class Profile(BaseModel):
