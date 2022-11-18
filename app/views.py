@@ -7,7 +7,7 @@ from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, 
     CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile
 from app.service.file import get_file_data
-from app.tasks import create_executors_for_file_task, create_cities_for_file_task
+from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task
 from utils import show_form_errors, get_generated_password, get_paginator
 
 
@@ -320,6 +320,39 @@ def executor_delete(request, pk):
 @login_required
 def executor_salary_calculator(request):
     pass
+
+
+#
+#                                   Executor Hours Files
+#
+@login_required
+def executor_hours_file_create(request):
+    if request.method == 'POST':
+        form = ArchiveFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = form.save(commit=False)
+            file.type = ArchiveFile.TypeChoices.HOURS
+            file.save()
+            messages.success(request, f'Файл "{file.filename}" сохранен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:executor_hours_file_list'))
+
+
+@login_required
+def executor_hours_file_list(request):
+    files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.HOURS)
+    return render(request, 'app/executor/hours/file/list.html', {
+        'files': files
+    })
+
+
+@login_required
+def executor_hours_file_parse(request, pk):
+    file = get_object_or_404(ArchiveFile, pk=pk)
+    create_executor_hours_for_file_task.delay(pk)
+    messages.success(request, f'Начата выгрузка исполнителей из файла "{file.filename}" ')
+    return redirect(reverse('app:executor_list'))
 
 
 #

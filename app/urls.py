@@ -14,7 +14,12 @@ urlpatterns = [
     path('staff/<int:pk>/update', views.user_update, name='user_update'),
     path('staff/<int:pk>/delete', views.user_delete, name='user_delete'),
 
-    # Executor Files
+    # Executor hours Files
+    path('executor/hours/file', views.executor_hours_file_list, name='executor_hours_file_list'),
+    path('executor/hours/file/create', views.executor_hours_file_create, name='executor_hours_file_create'),
+    path('executor/hours/file/<int:pk>/parse', views.executor_hours_file_parse, name='executor_hours_file_parse'),
+
+    # Executor list Files
     path('executor/file', views.executor_file_list, name='executor_file_list'),
     path('executor/file/create', views.executor_file_create, name='executor_file_create'),
     path('executor/file/<int:pk>/parse', views.executor_file_parse, name='executor_file_parse'),

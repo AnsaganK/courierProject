@@ -13,7 +13,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'app:executor_list' %}">Исполнители</a></li>
-                        <li class="breadcrumb-item active">Загруженные файлы</li>
+                        <li class="breadcrumb-item active">Файлы с исполнителями</li>
                     </ol>
                 </nav>
             </div>
@@ -65,6 +65,7 @@
                 <tr>
                     <th>#</th>
                     <th>Название</th>
+                    <th>Тип</th>
                     <th>Дата загрузки</th>
                     <th>Действия</th>
                 </tr>
@@ -74,9 +75,11 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ file.filename }}</td>
+                        <td>{{ file.get_type_display }}</td>
                         <td>{{ file.created_at }}</td>
                         <td>
-                            <a href="{% url 'app:executor_file_parse' file.pk %}" class="me-3" title="Выгрузить исполнителей">
+                            <a href="{% url 'app:executor_file_parse' file.pk %}" class="me-3"
+                               title="Выгрузить исполнителей">
                                 <i class="bi bi-play-fill text-success"></i>
                             </a>
                             <a href="{{ file.file.url }}" class="me-3" title="Скачать файл">

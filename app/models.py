@@ -261,6 +261,7 @@ class Executor(BaseModel):
 
 class ArchiveFile(BaseModel):
     class TypeChoices(models.TextChoices):
+        HOURS = 'hours', 'Часы'
         SALARY = 'salary', 'Зарплата'
         EXECUTOR = 'executor', 'Исполнитель'
         CITY = 'city', 'Город'
@@ -287,18 +288,18 @@ class ArchiveFile(BaseModel):
         return os.path.basename(self.file.name)
 
 
-class ExecutorHours(BaseModel):
+class ExecutorHour(BaseModel):
     ofc = models.ForeignKey(OFC, on_delete=models.DO_NOTHING, related_name='executor_hours', verbose_name='ЦФЗ')
     executor = models.ForeignKey(Executor, on_delete=models.DO_NOTHING, related_name='executor_hours',
                                  verbose_name='Исполнитель')
     period = models.ForeignKey(Period, on_delete=models.DO_NOTHING, related_name='executor_hours',
                                verbose_name='Период')
-
+    day = models.ForeignKey(Day, on_delete=models.CASCADE, related_name='executor_hours', verbose_name='День')
     hour = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Часы')
 
     class Meta:
-        verbose_name = ''
-        verbose_name_plural = ''
+        verbose_name = 'Часы исполнителя'
+        verbose_name_plural = 'Часы исполнителя'
         ordering = ['-pk']
 
     def __str__(self):

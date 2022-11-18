@@ -17,12 +17,14 @@ def get_file_data(file):
     return data
 
 
-def get_executor_file_data(file):
+#
+#                           Executor files tasks
+#
+def set_executors_file_data(file):
     workbook = load_workbook(file)
     worksheet = workbook.active
     columns = _get_columns(worksheet)
-    data = _set_executor_data(worksheet, columns)
-    return data
+    _set_executor_data(worksheet, columns)
 
 
 def _get_columns(worksheet) -> dict:
@@ -61,7 +63,7 @@ def _set_executor_data(worksheet, columns):
         for column_letter in columns:
             value = columns[column_letter].get('value')
             cell_value = worksheet[f'{column_letter}{row}'].value
-            _check_and_save_attribute(executor, value, cell_value)
+            _check_and_save_executor_attribute(executor, value, cell_value)
         _save_executor(executor)
 
 
@@ -75,7 +77,7 @@ def _save_executor(data: dict):
 
 
 # Refactor
-def _check_and_save_attribute(executor: dict, value, cell_value):
+def _check_and_save_executor_attribute(executor: dict, value, cell_value):
     columns = ['Наименование', 'Код', 'Фамилия', 'Имя', 'Отчество', 'ID', 'Роль', 'Расторгнут', 'Основной договор',
                'Дата расторжения договора', 'Дата заключения договора', 'Партнер', 'Тип гражданства', 'Телефон',
                'Эл почта',
@@ -169,3 +171,32 @@ def _check_and_save_attribute(executor: dict, value, cell_value):
             ofc[0].save()
         ofc = ofc[0]
         executor['OFC'] = ofc
+
+
+#
+#                             Executor Hours files tasks
+#
+def set_executor_hours_file_data(file):
+    workbook = load_workbook(file)
+    worksheet = workbook.active
+    columns = _get_columns(worksheet)
+    _set_executor_hours_data(worksheet, columns)
+
+
+def _set_executor_hours_data(worksheet, columns):
+    max_row = worksheet.max_row
+    for row in range(2, max_row + 1):
+        executor_hour = {}
+        for column_letter in columns:
+            value = columns[column_letter].get('value')
+            cell_value = worksheet[f'{column_letter}{row}'].value
+            _check_and_save_executor_hours_attribute(executor_hour, value, cell_value)
+        _save_hour(executor_hour)
+
+
+def _check_and_save_executor_hours_attribute(executor_hours, value, cell_value):
+    pass
+
+
+def _save_hour(executor_hour):
+    pass
