@@ -27,13 +27,13 @@ def set_executors_file_data(file):
     _set_executor_data(worksheet, columns)
 
 
-def _get_columns(worksheet) -> dict:
+def _get_columns(worksheet, row: int = 1) -> dict:
     max_column = worksheet.max_column
 
     columns = {}
     for column_index in range(1, max_column + 1):
         letter = get_column_letter(column_index)
-        value = worksheet[f'{letter}1'].value
+        value = worksheet[f'{letter}{row}'].value
         columns[letter] = {
             'index': column_index,
             'value': value
@@ -179,8 +179,26 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
 def set_executor_hours_file_data(file):
     workbook = load_workbook(file)
     worksheet = workbook.active
-    columns = _get_columns(worksheet)
-    _set_executor_hours_data(worksheet, columns)
+
+    max_row = worksheet.max_row
+    for row in range(1, max_row + 1):
+        period_cell_value = worksheet[f'C{row}'].value
+        table_first_cell_value = worksheet[f'A{row}'].value
+        period_word = 'Период:'
+        table_first_word = 'Подразделение'
+        if period_cell_value and period_word in period_cell_value:
+            period_cell_value = period_cell_value.replace(period_word, '').replace(' ', '').strip().split('-')
+            date_format = '%d.%m.%Y'
+            start_date = datetime.strptime(period_cell_value[0], date_format)
+            final_date = datetime.strptime(period_cell_value[1], date_format)
+
+        if table_first_cell_value and table_first_word in table_first_cell_value:
+            columns = _get_columns(worksheet, row=row)
+            # print(columns)
+            for column in columns:
+                if columns[column].get('value') != None:
+                    print(columns[column].get('value'))
+            _set_executor_hours_data(worksheet, columns)
 
 
 def _set_executor_hours_data(worksheet, columns):
@@ -190,12 +208,15 @@ def _set_executor_hours_data(worksheet, columns):
         for column_letter in columns:
             value = columns[column_letter].get('value')
             cell_value = worksheet[f'{column_letter}{row}'].value
-            _check_and_save_executor_hours_attribute(executor_hour, value, cell_value)
-        _save_hour(executor_hour)
+            # _check_and_save_executor_hours_attribute(executor_hour, value, cell_value)
+        # _save_hour(executor_hour)
 
 
-def _check_and_save_executor_hours_attribute(executor_hours, value, cell_value):
-    pass
+def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value):
+    if 'Фамилия' in value:
+        executor_hour['last_name'] = cell_value
+    if 'Имя' in value:
+        executor_hour['first_name'] = cell_value
 
 
 def _save_hour(executor_hour):

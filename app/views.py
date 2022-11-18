@@ -351,7 +351,7 @@ def executor_hours_file_list(request):
 def executor_hours_file_parse(request, pk):
     file = get_object_or_404(ArchiveFile, pk=pk)
     create_executor_hours_for_file_task.delay(pk)
-    messages.success(request, f'Начата выгрузка исполнителей из файла "{file.filename}" ')
+    messages.success(request, f'Начата выгрузка часов исполнителей из файла "{file.filename}" ')
     return redirect(reverse('app:executor_list'))
 
 
