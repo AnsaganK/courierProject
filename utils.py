@@ -6,6 +6,11 @@ import string
 import secrets
 
 
+def set_status(obj, status):
+    obj.status = status
+    obj.save()
+
+
 def show_form_errors(request: HttpRequest, errors):
     for error in errors:
         print(error)

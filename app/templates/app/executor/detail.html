@@ -203,7 +203,8 @@
                                 <i class="bi bi-upload"></i>
                                 Выгрузить в excel
                             </a>
-                            <a href="" class="btn btn-outline-success">
+                            <a href="#" onclick="copy('{{ request.build_absolute_uri }}/hours')"
+                               class="btn btn-outline-success">
                                 <i class="bx bx-select-multiple"></i>
                                 Скопировать
                             </a>
@@ -212,6 +213,9 @@
                                 <i class="bx bx-link"></i>
                                 Перейти
                             </a>
+                        </div>
+                        <div id="alert_div">
+
                         </div>
                         <table class="table table-bordered">
                             <thead>
@@ -250,4 +254,28 @@
         </div>
 
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function copy(str) {
+            let tmp = document.createElement('INPUT'),
+                focus = document.activeElement;
+
+            tmp.value = str;
+
+            document.body.appendChild(tmp);
+            tmp.select();
+            document.execCommand('copy');
+            document.body.removeChild(tmp);
+            focus.focus();
+
+            let alert_success = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                Ссылка '${str}' скопирована
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+            let alert_div = document.getElementById('alert_div');
+            alert_div.innerHTML = alert_success;
+        }
+    </script>
 {% endblock %}

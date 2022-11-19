@@ -5,7 +5,9 @@ import openpyxl
 from openpyxl.reader.excel import load_workbook
 from openpyxl.utils import get_column_letter
 
-from app.models import Executor, CitizenshipType, Citizenship, OFC, ExecutorHours, ArchiveFile, Period, Day, DayHour
+from app.models import Executor, CitizenshipType, Citizenship, OFC, ExecutorHours, ArchiveFile, Period, Day, DayHour, \
+    StatusChoices
+from utils import set_status
 
 
 def get_file_data(file):
@@ -20,11 +22,18 @@ def get_file_data(file):
 #
 #                           Executor files tasks
 #
-def set_executors_file_data(file):
-    workbook = load_workbook(file)
-    worksheet = workbook.active
-    columns = _get_columns(worksheet)
-    _set_executor_data(worksheet, columns)
+def set_executors_file_data(archive_file_id):
+    archive_file = ArchiveFile.objects.get(pk=archive_file_id)
+    set_status(archive_file, StatusChoices.WAIT)
+    try:
+        file = archive_file.file
+        workbook = load_workbook(file)
+        worksheet = workbook.active
+        columns = _get_columns(worksheet)
+        _set_executor_data(worksheet, columns)
+        set_status(archive_file, StatusChoices.SUCCESS)
+    except:
+        set_status(archive_file, StatusChoices.ERROR)
 
 
 def _get_columns(worksheet, row: int = 1) -> dict:
@@ -179,34 +188,38 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
 #
 def set_executor_hours_file_data(archive_file_id: int):
     archive_file = ArchiveFile.objects.get(pk=archive_file_id)
-    workbook = load_workbook(archive_file.file)
+    set_status(archive_file, StatusChoices.WAIT)
+    try:
+        workbook = load_workbook(archive_file.file)
+        worksheet = workbook.active
 
-    worksheet = workbook.active
+        max_row = worksheet.max_row
+        for row in range(1, max_row + 1):
+            period_cell_value = worksheet[f'C{row}'].value
+            table_first_cell_value = worksheet[f'A{row}'].value
+            period_word = 'Период:'
+            table_first_word = 'Подразделение'
+            if period_cell_value and period_word in period_cell_value:
+                period_cell_value = period_cell_value.replace(period_word, '').replace(' ', '').strip().split('-')
+                date_format = '%d.%m.%Y'
+                print(period_cell_value)
+                start_date = datetime.strptime(period_cell_value[0], date_format)
+                final_date = datetime.strptime(period_cell_value[1], date_format)
+                print(start_date)
+                print(final_date)
+                period = Period.objects.get_or_create(start_date=start_date, final_date=final_date)
+                if period[1]:
+                    period[0].save()
+                period = period[0]
+                print(period)
 
-    max_row = worksheet.max_row
-    for row in range(1, max_row + 1):
-        period_cell_value = worksheet[f'C{row}'].value
-        table_first_cell_value = worksheet[f'A{row}'].value
-        period_word = 'Период:'
-        table_first_word = 'Подразделение'
-        if period_cell_value and period_word in period_cell_value:
-            period_cell_value = period_cell_value.replace(period_word, '').replace(' ', '').strip().split('-')
-            date_format = '%d.%m.%Y'
-            print(period_cell_value)
-            start_date = datetime.strptime(period_cell_value[0], date_format)
-            final_date = datetime.strptime(period_cell_value[1], date_format)
-            print(start_date)
-            print(final_date)
-            period = Period.objects.get_or_create(start_date=start_date, final_date=final_date)
-            if period[1]:
-                period[0].save()
-            period = period[0]
-            print(period)
-
-        if table_first_cell_value and table_first_word in table_first_cell_value:
-            columns = _get_columns(worksheet, row=row)
-            print(columns)
-            _set_executor_hours_data(worksheet, row, columns, archive_file=archive_file, period=period)
+            if table_first_cell_value and table_first_word in table_first_cell_value:
+                columns = _get_columns(worksheet, row=row)
+                print(columns)
+                _set_executor_hours_data(worksheet, row, columns, archive_file=archive_file, period=period)
+        set_status(archive_file, StatusChoices.SUCCESS)
+    except:
+        set_status(archive_file, StatusChoices.ERROR)
 
 
 def _set_executor_hours_data(worksheet, row, columns, archive_file: ArchiveFile, period: Period):

@@ -10,6 +10,14 @@ from django.dispatch import receiver
 from django.shortcuts import reverse
 
 
+class StatusChoices(models.TextChoices):
+    WAIT = 'WAIT', 'Ожидание'
+    WARNING = 'WARNING', 'Ожидание'
+    SUCCESS = 'SUCCESS', 'Успешно'
+    ERROR = 'ERROR', 'Ошибка'
+    NOT_STARTED = 'NOT_STARTED', 'Не начато'
+
+
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -274,6 +282,8 @@ class ArchiveFile(BaseModel):
     file = models.FileField(upload_to='archive_files', verbose_name='Файл')
     type = models.CharField(max_length=64, choices=TypeChoices.choices, null=True, blank=True, verbose_name='Тип')
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
+    status = models.CharField(max_length=64, choices=StatusChoices.choices, default=StatusChoices.NOT_STARTED,
+                              verbose_name='Статус')
 
     class Meta:
         verbose_name = 'Архивный файл'
