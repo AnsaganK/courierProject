@@ -74,7 +74,7 @@
                             </a>
                         </th>
                         <td class="text-start">{{ executor.get_full_name }}</td>
-                        <td class="text-start">{{ executor.birth_date }}</td>
+                        <td class="text-start">{{ executor.birth_date|default:'-' }}</td>
                         <td class="text-start">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>
                         <td>{{ executor.INN|default:'-' }}</td>
                         <td>

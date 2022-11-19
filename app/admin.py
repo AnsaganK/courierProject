@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from app.models import City, OFC, Transport, AdditionalReason, Tariff, Bicycle, Citizenship, Executor, Profile
+from app.models import City, OFC, Transport, AdditionalReason, Tariff, Bicycle, Citizenship, Executor, Profile, \
+    ExecutorHours, Period, Day, DayHour
 
 
 @admin.register(City)
@@ -40,6 +41,26 @@ class CitizenshipAdmin(admin.ModelAdmin):
 
 @admin.register(Executor)
 class ExecutorAdmin(admin.ModelAdmin):
+    list_display = ['pk']
+
+
+@admin.register(ExecutorHours)
+class ExecutorHoursAdmin(admin.ModelAdmin):
+    list_display = ['pk']
+
+
+@admin.register(DayHour)
+class DayHourAdmin(admin.ModelAdmin):
+    list_display = ['pk']
+
+
+@admin.register(Period)
+class PeriodAdmin(admin.ModelAdmin):
+    list_display = ['pk']
+
+
+@admin.register(Day)
+class DayAdmin(admin.ModelAdmin):
     list_display = ['pk']
 
 

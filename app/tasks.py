@@ -33,5 +33,4 @@ def create_executors_for_file_task(pk: int):
 
 @shared_task
 def create_executor_hours_for_file_task(pk: int):
-    file = ArchiveFile.objects.get(pk=pk)
-    set_executor_hours_file_data(file.file)
+    set_executor_hours_file_data(archive_file_id=pk)

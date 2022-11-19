@@ -64,6 +64,7 @@
                 <thead>
                 <tr>
                     <th>#</th>
+                    <th>Посмотреть</th>
                     <th>Название</th>
                     <th>Тип</th>
                     <th>Дата загрузки</th>
@@ -74,6 +75,11 @@
                 {% for file in files %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'app:executor_hours_file_preview' file.pk %}">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                        </td>
                         <td>{{ file.filename }}</td>
                         <td>{{ file.get_type_display }}</td>
                         <td>{{ file.created_at }}</td>

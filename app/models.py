@@ -51,8 +51,8 @@ class OFC(BaseModel):
 
 
 class Period(BaseModel):
-    start_date = models.DateTimeField(null=True, blank=True, verbose_name='Начальная дата')
-    final_date = models.DateTimeField(null=True, blank=True, verbose_name='Конечная дата')
+    start_date = models.DateField(null=True, blank=True, verbose_name='Начальная дата')
+    final_date = models.DateField(null=True, blank=True, verbose_name='Конечная дата')
 
     class Meta:
         verbose_name = 'Период'
@@ -68,7 +68,7 @@ class Period(BaseModel):
 
 class Day(BaseModel):
     period = models.ForeignKey(Period, on_delete=models.CASCADE, related_name='days', verbose_name='Период')
-    date = models.DateField(verbose_name='Дата')
+    date = models.DateField(null=True, blank=True, verbose_name='Дата')
 
     class Meta:
         verbose_name = 'День'
@@ -288,14 +288,18 @@ class ArchiveFile(BaseModel):
         return os.path.basename(self.file.name)
 
 
-class ExecutorHour(BaseModel):
-    ofc = models.ForeignKey(OFC, on_delete=models.DO_NOTHING, related_name='executor_hours', verbose_name='ЦФЗ')
-    executor = models.ForeignKey(Executor, on_delete=models.DO_NOTHING, related_name='executor_hours',
+class ExecutorHours(BaseModel):
+    ofc = models.ForeignKey(OFC, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='executor_hours',
+                            verbose_name='ЦФЗ')
+    role = models.CharField(max_length=256, null=True, blank=True, verbose_name='Роль')
+    executor = models.ForeignKey(Executor, on_delete=models.DO_NOTHING, null=True, blank=True,
+                                 related_name='executor_hours',
                                  verbose_name='Исполнитель')
-    period = models.ForeignKey(Period, on_delete=models.DO_NOTHING, related_name='executor_hours',
+    period = models.ForeignKey(Period, on_delete=models.DO_NOTHING, null=True, blank=True,
+                               related_name='executor_hours',
                                verbose_name='Период')
-    day = models.ForeignKey(Day, on_delete=models.CASCADE, related_name='executor_hours', verbose_name='День')
-    hour = models.DecimalField(max_digits=4, decimal_places=1, verbose_name='Часы')
+    file = models.ForeignKey(ArchiveFile, on_delete=models.CASCADE, null=True, blank=True,
+                             related_name='executor_hours', verbose_name='Файл')
 
     class Meta:
         verbose_name = 'Часы исполнителя'
@@ -303,7 +307,26 @@ class ExecutorHour(BaseModel):
         ordering = ['-pk']
 
     def __str__(self):
-        return f'{self.executor.get_full_name} - {self.period}'
+        return f'{self.pk}'
+
+
+class DayHour(BaseModel):
+    hour = models.DecimalField(max_digits=6, decimal_places=1, null=True, blank=True, verbose_name='Часы')
+    day = models.ForeignKey(Day, on_delete=models.CASCADE, null=True, blank=True, related_name='executor_hours',
+                            verbose_name='День')
+    executor_hour = models.ForeignKey(ExecutorHours, on_delete=models.CASCADE, related_name='day_hours',
+                                      verbose_name='Часы по дням')
+
+    class Meta:
+        verbose_name = 'Часы по дням'
+        verbose_name_plural = 'Часы по дням'
+        ordering = ['pk']
+
+    def __str__(self):
+        return str(self.pk)
+
+    def get_absolute_url(self):
+        pass
 
 
 class Profile(BaseModel):

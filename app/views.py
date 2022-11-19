@@ -5,7 +5,8 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
     CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm
-from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile
+from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorHours, \
+    Day, DayHour
 from app.service.file import get_file_data
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task
 from utils import show_form_errors, get_generated_password, get_paginator
@@ -344,6 +345,19 @@ def executor_hours_file_list(request):
     files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.HOURS)
     return render(request, 'app/executor/hours/file/list.html', {
         'files': files
+    })
+
+
+@login_required
+def executor_hours_file_preview(request, pk):
+    archive_file = get_object_or_404(ArchiveFile, pk=pk)
+    executor_hours = archive_file.executor_hours.all().order_by('ofc__address')
+    days = DayHour.objects.filter(executor_hour__in=archive_file.executor_hours.all()).order_by('day_id').distinct(
+        'day').values('day__date')
+    return render(request, 'app/executor/hours/file/preview.html', {
+        'archive_file': archive_file,
+        'executor_hours': executor_hours,
+        'days': days
     })
 
 

@@ -16,6 +16,7 @@ urlpatterns = [
 
     # Executor hours Files
     path('executor/hours/file', views.executor_hours_file_list, name='executor_hours_file_list'),
+    path('executor/hours/file/<int:pk>/preview', views.executor_hours_file_preview, name='executor_hours_file_preview'),
     path('executor/hours/file/create', views.executor_hours_file_create, name='executor_hours_file_create'),
     path('executor/hours/file/<int:pk>/parse', views.executor_hours_file_parse, name='executor_hours_file_parse'),
 
@@ -27,9 +28,9 @@ urlpatterns = [
     # Executors
     path('executor', views.executor_list, name='executor_list'),
     path('executor/create', views.executor_create, name='executor_create'),
-    path('executor/<path:executor_id>', views.executor_detail, name='executor_detail'),
     path('executor/<int:pk>/update', views.executor_update, name='executor_update'),
     path('executor/<int:pk>/delete', views.executor_delete, name='executor_delete'),
+    path('executor/<path:executor_id>', views.executor_detail, name='executor_detail'),
 
 
     # Cities
