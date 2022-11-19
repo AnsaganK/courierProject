@@ -310,6 +310,19 @@ def executor_detail(request, executor_id):
     })
 
 
+def executor_hours_detail(request, executor_id):
+    executor = get_object_or_404(Executor, executor_id=executor_id)
+    executor_hours = executor.executor_hours.all()
+    week_days = [
+        'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
+    ]
+    return render(request, 'app/executor/hours/private.html', {
+        'executor': executor,
+        'executor_hours': executor_hours,
+        'week_days': week_days
+    })
+
+
 @login_required
 def executor_update(request, code):
     pass

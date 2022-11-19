@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -196,6 +197,7 @@ class Executor(BaseModel):
 
     # code = models.CharField(max_length=64, db_index=True, null=True, blank=True,
     #                         verbose_name='Код ')
+
     executor_id = models.CharField(max_length=64, unique=True, db_index=True, null=True, blank=True,
                                    verbose_name='Идентификатор')
     role = models.CharField(max_length=128, choices=RoleChoices.choices, default=RoleChoices.COURIER,
