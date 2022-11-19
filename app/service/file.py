@@ -234,7 +234,7 @@ def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value, p
         ofc = ofc[0]
         executor_hour['ofc'] = ofc
     elif 'Исполнитель' in value:
-        pass
+        executor_hour['executor_fullname'] = cell_value
     elif 'Роль' in value:
         executor_hour['role'] = cell_value
     elif cell_value and 'ID' in value:
@@ -242,7 +242,20 @@ def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value, p
         if executor[1]:
             executor[0].save()
         executor = executor[0]
+        print(executor.get_full_name, executor_hour.get('executor_fullname'))
+        if executor.get_full_name == '-' and executor_hour.get('executor_fullname'):
+            fullname = executor_hour.get('executor_fullname').split(' ')
+            print(fullname)
+            if len(fullname) >= 1:
+                executor.last_name = fullname[0]
+            if len(fullname) >= 2:
+                executor.first_name = fullname[1]
+            if len(fullname) >= 3:
+                executor.patronymic = ' '.join(fullname[2:])
+            executor.save()
+
         executor_hour['executor'] = executor
+        executor_hour['executor_id'] = cell_value
     else:
         try:
             day = datetime.strptime(value, '%d.%m.%y')
@@ -271,6 +284,10 @@ def _save_executor_hour(data: dict):
         if executor_hour[1]:
             executor_hour[0].save()
         executor_hour = executor_hour[0]
-        day_hour = DayHour(executor_hour=executor_hour, hour=hour_object.get('hour'), day=hour_object['day'])
+        day_hour = DayHour.objects.get_or_create(executor_hour=executor_hour, day=hour_object['day'])
+        if day_hour[1]:
+            day_hour[0].save()
+        day_hour = day_hour[0]
+        day_hour.hour = hour_object.get('hour')
         day_hour.save()
         # ExecutorHours.objects.filter(pk=executor_hour.id).update(hour=hour_object['hour'])

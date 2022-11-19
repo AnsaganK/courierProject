@@ -2,6 +2,7 @@ import os
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -253,7 +254,7 @@ class Executor(BaseModel):
             full_name += ' ' + self.first_name
         if self.patronymic:
             full_name += ' ' + self.patronymic
-        return full_name if full_name else ' - '
+        return full_name if full_name else '-'
 
     def get_absolute_url(self):
         return reverse('app:executor_detail', args=[self.executor_id])
@@ -308,6 +309,17 @@ class ExecutorHours(BaseModel):
 
     def __str__(self):
         return f'{self.pk}'
+
+    def get_absolute_url(self):
+        pass
+
+    @property
+    def get_hours_sum(self):
+        return self.day_hours.aggregate(Sum('hour')).get('hour__sum')
+
+    @property
+    def get_days_hour(self):
+        pass
 
 
 class DayHour(BaseModel):

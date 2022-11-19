@@ -66,11 +66,6 @@
                         </button>
                     </li>
 
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password"
-                                aria-selected="false" role="tab" tabindex="-1">Сменить пароль
-                        </button>
-                    </li>
 
                 </ul>
                 <div class="tab-content pt-2">
@@ -203,43 +198,36 @@
                     </div>
 
                     <div class="tab-pane fade pt-3" id="profile-settings" role="tabpanel">
-
-
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>ЦФЗ</th>
+                                <th>Сотрудник</th>
+                                <th>Период</th>
+                                <th>Табельный номер</th>
+                                {% for week_day in week_days %}
+                                    <th>{{ week_day }}</th>
+                                {% endfor %}
+                                <th>Итого</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for executor_hour in executor_hours %}
+                                <tr>
+                                    <td>{{ executor_hour.ofc }}</td>
+                                    <td>{{ executor_hour.executor.get_full_name }}</td>
+                                    <td>{{ executor_hour.period }}</td>
+                                    <td>{{ executor_hour.executor.executor_id }}</td>
+                                    {% for day_hour in executor_hour.day_hours.all %}
+                                        <td>{{ day_hour.hour }}</td>
+                                    {% endfor %}
+                                    <td>{{ executor_hour.get_hours_sum }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div class="tab-pane fade pt-3" id="profile-change-password" role="tabpanel">
-                        <!-- Change Password Form -->
-                        <form>
-
-                            <div class="row mb-3">
-                                <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Нынешний
-                                    пароль</label>
-                                <div class="col-md-8 col-lg-9">
-                                    <input name="password" type="password" class="form-control" id="currentPassword">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">Новый пароль</label>
-                                <div class="col-md-8 col-lg-9">
-                                    <input name="newpassword" type="password" class="form-control" id="newPassword">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Повторите новый
-                                    пароль</label>
-                                <div class="col-md-8 col-lg-9">
-                                    <input name="renewpassword" type="password" class="form-control" id="renewPassword">
-                                </div>
-                            </div>
-
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary">Сменить пароль</button>
-                            </div>
-                        </form><!-- End Change Password Form -->
-
-                    </div>
 
                 </div><!-- End Bordered Tabs -->
 

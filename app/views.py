@@ -299,8 +299,14 @@ def executor_list(request):
 @login_required
 def executor_detail(request, executor_id):
     executor = get_object_or_404(Executor, executor_id=executor_id)
+    executor_hours = executor.executor_hours.all()
+    week_days = [
+        'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
+    ]
     return render(request, 'app/executor/detail.html', {
-        'executor': executor
+        'executor': executor,
+        'executor_hours': executor_hours,
+        'week_days': week_days
     })
 
 
@@ -354,10 +360,14 @@ def executor_hours_file_preview(request, pk):
     executor_hours = archive_file.executor_hours.all().order_by('ofc__address')
     days = DayHour.objects.filter(executor_hour__in=archive_file.executor_hours.all()).order_by('day_id').distinct(
         'day').values('day__date')
+
+    days_hour = DayHour.objects.filter(executor_hour__in=archive_file.executor_hours.all()).order_by('day_id').distinct(
+        'day').values('day__date')
     return render(request, 'app/executor/hours/file/preview.html', {
         'archive_file': archive_file,
         'executor_hours': executor_hours,
-        'days': days
+        'days': days,
+        'days_hour': days_hour
     })
 
 

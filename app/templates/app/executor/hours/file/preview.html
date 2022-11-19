@@ -39,6 +39,7 @@
                     {% for day in days %}
                         <th>{{ day.day__date|date:"d.m.y" }}</th>
                     {% endfor %}
+                    <th>Итого</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,10 +49,13 @@
                         <td>{{ executor_hour.ofc }}</td>
                         <td>{{ executor_hour.executor }}</td>
                         <td>{{ executor_hour.role }}</td>
-                        <td>{{ executor_hour.executor.executor_id }}</td>
+                        <td>
+                            <a href="{{ executor_hour.executor.get_absolute_url }}">{{ executor_hour.executor.executor_id }}</a>
+                        </td>
                         {% for day_hour in executor_hour.day_hours.all %}
-                            <td>{{ day_hour.hour }}</td>
+                            <td>{{ day_hour.hour|default:'-' }}</td>
                         {% endfor %}
+                        <td>{{ executor_hour.get_hours_sum|default:'0.0' }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
