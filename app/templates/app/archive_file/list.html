@@ -84,7 +84,8 @@
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Описание</label>
                             <div class="col-sm-10">
-                                <textarea id="description_textarea" class="form-control" name="description" style="height: 100px"></textarea>
+                                <textarea id="description_textarea" class="form-control" name="description"
+                                          style="height: 100px"></textarea>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -123,13 +124,14 @@
             </div>
         </div>
     </div>
-
+    {% include 'include/archive_file/status_block.html' %}
     <div class="col">
         {% if archive_files %}
             <table class="table table-bordered text-center">
                 <thead>
                 <tr>
                     <th scope="col">#</th>
+                    <th scope="col">Статус</th>
                     <th scope="col">Файл</th>
                     <th scope="col">Описание</th>
                     <th scope="col">Тип</th>
@@ -141,6 +143,9 @@
                 {% for archive_file in archive_files %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
+                        <td style="font-size: 24px">
+                            {% include 'include/archive_file/status.html' with status=archive_file.status %}
+                        </td>
                         <td>{{ archive_file.filename }}</td>
                         <td>{{ archive_file.description|default:'-' }}</td>
                         <td>{{ archive_file.get_type_display }}</td>

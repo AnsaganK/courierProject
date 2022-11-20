@@ -64,7 +64,7 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>Посмотреть</th>
+                    <th>Статус</th>
                     <th>Название</th>
                     <th>Тип</th>
                     <th>Дата загрузки</th>
@@ -75,12 +75,13 @@
                 {% for file in files %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
+                        <td>{% include 'include/archive_file/status.html' with status=file.status %}</td>
                         <td>
-                            <a href="{% url 'app:executor_hours_file_preview' file.pk %}">
-                                <i class="bi bi-eye-fill"></i>
+                            <a href="{% url 'app:executor_hours_file_preview' file.pk %}" class="me-2">
+                                <span>{{ file.filename }}</span>
+
                             </a>
                         </td>
-                        <td>{{ file.filename }}</td>
                         <td>{{ file.get_type_display }}</td>
                         <td>{{ file.created_at }}</td>
                         <td>

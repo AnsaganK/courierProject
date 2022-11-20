@@ -1,11 +1,11 @@
 {% if status == 'NOT_STARTED' %}
-    <i class="bx bx-stop text-black-50"></i>
+    <i class="bx bx-data text-black-50" title="Загружен, без парсинга"></i>
 {% elif status == 'WAIT' %}
-    <i class="bx bx-time-five text-secondary"></i>
+    <i class="bx bx-time-five text-primary" title="Процесс запущен"></i>
 {% elif status == 'WARNING' %}
-    <i class="bx bx-error-alt text-warning"></i>
+    <i class="bx bx-error-alt text-warning" title="Предупреждение (не критично)"></i>
 {% elif status == 'SUCCESS' %}
-    <i class="bx bx-check text-success"></i>
+    <i class="bx bx-check-circle text-success" title="Успешно"></i>
 {% elif status == 'ERROR' %}
-    <i class="bx bx-error-circle text-danger"></i>
+    <i class="bx bx-error-circle text-danger" title="Ошибка"></i>
 {% endif %}
