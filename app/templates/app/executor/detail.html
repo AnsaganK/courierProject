@@ -218,7 +218,7 @@
                         <div id="alert_div">
 
                         </div>
-                        <table class="table table-bordered">
+                        <table class="table table-bordered text-center">
                             <thead>
                             <tr>
                                 <th>ЦФЗ</th>
@@ -239,7 +239,7 @@
                                     <td>{{ executor_hour.period }}</td>
                                     <td>{{ executor_hour.executor.executor_id }}</td>
                                     {% for day_hour in executor_hour.day_hours.all %}
-                                        <td>{{ day_hour.hour }}</td>
+                                        <td>{{ day_hour.hour|default:'-' }}</td>
                                     {% endfor %}
                                     <td>{{ executor_hour.get_hours_sum }}</td>
                                 </tr>
