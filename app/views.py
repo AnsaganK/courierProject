@@ -1,6 +1,9 @@
+import csv
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
@@ -321,6 +324,32 @@ def executor_hours_detail(request, executor_id):
         'executor_hours': executor_hours,
         'week_days': week_days
     })
+
+
+def executor_hours_export(request, executor_id):
+    executor = get_object_or_404(Executor, executor_id=executor_id)
+    executor_hours = executor.executor_hours.all()
+    week_days = [
+        'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
+    ]
+    filename = executor_id.replace('/', '-')
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition': f'attachment; filename="{filename}.csv"'},
+    )
+    response.write(u'\ufeff'.encode('utf8'))
+    writer = csv.writer(response, delimiter=";")
+
+    headline_row = ['ЦФЗ', 'Сотрудник', 'Период', 'Табельный номер'] + [week_day for week_day in week_days] + ['Итого']
+    writer.writerow(headline_row)
+    for executor_hour in executor_hours:
+        executor_hour_row = [executor_hour.ofc, executor_hour.executor.get_full_name, executor_hour.period,
+                             executor_hour.executor.executor_id] + \
+                            [day_hour.hour if day_hour.hour else '' for day_hour in executor_hour.day_hours.all()] + [
+                                executor_hour.get_hours_sum]
+        writer.writerow(executor_hour_row)
+
+    return response
 
 
 @login_required

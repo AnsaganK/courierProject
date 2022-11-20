@@ -1,0 +1,11 @@
+{% if status == 'NOT_STARTED' %}
+    <i class="bx bx-stop text-black-50"></i>
+{% elif status == 'WAIT' %}
+    <i class="bx bx-time-five text-secondary"></i>
+{% elif status == 'WARNING' %}
+    <i class="bx bx-error-alt text-warning"></i>
+{% elif status == 'SUCCESS' %}
+    <i class="bx bx-check text-success"></i>
+{% elif status == 'ERROR' %}
+    <i class="bx bx-error-circle text-danger"></i>
+{% endif %}

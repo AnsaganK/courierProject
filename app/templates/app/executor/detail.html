@@ -199,7 +199,8 @@
 
                     <div class="tab-pane fade pt-3" id="profile-settings" role="tabpanel">
                         <div class="mb-2">
-                            <a href="" class="btn btn-outline-success">
+                            <a href="{% url 'app:executor_hours_export' executor.executor_id %}"
+                               class="btn btn-outline-success">
                                 <i class="bi bi-upload"></i>
                                 Выгрузить в excel
                             </a>
