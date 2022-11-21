@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load general %}
 
 {% block title %}
     {{ executor.executor_id }} | {{ executor.get_full_name }}
@@ -47,22 +48,30 @@
             <div class="card-body pt-3">
                 <!-- Bordered Tabs -->
                 <ul class="nav nav-tabs nav-tabs-bordered" role="tablist">
-
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview"
+                        <button
+                                class="nav-link {% if '?page=info' in request.get_full_path or not '?'|line_entry:request.get_full_path %}active{% endif %}"
+                                data-bs-toggle="tab"
+                                data-bs-target="#profile-overview"
                                 aria-selected="false" role="tab" tabindex="-1">Информация
                         </button>
                     </li>
 
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit"
+                        <button
+                                class="nav-link {% if '?page=edit' in request.get_full_path %}active{% endif %}"
+                                data-bs-toggle="tab"
+                                data-bs-target="#profile-edit"
                                 aria-selected="true" role="tab">Редактировать
                         </button>
                     </li>
 
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings"
-                                aria-selected="false" role="tab" tabindex="-1">Зарплата
+                        <button
+                                class="nav-link {% if '?page=hours' in request.get_full_path %}active{% endif %}"
+                                data-bs-toggle="tab"
+                                data-bs-target="#profile-settings"
+                                aria-selected="false" role="tab" tabindex="-1">Часы
                         </button>
                     </li>
 
@@ -70,7 +79,8 @@
                 </ul>
                 <div class="tab-content pt-2">
 
-                    <div class="tab-pane fade profile-overview  active show" id="profile-overview" role="tabpanel">
+                    <div class="tab-pane fade profile-overview {% if '?page=info' in request.get_full_path or not '?'|line_entry:request.get_full_path %}active show{% endif %}"
+                         id="profile-overview" role="tabpanel">
                         <h5 class="card-title">Общая информация</h5>
                         {#                        <p class="small fst-italic"></p>#}
 
@@ -164,7 +174,8 @@
                         </div>
                     </div>
 
-                    <div class="tab-pane fade profile-edit pt-3" id="profile-edit" role="tabpanel">
+                    <div class="tab-pane fade profile-edit pt-3 {% if '?page=edit' in request.get_full_path %}active show{% endif %}"
+                         id="profile-edit" role="tabpanel">
 
                         <!-- Profile Edit Form -->
                         <form>
@@ -197,7 +208,9 @@
 
                     </div>
 
-                    <div class="tab-pane fade pt-3" id="profile-settings" role="tabpanel">
+                    <div class="tab-pane fade pt-3 {% if '?page=hours' in request.get_full_path %}active show{% endif %}"
+                         id="profile-settings"
+                         role="tabpanel">
                         <div class="mb-2">
                             <a href="{% url 'app:executor_hours_export' executor.executor_id %}"
                                class="btn btn-outline-success">

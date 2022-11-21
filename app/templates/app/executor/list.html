@@ -61,7 +61,7 @@
                     <th scope="col">Название</th>
                     <th scope="col">Дата рожд.</th>
                     <th scope="col">ЦФЗ</th>
-                    <th scope="col">Номер тел./th>
+                    <th scope="col">Номер тел.</th>
                     <th scope="col">Действия</th>
                 </tr>
                 </thead>
@@ -78,6 +78,10 @@
                         <td class="text-start">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>
                         <td>{{ executor.phone_number|default:'-' }}</td>
                         <td>
+                            <a href="{{ executor.get_absolute_url }}?page=hours"
+                               class="me-3" title="Просмотреть часы">
+                                <i class="bx bx-time text-success"></i>
+                            </a>
                             <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
                                data-update-url=""
                                data-city-name=""
