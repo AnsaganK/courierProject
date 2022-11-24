@@ -89,10 +89,6 @@
                             <div class="col-lg-9 col-md-8">{{ executor.get_full_name }}</div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-3 col-md-4 label ">ID</div>
-                            <div class="col-lg-9 col-md-8">{{ executor.executor_id }}</div>
-                        </div>
-                        <div class="row">
                             <div class="col-lg-3 col-md-4 label">Пол</div>
                             <div class="col-lg-9 col-md-8">{{ executor.get_gender_display }}</div>
                         </div>
@@ -105,7 +101,7 @@
 
                         <div class="row">
                             <div class="col-lg-3 col-md-4 label">Номер телефона</div>
-                            <div class="col-lg-9 col-md-8">{{ executor.phone_number }}</div>
+                            <div class="col-lg-9 col-md-8">{{ executor.phone_number|default:'-' }}</div>
                         </div>
 
                         <div class="row">
@@ -114,9 +110,18 @@
                         </div>
                         <div class="row">
                             <div class="col-lg-3 col-md-4 label">Дата рождения</div>
-                            <div class="col-lg-9 col-md-8">{{ executor.birth_date }}</div>
+                            <div class="col-lg-9 col-md-8">{{ executor.birth_date|default:'-' }}</div>
                         </div>
-
+                        {% if executor.contacts.exists %}
+                            <hr>
+                            <h5 class="card-title">Контакты</h5>
+                            {% for contact in executor.contacts.all %}
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">{{ contact.type|capfirst }}</div>
+                                    <div class="col-lg-9 col-md-8">{{ contact.identifier|default:'-' }}</div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                         <hr>
                         <h5 class="card-title">Документы</h5>
                         <div class="row">
@@ -151,8 +156,16 @@
                         <hr>
                         <h5 class="card-title">Исполнитель</h5>
                         <div class="row">
-                            <div class="col-lg-3 col-md-4 label">ЦФЗ</div>
-                            <div class="col-lg-9 col-md-8">{{ executor.OFC|default:'-' }}</div>
+                            <div class="col-lg-3 col-md-4 label ">ID</div>
+                            <div class="col-lg-9 col-md-8">{{ executor.executor_id }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">Дата заключения</div>
+                            <div class="col-lg-9 col-md-8">{{ executor.date_conclusion|date:'Y-m-d' }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">Дата расторжения</div>
+                            <div class="col-lg-9 col-md-8">{{ executor.date_terminated|date:'Y-m-d' }}</div>
                         </div>
 
                         <div class="row">
@@ -164,48 +177,279 @@
                             <div class="col-lg-3 col-md-4 label">Основной договор</div>
                             <div class="col-lg-9 col-md-8">{{ executor.main_contract|default:'-' }}</div>
                         </div>
+
                         <div class="row">
                             <div class="col-lg-3 col-md-4 label">Куратор(рекрутер)</div>
                             <div class="col-lg-9 col-md-8">{{ executor.curator|default:'-' }}</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 label">ЦФЗ</div>
+                            <div class="col-lg-9 col-md-8">{{ executor.OFC|default:'-' }}</div>
                         </div>
                         <div class="row">
                             <div class="col-lg-3 col-md-4 label">Примечание</div>
                             <div class="col-lg-9 col-md-8">{{ executor.note|default:'-' }}</div>
                         </div>
                     </div>
-
                     <div class="tab-pane fade profile-edit pt-3 {% if '?page=edit' in request.get_full_path %}active show{% endif %}"
                          id="profile-edit" role="tabpanel">
 
                         <!-- Profile Edit Form -->
-                        <form>
-                            <div class="row mb-3">
-                                <label for="last_name" class="col-md-4 col-lg-3 col-form-label">Фамилия</label>
-                                <div class="col-md-8 col-lg-9">
-                                    <input name="last_name" type="text" class="form-control" id="last_name"
-                                           value="{{ executor.last_name|default:'-' }}">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <label for="first_name" class="col-md-4 col-lg-3 col-form-label">Имя</label>
-                                <div class="col-md-8 col-lg-9">
-                                    <input name="first_name" type="text" class="form-control" id="first_name"
-                                           value="{{ executor.first_name|default:'-' }}">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <label for="patronymic" class="col-md-4 col-lg-3 col-form-label">Отчество</label>
-                                <div class="col-md-8 col-lg-9">
-                                    <input name="patronymic" type="text" class="form-control" id="patronymic"
-                                           value="{{ executor.patronymic|default:'-' }}">
-                                </div>
-                            </div>
+                        <form class="row" action="{% url 'app:executor_update' executor.executor_id %}" method="post">
+                            {% csrf_token %}
+                            <div class="col-lg-6">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">Редактирование исполнителя</h5>
+                                    <span class="text-end d-block">Общие данные</span>
+                                    <hr>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Фамилия</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="last_name" class="form-control"
+                                                   value="{{ executor.last_name }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Имя</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="first_name" class="form-control"
+                                                   value="{{ executor.first_name }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Отчество</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="patronymic" class="form-control"
+                                                   value="{{ executor.patronymic }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Пол</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" name="gender" id="">
+                                                {% for gender in genders %}
+                                                    <option value="{{ gender.0 }}"
+                                                            {% if executor.gender == gender.0 %}
+                                                            selected {% endif %}>{{ gender.1 }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Гражданство</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" name="citizenship" id="">
+                                                <option value="">Не выбрано</option>
+                                                {% for citizenship in citizenships %}
+                                                    <option value="{{ citizenship.pk }}"
+                                                            {% if executor.citizenship == citizenship %}
+                                                            selected
+                                                            {% endif %}>{{ citizenship.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Тип
+                                            гражданства</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" name="citizenship_type" id="">
+                                                <option value="">Не выбрано</option>
+                                                {% for citizenship_type in citizenship_types %}
+                                                    <option value="{{ citizenship_type.pk }}"
+                                                            {% if executor.citizenship_type == citizenship_type %}
+                                                            selected {% endif %}>{{ citizenship_type.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Номер
+                                            телефона</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" name="phone_number"
+                                                   value="{{ executor.phone_number|default:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputEmail" class="col-sm-3 col-form-label">Email</label>
+                                        <div class="col-sm-9">
+                                            <input type="email" class="form-control" name="email"
+                                                   value="{{ executor.email|default:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputEmail" class="col-sm-3 col-form-label">Дата рождения</label>
+                                        <div class="col-sm-9">
+                                            <input type="date" class="form-control" name="birth_date"
+                                                   value="{{ executor.birth_date|date:"Y-m-d" }}">
+                                        </div>
+                                    </div>
 
+                                    <hr>
+                                    <span class="text-end d-block">Контакты</span>
+                                    <hr>
+                                    <div id="contacts_block">
+                                        {% for contact in executor.contacts.all %}
+                                            <div class="row mb-3">
+                                                <div class="col-sm-3">
+                                                    <select class="form-select" name="type" id="">
+                                                        {% for contact_type in contact_types %}
+                                                            <option value="{{ contact_type.0 }}"
+                                                                    {% if contact.type == contact_type.0 %}
+                                                                    selected {% endif %}>
+                                                                <i class="bi bi-telegram"></i>
+                                                                {{ contact_type.1 }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-9">
+                                                    <input type="text" name="identifier" class="form-control"
+                                                           value="{{ contact.identifier }}">
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <span onclick="addContactForm()" class="btn btn-success"><i class="bi bi-plus"></i></span>
+                                    <span onclick="removeContactForm()" class="btn btn-danger"><i
+                                            class="bx bx-minus"></i></span>
+                                    <hr>
+                                    <span class="text-end d-block">Личные документы</span>
+                                    <hr>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">ИНН</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="INN" class="form-control"
+                                                   value="{{ executor.INN|default:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Серия</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="passport_series" class="form-control"
+                                                   value="{{ executor.passport_series|default:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Дата выдачи</label>
+                                        <div class="col-sm-9">
+                                            <input type="date" name="passport_date" class="form-control"
+                                                   value="{{ executor.passport_date|date:'Y-m-d'|default:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Место выдачи</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="passport_place" class="form-control"
+                                                   value="{{ executor.passport_place|default:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Образование</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="education" class="form-control"
+                                                   value="{{ executor.education|default:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Дата мед.
+                                            ком.</label>
+                                        <div class="col-sm-9">
+                                            <input type="date" name="med_exam_date" class="form-control"
+                                                   value="{{ executor.med_exam_date|date:'Y-m-d' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Физ. лицо</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="individual" class="form-control"
+                                                   value="{{ executor.individual|default:'' }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">Редактирование исполнителя</h5>
+                                    <span class="text-end d-block">Данные как исполнителя</span>
+                                    <hr>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">ID</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="executor_id" class="form-control"
+                                                   value="{{ executor.executor_id }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Дата
+                                            заключения</label>
+                                        <div class="col-sm-9">
+                                            <input type="date" name="date_conclusion" class="form-control"
+                                                   value="{{ executor.date_conclusion|date:'Y-m-d' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Дата
+                                            расторжения</label>
+                                        <div class="col-sm-9">
+                                            <input type="date" name="date_terminated" class="form-control"
+                                                   value="{{ executor.date_terminated|date:'Y-m-d' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Роль</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" name="role" id="">
+                                                {% for role in roles %}
+                                                    <option value="{{ role.0 }}" {% if executor.role == role.0 %}
+                                                            selected {% endif %}>{{ role.1 }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Основной договор</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text" name="main_contract"
+                                                   value="{{ executor.main_contract|default:'' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Куратор</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" name="curator" id="">
+                                                <option value="">Не выбрано</option>
+                                                {% for curator in curators %}
+                                                    <option value="{{ curator.pk }}"
+                                                            {% if executor.curator == curator %}
+                                                            selected {% endif %}>{{ curator.get_full_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">ЦФЗ</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" name="OFC" id="">
+                                                <option value="">Не выбрано</option>
+                                                {% for ofc in ofcs %}
+                                                    <option value="{{ ofc.pk }}" {% if executor.OFC == ofc %}
+                                                            selected {% endif %}>
+                                                        {{ ofc.address }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="text-center">
-                                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                                <button type="submit" class="btn btn-primary">Изменить данные</button>
                             </div>
-                        </form><!-- End Profile Edit Form -->
-
+                        </form>
+                        <!-- End Profile Edit Form -->
                     </div>
 
                     <div class="tab-pane fade pt-3 {% if '?page=hours' in request.get_full_path %}active show{% endif %}"
@@ -290,6 +534,34 @@
             </div>`;
             let alert_div = document.getElementById('alert_div');
             alert_div.innerHTML = alert_success;
+        }
+    </script>
+    <script>
+        function addContactForm() {
+            let contacts_block = document.getElementById('contacts_block');
+            let form = `<div class="row mb-3">
+                                            <div class="col-sm-3">
+                                                <select class="form-select" name="type" id="">
+                                                    {% for contact_type in contact_types %}
+                                                        <option value="{{ contact_type.0 }}"><i
+                                                                class="bi bi-telegram"></i>{{ contact_type.1 }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <input type="text" name="identifier" required class="form-control">
+                                            </div>
+                                        </div>`;
+            contacts_block.innerHTML += form;
+        }
+
+        function removeContactForm() {
+            let contacts_block = document.getElementById('contacts_block');
+            let contact_forms = contacts_block.children;
+            if (contact_forms.length > 1) {
+                console.log(contact_forms[contact_forms.length - 1]);
+                contacts_block.removeChild(contact_forms[contact_forms.length - 1])
+            }
         }
     </script>
 {% endblock %}

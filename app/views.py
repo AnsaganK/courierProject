@@ -7,9 +7,9 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
-    CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm
+    CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorHours, \
-    Day, DayHour
+    Day, DayHour, Contact
 from app.service.file import get_file_data
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task
 from utils import show_form_errors, get_generated_password, get_paginator
@@ -309,7 +309,14 @@ def executor_detail(request, executor_id):
     return render(request, 'app/executor/detail.html', {
         'executor': executor,
         'executor_hours': executor_hours,
-        'week_days': week_days
+        'week_days': week_days,
+        'genders': Executor.GenderChoices.choices,
+        'citizenships': Citizenship.objects.all(),
+        'citizenship_types': CitizenshipType.objects.all(),
+        'roles': Executor.RoleChoices.choices,
+        'curators': User.objects.filter(profile__role=Profile.RoleChoices.CURATOR),
+        'ofcs': OFC.objects.all(),
+        'contact_types': Contact.TypeChoices.choices
     })
 
 
@@ -353,8 +360,23 @@ def executor_hours_export(request, executor_id):
 
 
 @login_required
-def executor_update(request, code):
-    pass
+def executor_update(request, executor_id):
+    executor = get_object_or_404(Executor, executor_id=executor_id)
+    if request.method == 'POST':
+        post = dict(request.POST)
+        contacts = dict(zip(post['identifier'], post['type']))
+        form = ExecutorForm(request.POST, instance=executor)
+        if form.is_valid():
+            form.save()
+            
+            executor.contacts.all().delete()
+            for c in contacts:
+                contact = Contact.objects.create(executor=executor, identifier=c, type=contacts[c])
+                contact.save()
+            messages.success(request, f'Данные о "{executor.get_full_name}" изменены')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(executor.get_absolute_url())
 
 
 @login_required

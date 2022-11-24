@@ -28,7 +28,7 @@ urlpatterns = [
     # Executors
     path('executor', views.executor_list, name='executor_list'),
     path('executor/create', views.executor_create, name='executor_create'),
-    path('executor/<int:pk>/update', views.executor_update, name='executor_update'),
+    path('executor/<path:executor_id>/update', views.executor_update, name='executor_update'),
     path('executor/<int:pk>/delete', views.executor_delete, name='executor_delete'),
     path('executor/<path:executor_id>/hours/export', views.executor_hours_export, name='executor_hours_export'),
     path('executor/<path:executor_id>/hours', views.executor_hours_detail, name='executor_hours_detail'),

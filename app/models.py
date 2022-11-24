@@ -270,6 +270,24 @@ class Executor(BaseModel):
         return reverse('app:executor_detail', args=[self.executor_id])
 
 
+class Contact(BaseModel):
+    class TypeChoices(models.TextChoices):
+        WHATSAPP = 'whatsapp', 'whatsapp'
+        TELEGRAM = 'telegram', 'telegram'
+        VK = 'vk', 'vk'
+        OK = 'ok', 'ok'
+
+    identifier = models.CharField(max_length=256, verbose_name='Идентификатор')
+    executor = models.ForeignKey(Executor, null=True, blank=True, on_delete=models.CASCADE, related_name='contacts',
+                                 verbose_name='Исполнитель')
+    type = models.CharField(max_length=64, null=True, blank=True, verbose_name='Тип ')
+
+    class Meta:
+        verbose_name = 'Контакт'
+        verbose_name_plural = 'Контакты'
+        ordering = ['type']
+
+
 class ArchiveFile(BaseModel):
     class TypeChoices(models.TextChoices):
         HOURS = 'hours', 'Часы'
