@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from constants import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST
+from constants import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, IS_DEBUG
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-s=b@3n^-miq1jwx*j0dn55fc0a)1z-5mepy!e4d1_urqkl)=h('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = IS_DEBUG
 
 ALLOWED_HOSTS = [
     '95.181.164.112',
