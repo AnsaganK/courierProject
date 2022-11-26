@@ -5,6 +5,7 @@ app_name = 'app'
 urlpatterns = [
     # Flat pages
     path('', views.home, name='home'),
+    path('statistic', views.statistic, name='statistic'),
 
     # Staffs
     path('staff/curator', views.curator_list, name='curator_list'),
@@ -28,6 +29,9 @@ urlpatterns = [
     # Executors
     path('executor', views.executor_list, name='executor_list'),
     path('executor/create', views.executor_create, name='executor_create'),
+    path('executor/my', views.executor_list_my, name='executor_list_my'),
+    path('executor/free', views.executor_list_free, name='executor_list_free'),
+    path('executor/<int:pk>/add', views.executor_add_for_curator, name='executor_add_for_curator'),
     path('executor/<path:executor_id>/update', views.executor_update, name='executor_update'),
     path('executor/<int:pk>/delete', views.executor_delete, name='executor_delete'),
     path('executor/<path:executor_id>/hours/export', views.executor_hours_export, name='executor_hours_export'),

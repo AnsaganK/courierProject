@@ -1,4 +1,5 @@
 {% load static %}
+{% load role %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -49,17 +50,18 @@
             border-color: #f58555;
         }
 
-        .active .page-link{
+        .active .page-link {
             background-color: #f58555 !important;
             color: #fff !important;
         }
+
         .page-link {
             color: #f58555;
         }
 
         .page-link:hover {
             z-index: 2;
-            color:#f58555;
+            color: #f58555;
             background-color: var(--bs-pagination-hover-bg);
             border-color: var(--bs-pagination-hover-border-color);
         }
@@ -125,14 +127,14 @@
             <li class="nav-item dropdown pe-3">
 
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                    <img src="{% static 'app/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
-                    <span class="d-none d-md-block dropdown-toggle ps-2">И. Иванов</span>
+                    <img src="{% static 'app/img/default_avatar.png' %}" alt="Profile" class="rounded-circle">
+                    <span class="d-none d-md-block dropdown-toggle ps-2">{{ request.user.first_name.0 }}. {{ request.user.last_name }}</span>
                 </a><!-- End Profile Iamge Icon -->
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
-                        <h6>Иван Иванов</h6>
-                        <span>Куратор</span>
+                        <h6>{{ request.user.get_full_name }}</h6>
+                        <span>{{ request.user.profile.get_role_display }}</span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
@@ -190,143 +192,138 @@
         <hr>
         <li class="nav-heading">Основное</li>
         <hr>
-        <li class="nav-item">
-            <a class="nav-link {% if request.path != '/' %}collapsed{% endif %}" href="{% url 'app:home' %}">
-                <i class="bi bi-grid"></i>
-                <span>Главная</span>
-            </a>
-        </li><!-- End Dashboard Nav -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#">
-                <i class="bi bi-calculator"></i>
-                <span>Калькулятор</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}{% else %}collapsed{% endif %}"
-               data-bs-target="#forms-service-nav"
-               data-bs-toggle="collapse" href="#">
-                <i class="bi bi-person-badge"></i>
-                <span>Упр. персонал</span><i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="forms-service-nav"
-                class="nav-content
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}{% else %}collapse{% endif %} "
-                data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="{% url 'app:curator_list' %}"
-                       class="{% if '/staff/curator' in request.path %}active{% endif %}">
-                        <i class="bi bi-circle"></i><span>Кураторы</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'app:admin_list' %}"
-                       class="{% if '/staff/admin' in request.path %}active{% endif %}">
-                        <i class="bi bi-circle"></i><span>Админы</span>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if '/executor' not in request.path %}collapsed{% endif %}"
-               href="{% url 'app:executor_list' %}">
-                <i class="bi bi-people"></i>
-                <span>Исполнители</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if '/bicycle' not in request.path %}collapsed{% endif %}"
-               href="{% url 'app:bicycle_list' %}">
-                <i class="bi bi-bicycle"></i>
-                <span>Велосипеды</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if '/city' in request.path or '/OFC' in request.path %}{% else %}collapsed{% endif %}"
-               data-bs-target="#forms-nav"
-               data-bs-toggle="collapse" href="#">
-                <i class="bi bi-cursor-fill"></i>
-                <span>Места</span><i class="bi bi-chevron-down ms-auto"></i>
-            </a>
-            <ul id="forms-nav" class="nav-content
+        {% if request.user|check_role:'admin' %}
+            <li class="nav-item">
+                <a class="nav-link {% if request.path != '/' %}collapsed{% endif %}" href="{% url 'app:home' %}">
+                    <i class="bi bi-grid"></i>
+                    <span>Главная</span>
+                </a>
+            </li><!-- End Dashboard Nav -->
+            <li class="nav-item">
+                <a class="nav-link {% if request.path != '/statistic' %}collapsed{% endif %}"
+                   href="{% url 'app:statistic' %}">
+                    <i class="bi bi-bar-chart"></i>
+                    <span>Статистика</span>
+                </a>
+            </li><!-- End Dashboard Nav -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#">
+                    <i class="bi bi-calculator"></i>
+                    <span>Калькулятор</span>
+                </a>
+            </li>
+        {% endif %}
+        {% if request.user|check_role:'admin' %}
+            <li class="nav-item">
+                <a class="nav-link {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}
+                {% else %}collapsed{% endif %}"
+                   data-bs-target="#forms-service-nav"
+                   data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Упр. персонал</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="forms-service-nav"
+                    class="nav-content {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}
+                    {% else %}collapse{% endif %} "
+                    data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{% url 'app:curator_list' %}"
+                           class="{% if '/staff/curator' in request.path %}active{% endif %}">
+                            <i class="bi bi-circle"></i><span>Кураторы</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'app:admin_list' %}"
+                           class="{% if '/staff/admin' in request.path %}active{% endif %}">
+                            <i class="bi bi-circle"></i><span>Админы</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/executor' not in request.path %}collapsed{% endif %}"
+                   href="{% url 'app:executor_list' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Исполнители</span>
+                </a>
+            </li>
+        {% endif %}
+        {% if request.user|check_role:'curator' %}
+            <li class="nav-item">
+                <a class="nav-link {% if '/executor' not in request.path or '/free' in request.path %}collapsed{% endif %}"
+                   href="{% url 'app:executor_list_my' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Мои исполнители ({{ request.user.executors.count }})</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/executor/free' not in request.path %}collapsed{% endif %}"
+                   href="{% url 'app:executor_list_free' %}">
+                    <i class="bi bi-people"></i>
+                    <span>Свободные исполнители</span>
+                </a>
+            </li>
+        {% endif %}
+        {% if request.user|check_role:'admin' %}
+            <li class="nav-item">
+                <a class="nav-link {% if '/bicycle' not in request.path %}collapsed{% endif %}"
+                   href="{% url 'app:bicycle_list' %}">
+                    <i class="bi bi-bicycle"></i>
+                    <span>Велосипеды</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link
+                        {% if '/city' in request.path or '/OFC' in request.path %}{% else %}collapsed{% endif %}"
+                   data-bs-target="#forms-nav"
+                   data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-cursor-fill"></i>
+                    <span>Места</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="forms-nav" class="nav-content
                     {% if '/city' in request.path or '/OFC' in request.path %}{% else %}collapse{% endif %} "
-                data-bs-parent="#sidebar-nav">
-                <li>
-                    <a href="{% url 'app:city_list' %}" class="{% if '/city' in request.path %}active{% endif %}">
-                        <i class="bi bi-circle"></i><span>Города</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'app:ofc_list' %}" class="{% if '/OFC' in request.path %}active{% endif %}">
-                        <i class="bi bi-circle"></i><span>ЦФЗ</span>
-                    </a>
-                </li>
+                    data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a href="{% url 'app:city_list' %}" class="{% if '/city' in request.path %}active{% endif %}">
+                            <i class="bi bi-circle"></i><span>Города</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'app:ofc_list' %}" class="{% if '/OFC' in request.path %}active{% endif %}">
+                            <i class="bi bi-circle"></i><span>ЦФЗ</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
+
+        {% if request.user|check_role:'admin' %}
+            <hr>
+            <li class="nav-heading">Прочее</li>
+            <hr>
+            <li class="nav-item">
+                <a class="nav-link {% if '/archive' not in request.path %}collapsed{% endif %}"
+                   href="{% url 'app:archive_file_list' %}">
+                    <i class="bx bx-archive"></i>
+                    <span>Архив</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/citizenship' != request.path %}collapsed{% endif %}"
+                   href="{% url 'app:citizenship_list' %}">
+                    <i class="bx bxs-flag-alt"></i>
+                    <span>Гражданства</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if '/citizenship/type' not in request.path %}collapsed{% endif %}"
+                   href="{% url 'app:citizenship_type_list' %}">
+                    <i class="bx bx-command"></i>
+                    <span>Типы гражданства</span>
+                </a>
+            </li>
             </ul>
-        </li>
-        <hr>
-        <li class="nav-heading">Прочее</li>
-        <hr>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#">
-                <i class="bx bx-money"></i>
-                <span>Файлы ЗП</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if '/archive' not in request.path %}collapsed{% endif %}"
-               href="{% url 'app:archive_file_list' %}">
-                <i class="bx bx-archive"></i>
-                <span>Архив</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if '/citizenship' != request.path %}collapsed{% endif %}"
-               href="{% url 'app:citizenship_list' %}">
-                <i class="bx bxs-flag-alt"></i>
-                <span>Гражданства</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if '/citizenship/type' not in request.path %}collapsed{% endif %}"
-               href="{% url 'app:citizenship_type_list' %}">
-                <i class="bx bx-command"></i>
-                <span>Типы гражданства</span>
-            </a>
-        </li>
-    </ul>
+        {% endif %}
 
 </aside><!-- End Sidebar-->
 
@@ -413,6 +410,28 @@
 </script>
 
 <script>
+
+    function addExecutorForCurator(elem) {
+        let add_url = elem.dataset.addUrl;
+        let add_form = document.getElementById('add_form');
+        add_form.setAttribute('action', add_url);
+
+        let full_name_span = document.getElementById('full_name_span');
+        let birth_date_span = document.getElementById('birth_date_span');
+        let executor_id_span = document.getElementById('executor_id_span');
+        let phone_number_span = document.getElementById('phone_number_span');
+
+        let full_name = elem.dataset.fullName;
+        let birth_date = elem.dataset.birthDate;
+        let executor_id = elem.dataset.executorId;
+        let phone_number = elem.dataset.phoneNumber;
+
+        full_name_span.innerText = full_name;
+        birth_date_span.innerText = birth_date;
+        executor_id_span.innerText = executor_id;
+        phone_number_span.innerText = phone_number;
+    }
+
     function userUpdate(elem) {
         let update_url = elem.dataset.updateUrl;
         let update_form = document.getElementById('update_form');

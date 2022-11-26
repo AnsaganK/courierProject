@@ -1,0 +1,35 @@
+<div class="modal fade" id="add_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="" method="post" id="add_form" class="needs-validation was-validated">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Стать куратором</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <span class="col-sm-5">ID: </span>
+                        <span class="col-sm-7" id="executor_id_span"></span>
+                    </div>
+                    <div class="row mb-3">
+                        <span class="col-sm-5">ФИО: </span>
+                        <span class="col-sm-7" id="full_name_span"></span>
+                    </div>
+                    <div class="row mb-3">
+                        <span class="col-sm-5">Дата рождения: </span>
+                        <span class="col-sm-7" id="birth_date_span"></span>
+                    </div>
+                    <div class="row mb-3">
+                        <span class="col-sm-5">Номер: </span>
+                        <span class="col-sm-7" id="phone_number_span"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-success">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

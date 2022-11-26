@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
     CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorHours, \
-    Day, DayHour, Contact
+    Day, DayHour, Contact, Period
 from app.service.file import get_file_data
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task
 from app.utils import check_role
@@ -23,6 +23,7 @@ ADMIN = Profile.RoleChoices.ADMIN
 #                               Flat page views
 #
 @login_required
+@check_role([ADMIN], redirect_url='/executor')
 def home(request):
     city_count = City.objects.count()
     ofc_count = OFC.objects.count()
@@ -37,13 +38,22 @@ def home(request):
     return render(request, 'app/page/home.html', {
         'city_count': city_count,
         'ofc_count': ofc_count,
-
         'curator_count': curator_count,
         'curator_with_teams_count': curator_with_teams_count,
-
         'executor_count': executor_count,
-
         'bicycle_count': bicycle_count
+    })
+
+
+@login_required
+@check_role([ADMIN])
+def statistic(request):
+    last_periods = Period.objects.all().order_by('-final_date')[:4]
+    executors = Executor.objects.filter(executor_hours__period__in=last_periods)
+    executors = get_paginator(request, executors, 100)
+    return render(request, 'app/page/statistic.html', {
+        'executors': executors,
+        'periods': last_periods
     })
 
 
@@ -51,6 +61,7 @@ def home(request):
 #                               City views
 #
 @login_required
+@check_role([ADMIN])
 def city_create(request):
     if request.method == 'POST':
         form = CityForm(request.POST)
@@ -63,6 +74,7 @@ def city_create(request):
 
 
 @login_required
+@check_role([ADMIN])
 def city_list(request):
     cities = City.objects.all()
     return render(request, 'app/city/list.html', {
@@ -71,6 +83,7 @@ def city_list(request):
 
 
 @login_required
+@check_role([ADMIN])
 def city_detail(request, pk):
     city = get_object_or_404(City, pk=pk)
     return render(request, 'app/city/detail.html', {
@@ -79,6 +92,7 @@ def city_detail(request, pk):
 
 
 @login_required
+@check_role([ADMIN])
 def city_update(request, pk):
     city = get_object_or_404(City, pk=pk)
     if request.method == 'POST':
@@ -92,6 +106,7 @@ def city_update(request, pk):
 
 
 @login_required
+@check_role([ADMIN])
 def city_delete(request, pk):
     city = get_object_or_404(City, pk=pk)
     name = city.name
@@ -101,6 +116,7 @@ def city_delete(request, pk):
 
 
 @login_required
+@check_role([ADMIN])
 def city_file_create(request):
     if request.method == 'POST':
         form = ArchiveFileForm(request.POST, request.FILES)
@@ -115,6 +131,7 @@ def city_file_create(request):
 
 
 @login_required
+@check_role([ADMIN])
 def city_file_list(request):
     files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.CITY)
     return render(request, 'app/city/file/list.html', {
@@ -123,6 +140,7 @@ def city_file_list(request):
 
 
 @login_required
+@check_role([ADMIN])
 def city_file_parse(request, pk):
     file = get_object_or_404(ArchiveFile, pk=pk)
     create_cities_for_file_task.delay(pk)
@@ -134,6 +152,7 @@ def city_file_parse(request, pk):
 #                               OFC views
 #
 @login_required
+@check_role([ADMIN])
 def ofc_create(request):
     if request.method == 'POST':
         form = OFCForm(request.POST)
@@ -147,6 +166,7 @@ def ofc_create(request):
 
 
 @login_required
+@check_role([ADMIN])
 def ofc_list(request):
     ofcs = OFC.objects.select_related('city').all()
     ofcs = get_paginator(request, ofcs, 25)
@@ -158,6 +178,7 @@ def ofc_list(request):
 
 
 @login_required
+@check_role([ADMIN])
 def ofc_detail(request, pk):
     ofc = get_object_or_404(OFC, pk=pk)
     return render(request, 'app/ofc/detail.html', {
@@ -166,6 +187,7 @@ def ofc_detail(request, pk):
 
 
 @login_required
+@check_role([ADMIN])
 def ofc_update(request, pk):
     ofc = get_object_or_404(OFC, pk=pk)
     if request.method == 'POST':
@@ -179,6 +201,7 @@ def ofc_update(request, pk):
 
 
 @login_required
+@check_role([ADMIN])
 def ofc_delete(request, pk):
     ofc = get_object_or_404(OFC, pk=pk)
     address = ofc.address
@@ -191,6 +214,7 @@ def ofc_delete(request, pk):
 #                               Staff views
 #
 @login_required
+@check_role([ADMIN])
 def user_create(request):
     if request.method == 'POST':
         user_form = UserCreateForm(request.POST)
@@ -221,6 +245,7 @@ def curator_list(request):
 
 
 @login_required
+@check_role([ADMIN])
 def admin_list(request):
     admins = User.objects.filter(profile__role=Profile.RoleChoices.ADMIN)
     roles = Profile.RoleChoices.choices
@@ -233,6 +258,7 @@ def admin_list(request):
 
 
 @login_required
+@check_role([ADMIN])
 def user_detail(request, pk):
     user = get_object_or_404(User, pk=pk)
     return render(request, 'app/staff/curator/detail.html', {
@@ -241,6 +267,7 @@ def user_detail(request, pk):
 
 
 @login_required
+@check_role([ADMIN])
 def user_update(request, pk):
     user = get_object_or_404(User, pk=pk)
     if request.method == 'POST':
@@ -262,6 +289,7 @@ def user_update(request, pk):
 
 
 @login_required
+@check_role([ADMIN])
 def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)
     username = user.username
@@ -274,6 +302,7 @@ def user_delete(request, pk):
 #                               Executor views
 #
 @login_required
+@check_role([ADMIN])
 def executor_create(request):
     if request.method == 'POST':
         pass
@@ -294,8 +323,52 @@ def executor_create(request):
 
 
 @login_required
+@check_role([ADMIN, CURATOR])
 def executor_list(request):
-    executors = Executor.objects.all()
+    user = request.user
+    profile = user.profile
+    if profile.role == ADMIN:
+        executors = Executor.objects.all()
+    else:
+        executors = Executor.objects.filter(curator=request.user)
+    count = executors.count()
+    executors = get_paginator(request, executors, 50)
+    return render(request, 'app/executor/list.html', {
+        'executors': executors,
+        'count': count
+    })
+
+
+@login_required
+@check_role([CURATOR])
+def executor_list_free(request):
+    executors = Executor.objects.filter(curator=None)
+    count = executors.count()
+    executors = get_paginator(request, executors, 50)
+    return render(request, 'app/executor/free.html', {
+        'executors': executors,
+        'count': count
+    })
+
+
+@login_required
+@check_role([CURATOR])
+def executor_add_for_curator(request, pk):
+    executor = get_object_or_404(Executor, pk=pk)
+    user = request.user
+    if not executor.curator:
+        executor.curator = user
+        executor.save()
+        messages.success(request, f'Исполнитель "{executor.get_full_name}" добавлен')
+    else:
+        messages.error(request, f'У данного исполнителя есть куратор: {executor.curator.get_full_name()}')
+    return redirect(reverse('app:executor_list_free'))
+
+
+@login_required
+@check_role([ADMIN, CURATOR])
+def executor_list_my(request):
+    executors = Executor.objects.filter(curator=request.user)
     count = executors.count()
     executors = get_paginator(request, executors, 50)
     return render(request, 'app/executor/list.html', {
@@ -369,7 +442,10 @@ def executor_update(request, executor_id):
     executor = get_object_or_404(Executor, executor_id=executor_id)
     if request.method == 'POST':
         post = dict(request.POST)
-        contacts = dict(zip(post['identifier'], post['type']))
+        if post.get('identifier'):
+            contacts = dict(zip(post['identifier'], post['type']))
+        else:
+            contacts = []
         form = ExecutorForm(request.POST, instance=executor)
         if form.is_valid():
             form.save()

@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load role %}
+
 
 {% block title %}
     Список исполнителей
@@ -16,20 +18,22 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-auto">
-                <a href="{% url 'app:executor_hours_file_list' %}" class="btn btn-primary mb-2">
-                    <i class="bi bi-clock"></i>
-                    Файлы с часами
-                </a>
-                <a href="{% url 'app:executor_file_list' %}" class="btn btn-primary mb-2">
-                    <i class="bi bi-archive-fill"></i>
-                    Файлы с исполнителями
-                </a>
-                <a href="{% url 'app:executor_create' %}" class="btn btn-success mb-2">
-                    <i class="bi bi-plus"></i>
-                    Добавить исполнителя
-                </a>
-            </div>
+            {% if request.user|check_role:'admin' %}
+                <div class="col-auto">
+                    <a href="{% url 'app:executor_hours_file_list' %}" class="btn btn-primary mb-2">
+                        <i class="bi bi-clock"></i>
+                        Файлы с часами
+                    </a>
+                    <a href="{% url 'app:executor_file_list' %}" class="btn btn-primary mb-2">
+                        <i class="bi bi-archive-fill"></i>
+                        Файлы с исполнителями
+                    </a>
+                    <a href="{% url 'app:executor_create' %}" class="btn btn-success mb-2">
+                        <i class="bi bi-plus"></i>
+                        Добавить исполнителя
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div><!-- End Page Title -->
 {% endblock %}
@@ -82,19 +86,14 @@
                                class="me-3" title="Просмотреть часы">
                                 <i class="bx bx-time text-success"></i>
                             </a>
-                            <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
-                               data-update-url=""
-                               data-city-name=""
-                               class="me-3"
-                               onclick="executorUpdate(this)">
-                                <i class="bi bi-gear text-primary"></i>
-                            </a>
-                            <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
-                               data-delete-url="{% url 'app:executor_delete' executor.pk %}"
-                               data-name="{{ executor.get_full_name }}"
-                               onclick="objectDelete(this)">
-                                <i class="bi bi-trash text-danger"></i>
-                            </a>
+                            {% if request.user|check_role:'admin' %}
+                                <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
+                                   data-delete-url="{% url 'app:executor_delete' executor.pk %}"
+                                   data-name="{{ executor.get_full_name }}"
+                                   onclick="objectDelete(this)">
+                                    <i class="bi bi-trash text-danger"></i>
+                                </a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
