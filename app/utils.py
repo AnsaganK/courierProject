@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, reverse
 from app.models import Profile
 
 
-def check_role(roles: list[Profile.RoleChoices], redirect_url: Optional[str] = None):
+def check_role(roles: list, redirect_url: Optional[str] = None):
     def decorator(function):
         def wrapper(request, *args, **kwargs):
             user = request.user
