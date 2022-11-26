@@ -50,10 +50,12 @@ def home(request):
 def statistic(request):
     last_periods = Period.objects.all().order_by('-final_date')[:4]
     executors = Executor.objects.filter(executor_hours__period__in=last_periods).distinct()
+    count = executors.count()
     executors = get_paginator(request, executors, 100)
     return render(request, 'app/page/statistic.html', {
         'executors': executors,
-        'periods': last_periods
+        'periods': last_periods,
+        'count': count
     })
 
 

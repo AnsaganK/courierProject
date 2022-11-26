@@ -25,6 +25,7 @@
 {% block content %}
     <div class="col">
         {% if executors %}
+            <span>Всего активных: {{ count }}</span>
             {% include 'include/paginataion.html' with page=executors %}
             <table class="table text-center">
                 <thead>
