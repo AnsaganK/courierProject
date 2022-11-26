@@ -46,7 +46,10 @@
                         <td><a href="{{ executor.get_absolute_url }}">{{ executor.executor_id }}</a></td>
                         <td>{{ executor.citizenship|default:'-' }}</td>
                         <td>{{ executor.get_full_name }}</td>
-                        <td></td>
+                        <td><a href="{{ executor.get_absolute_url }}?page=hours"
+                               class="me-3" title="Просмотреть часы">
+                            <i class="bx bx-time text-success"></i>
+                        </a></td>
                         <td>{{ executor.phone_number|default:'-' }}</td>
                         <td>{{ executor.curator.get_full_name }}</td>
                         {% for period in periods %}
