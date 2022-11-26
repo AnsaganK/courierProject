@@ -12,7 +12,11 @@ from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, Citiz
     Day, DayHour, Contact
 from app.service.file import get_file_data
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task
+from app.utils import check_role
 from utils import show_form_errors, get_generated_password, get_paginator
+
+CURATOR = Profile.RoleChoices.CURATOR
+ADMIN = Profile.RoleChoices.ADMIN
 
 
 #
@@ -204,6 +208,7 @@ def user_create(request):
 
 
 @login_required
+@check_role([ADMIN])
 def curator_list(request):
     curators = User.objects.filter(profile__role=Profile.RoleChoices.CURATOR)
     roles = Profile.RoleChoices.choices
@@ -368,7 +373,7 @@ def executor_update(request, executor_id):
         form = ExecutorForm(request.POST, instance=executor)
         if form.is_valid():
             form.save()
-            
+
             executor.contacts.all().delete()
             for c in contacts:
                 contact = Contact.objects.create(executor=executor, identifier=c, type=contacts[c])
@@ -688,3 +693,14 @@ def archive_file_delete(request, pk):
     archive_file.delete()
     messages.success(request, f'Архивный файл "{pk}" удален')
     return redirect(reverse('app:archive_file_list'))
+
+
+#
+#                                   Error pages
+#
+def error_404_view(request, exception):
+    return render(request, '404.html')
+
+
+def error_403_view(request, exception):
+    return render(request, '403.html')
