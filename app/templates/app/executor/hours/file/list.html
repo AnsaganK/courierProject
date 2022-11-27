@@ -75,7 +75,7 @@
                 {% for file in files %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
-                        <td>{% include 'include/archive_file/status.html' with status=file.status %}</td>
+                        <td>{% include 'include/archive_file/status.html' with file_id=file.pk status=file.status %}</td>
                         <td>
                             <a href="{% url 'app:executor_hours_file_preview' file.pk %}" class="me-2">
                                 <span>{{ file.filename }}</span>

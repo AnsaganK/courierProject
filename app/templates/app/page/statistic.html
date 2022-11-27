@@ -27,17 +27,22 @@
         {% if executors %}
             <span>Всего активных: {{ count }}</span>
             {% include 'include/paginataion.html' with page=executors %}
-            <table class="table text-center">
+            <table class="table table-bordered text-center">
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Гражданство</th>
-                    <th>ФИО</th>
-                    <th>Ссылка</th>
-                    <th>Номер</th>
-                    <th>Рекрутер</th>
+                <tr class="align-middle">
+                    <th rowspan="2">ID</th>
+                    <th rowspan="2">Гражданство</th>
+                    <th rowspan="2">ФИО</th>
+                    <th rowspan="2">Ссылка</th>
+                    <th rowspan="2">Номер</th>
+                    <th rowspan="2">Рекрутер</th>
                     {% for period in periods %}
                         <th>{{ period.start_date|date:'d.m' }} - {{ period.final_date|date:'d.m' }}</th>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for period in periods %}
+                        <th>{{ period.get_hours_sum }}</th>
                     {% endfor %}
                 </tr>
                 </thead>

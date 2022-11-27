@@ -3,7 +3,7 @@ import csv
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
@@ -49,6 +49,8 @@ def home(request):
 @check_role([ADMIN])
 def statistic(request):
     last_periods = Period.objects.all().order_by('-final_date')[:4]
+    last_periods = last_periods[::-1]
+
     executors = Executor.objects.filter(executor_hours__period__in=last_periods).distinct()
     count = executors.count()
     executors = get_paginator(request, executors, 100)
@@ -771,6 +773,13 @@ def archive_file_delete(request, pk):
     archive_file.delete()
     messages.success(request, f'Архивный файл "{pk}" удален')
     return redirect(reverse('app:archive_file_list'))
+
+
+def archive_file_get_status(request, pk):
+    archive_file = get_object_or_404(ArchiveFile, pk=pk)
+    return JsonResponse({
+        'status': archive_file.status
+    })
 
 
 #

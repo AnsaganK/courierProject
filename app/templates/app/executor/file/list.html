@@ -75,7 +75,7 @@
                 {% for file in files %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
-                        <td>{% include 'include/archive_file/status.html' with status=file.status %}</td>
+                        <td>{% include 'include/archive_file/status.html' with file_id=file.pk status=file.status %}</td>
                         <td>{{ file.filename }}</td>
                         <td>{{ file.get_type_display }}</td>
                         <td>{{ file.created_at }}</td>

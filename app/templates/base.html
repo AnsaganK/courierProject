@@ -65,6 +65,12 @@
             background-color: var(--bs-pagination-hover-bg);
             border-color: var(--bs-pagination-hover-border-color);
         }
+
+        .file_preloader_status {
+            height: 20px !important;
+            width: 20px !important;
+            font-size: 5px !important;
+        }
     </style>
     <!-- =======================================================
     * Template Name: NiceAdmin - v2.4.1
@@ -498,6 +504,59 @@
         description_textarea.value = description;
         type_select.value = type;
     }
+</script>
+<script>
+    function trackingStatus() {
+        let file_statuses = document.querySelectorAll('div.file_status_block:not([data-file-id=null])');
+        file_statuses.forEach((file_status) => {
+            let old_status = file_status.dataset.status;
+            setInterval(async () => {
+                let new_status = await getFileStatus(file_status.dataset.fileId);
+                console.log(old_status, new_status);
+                if (old_status !== new_status) {
+                    changeFileStatus(file_status, new_status);
+                }
+                old_status = new_status
+            }, 5000)
+        });
+    }
+
+    async function getFileStatus(file_id) {
+        let url = `/archive/${file_id}/status`
+        let response = await fetch(url);
+        if (response.ok) {
+            let json = await response.json();
+            return json.status
+        } else {
+            console.log(response.status);
+        }
+    }
+
+    function changeFileStatus(elem, new_status) {
+        let status = ''
+        switch (new_status) {
+            case 'NOT_STARTED':
+                status = '<i class="bx bx-data text-black-50" title="Загружен, без парсинга"></i>';
+                break;
+            case 'WAIT':
+                status = `<div class="spinner-border text-primary file_preloader_status" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>`;
+                break;
+            case 'WARNING':
+                status = '<i class="bx bx-error-alt text-warning" title="Предупреждение (не критично)"></i>';
+                break;
+            case 'SUCCESS':
+                status = '<i class="bx bx-check-circle text-success" title="Успешно"></i>';
+                break;
+            case 'ERROR':
+                status = '<i class="bx bx-error-circle text-danger" title="Ошибка"></i>';
+                break;
+        }
+        elem.innerHTML = status;
+    }
+
+    trackingStatus()
 </script>
 {% block script %}
 

@@ -75,6 +75,10 @@ class Period(BaseModel):
     def get_absolute_url(self):
         pass
 
+    @property
+    def get_hours_sum(self):
+        return DayHour.objects.filter(day__period=self).aggregate(Sum('hour')).get('hour__sum')
+
 
 class Day(BaseModel):
     period = models.ForeignKey(Period, on_delete=models.CASCADE, related_name='days', verbose_name='Период')

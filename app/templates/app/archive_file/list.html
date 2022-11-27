@@ -144,7 +144,7 @@
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td style="font-size: 24px">
-                            {% include 'include/archive_file/status.html' with status=archive_file.status %}
+                            {% include 'include/archive_file/status.html' with file_id=archive_file.pk status=archive_file.status %}
                         </td>
                         <td>{{ archive_file.filename }}</td>
                         <td>{{ archive_file.description|default:'-' }}</td>
