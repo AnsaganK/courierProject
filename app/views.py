@@ -558,7 +558,7 @@ def executor_file_parse(request, pk):
     file = get_object_or_404(ArchiveFile, pk=pk)
     create_executors_for_file_task.delay(pk)
     messages.success(request, f'Начата выгрузка исполнителей из файла "{file.filename}" ')
-    return redirect(reverse('app:executor_list'))
+    return redirect(reverse('app:executor_file_list'))
 
 
 #
