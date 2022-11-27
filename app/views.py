@@ -31,7 +31,9 @@ def home(request):
     curator_count = Profile.objects.filter(role=Profile.RoleChoices.CURATOR).count()
     curator_with_teams_count = User.objects.exclude(executors=None).count()
 
-    executor_count = Executor.objects.count()
+    executors = Executor.objects.all()
+    last_periods = Period.objects.all().order_by('-final_date')[:4]
+    active_executors = executors.filter(executor_hours__period__in=last_periods).distinct()
 
     bicycle_count = Bicycle.objects.count()
     bicycle_used_count = 0
@@ -40,7 +42,8 @@ def home(request):
         'ofc_count': ofc_count,
         'curator_count': curator_count,
         'curator_with_teams_count': curator_with_teams_count,
-        'executor_count': executor_count,
+        'executor_count': executors.count(),
+        'executor_active_count': active_executors.count(),
         'bicycle_count': bicycle_count
     })
 
