@@ -95,7 +95,9 @@ class Day(BaseModel):
     def get_absolute_url(self):
         pass
 
-
+    @property
+    def get_hours_sum(self):
+        return DayHour.objects.filter(day=self).aggregate(Sum('hour')).get('hour__sum')
 class Transport(BaseModel):
     name = models.CharField(max_length=256, verbose_name='Название')
     is_own = models.BooleanField(default=False, verbose_name='Собственный')
