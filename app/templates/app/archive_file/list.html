@@ -151,6 +151,10 @@
                         <td>{{ archive_file.get_type_display }}</td>
                         <td>{{ archive_file.created_at }}</td>
                         <td>
+
+                            <a href="{{ archive_file.file.url }}" class="me-3" title="Скачать файл">
+                                <i class="bi bi-cloud-download-fill text-primary"></i>
+                            </a>
                             <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
                                data-update-url="{% url 'app:archive_file_update' archive_file.pk %}"
                                data-type="{{ archive_file.type }}"

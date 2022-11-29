@@ -381,6 +381,7 @@ class Profile(BaseModel):
     class RoleChoices(models.TextChoices):
         CURATOR = 'curator', 'Куратор'
         ADMIN = 'admin', 'Админ'
+        SUPPORT = 'support', 'Тех. поддержка'
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', verbose_name='Пользователь')
     patronymic = models.CharField(max_length=64, null=True, blank=True, verbose_name='Отчество')
