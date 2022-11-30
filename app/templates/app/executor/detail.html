@@ -443,6 +443,20 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="row mb-3">
+                                        <label for="inputText" class="col-sm-3 col-form-label">Транспорт</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" name="transport" id="">
+                                                <option value="">Не выбрано</option>
+                                                {% for transport in transports %}
+                                                    <option value="{{ transport.pk }}" {% if executor.transport == transport %}
+                                                            selected {% endif %}>
+                                                        {{ transport.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="text-center">
