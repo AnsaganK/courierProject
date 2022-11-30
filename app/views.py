@@ -501,6 +501,7 @@ def executor_hours_file_create(request):
 @login_required
 def executor_hours_file_list(request):
     files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.HOURS)
+    files = get_paginator(request, files, 10)
     return render(request, 'app/executor/hours/file/list.html', {
         'files': files
     })
@@ -512,14 +513,10 @@ def executor_hours_file_preview(request, pk):
     executor_hours = archive_file.executor_hours.all().order_by('ofc__address')
     days = DayHour.objects.filter(executor_hour__in=archive_file.executor_hours.all()).order_by('day_id').distinct(
         'day').values('day__date')
-
-    days_hour = DayHour.objects.filter(executor_hour__in=archive_file.executor_hours.all()).order_by('day_id').distinct(
-        'day').values('day__date')
     return render(request, 'app/executor/hours/file/preview.html', {
         'archive_file': archive_file,
         'executor_hours': executor_hours,
         'days': days,
-        'days_hour': days_hour
     })
 
 

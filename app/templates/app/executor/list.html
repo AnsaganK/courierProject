@@ -84,8 +84,19 @@
                         <td>
                             <a href="{{ executor.get_absolute_url }}?page=hours"
                                class="me-3" title="Просмотреть часы">
-                                <i class="bx bx-time text-success"></i>
+                                <i class="bx bx-time text-primary"></i>
                             </a>
+                            {% if executor.get_whatsapp %}
+                                <a href="https://wa.me/{{ executor.get_whatsapp }}?text={{ request.get_host }}{% url 'app:executor_hours_detail' executor.executor_id %}"
+                                   class="me-3" title="Просмотреть часы" target="_blank">
+                                    <i class="bx bxl-whatsapp text-success"></i>
+                                </a>
+                            {% else %}
+                                <a href="#"
+                                   class="me-3" title="Просмотреть часы">
+                                    <i class="bx bxl-whatsapp text-black-50"></i>
+                                </a>
+                            {% endif %}
                             {% if request.user|check_role:'admin' %}
                                 <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
                                    data-delete-url="{% url 'app:executor_delete' executor.pk %}"

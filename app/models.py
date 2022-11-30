@@ -98,6 +98,8 @@ class Day(BaseModel):
     @property
     def get_hours_sum(self):
         return DayHour.objects.filter(day=self).aggregate(Sum('hour')).get('hour__sum')
+
+
 class Transport(BaseModel):
     name = models.CharField(max_length=256, verbose_name='Название')
     is_own = models.BooleanField(default=False, verbose_name='Собственный')
@@ -271,6 +273,12 @@ class Executor(BaseModel):
         if self.patronymic:
             full_name += ' ' + self.patronymic
         return full_name if full_name else '-'
+
+    @property
+    def get_whatsapp(self):
+        whatsapp = self.contacts.filter(type=Contact.TypeChoices.WHATSAPP).first()
+        if whatsapp:
+            return whatsapp.identifier
 
     def get_absolute_url(self):
         return reverse('app:executor_detail', args=[self.executor_id])
