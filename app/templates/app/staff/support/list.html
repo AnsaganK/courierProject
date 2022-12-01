@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Список тех. поддержки
+{% endblock %}
+
+
+{% block breadcrumb %}
+    <div class="pagetitle">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-6">
+                <h1>Тех. поддержка</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item active">Тех. поддержка</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-auto">
+                <a href="#" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#user_create_modal">
+                    <i class="bi bi-plus"></i>
+                    Добавить тех. поддержку
+                </a>
+            </div>
+        </div>
+    </div><!-- End Page Title -->
+{% endblock %}
+
+
+{% block content %}
+    <!-- Create Curator Modal -->
+    {% include 'include/staff/user_create_modal.html' with selected_role='support' %}
+    <!-- Update Curator Modal -->
+    {% include 'include/staff/user_update_modal.html' %}
+    <!-- Delete Curator Modal -->
+    {% include 'include/staff/user_delete_modal.html' %}
+
+    <div class="col">
+        {% include 'include/staff/users_table.html' with users=supports %}
+    </div>
+{% endblock %}

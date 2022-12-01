@@ -9,6 +9,7 @@ urlpatterns = [
 
     # Staffs
     path('staff/curator', views.curator_list, name='curator_list'),
+    path('staff/support', views.support_list, name='support_list'),
     path('staff/admin', views.admin_list, name='admin_list'),
     path('staff/create', views.user_create, name='user_create'),
     path('staff/<int:pk>', views.user_detail, name='user_delete'),

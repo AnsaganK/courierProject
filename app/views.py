@@ -17,7 +17,7 @@ from utils import show_form_errors, get_generated_password, get_paginator
 
 CURATOR = Profile.RoleChoices.CURATOR
 ADMIN = Profile.RoleChoices.ADMIN
-
+SUPPORT = Profile.RoleChoices.SUPPORT
 
 #
 #                               Flat page views
@@ -250,6 +250,17 @@ def curator_list(request):
         'roles': roles
     })
 
+@login_required
+@check_role([ADMIN])
+def support_list(request):
+    supports = User.objects.filter(profile__role=Profile.RoleChoices.SUPPORT)
+    roles = Profile.RoleChoices.choices
+    password = get_generated_password()
+    return render(request, 'app/staff/support/list.html', {
+        'supports': supports,
+        'password': password,
+        'roles': roles
+    })
 
 @login_required
 @check_role([ADMIN])
