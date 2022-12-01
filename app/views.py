@@ -19,6 +19,7 @@ CURATOR = Profile.RoleChoices.CURATOR
 ADMIN = Profile.RoleChoices.ADMIN
 SUPPORT = Profile.RoleChoices.SUPPORT
 
+
 #
 #                               Flat page views
 #
@@ -250,6 +251,7 @@ def curator_list(request):
         'roles': roles
     })
 
+
 @login_required
 @check_role([ADMIN])
 def support_list(request):
@@ -261,6 +263,7 @@ def support_list(request):
         'password': password,
         'roles': roles
     })
+
 
 @login_required
 @check_role([ADMIN])
@@ -351,9 +354,11 @@ def executor_list(request):
         executors = Executor.objects.filter(curator=request.user)
     count = executors.count()
     executors = get_paginator(request, executors, 50)
+    citizenships = Citizenship.objects.all()
     return render(request, 'app/executor/list.html', {
         'executors': executors,
-        'count': count
+        'count': count,
+        'citizenships': citizenships
     })
 
 

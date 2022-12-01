@@ -71,6 +71,23 @@
             width: 20px !important;
             font-size: 5px !important;
         }
+
+        .check_label {
+            padding: 7px;
+            background-color: grey;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all .2s;
+            margin: 3px;
+            font-size: 11px;
+        }
+
+        input:checked + label.check_label {
+            background-color: #f58555;
+            color: #fff;
+        }
+
     </style>
     <!-- =======================================================
     * Template Name: NiceAdmin - v2.4.1
