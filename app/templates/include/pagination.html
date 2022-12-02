@@ -4,11 +4,12 @@
             <ul class="pagination">
                 {% if page.has_previous %}
                     <li class="page-item">
-                        <a href="?page={{ page.previous_page_number }}" class="page-link"> << </a>
+                        <a href="?page={{ page.previous_page_number }}{% include 'include/get_parameters_for_pagination.html' %}"
+                           class="page-link"> << </a>
                     </li>
                     <li class="page-item">
                         <a class="page-link"
-                           href="?page={{ page.previous_page_number }}">{{ page.previous_page_number }}</a>
+                           href="?page={{ page.previous_page_number }}{% include 'include/get_parameters_for_pagination.html' %}">{{ page.previous_page_number }}</a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
@@ -20,12 +21,11 @@
                         class="sr-only"></span></span></li>
 
                 {% if page.has_next %}
-                    <li class="page-item"><a class="page-link"
-                                             href="?page={{ page.next_page_number }}">{{ page.next_page_number }}</a>
-                    </li>
-
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page.next_page_number }}"> >> </a>
+                        <a class="page-link" href="?page={{ page.next_page_number }}{% include 'include/get_parameters_for_pagination.html' %}">{{ page.next_page_number }}</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page.next_page_number }}{% include 'include/get_parameters_for_pagination.html' %}"> >> </a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">

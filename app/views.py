@@ -10,6 +10,7 @@ from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, 
     CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorHours, \
     Day, DayHour, Contact, Period, Transport
+from app.service.executor import get_query_parameters
 from app.service.file import get_file_data
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task
 from app.utils import check_role
@@ -56,13 +57,14 @@ def statistic(request):
     last_periods = last_periods[::-1]
 
     executors = Executor.objects.filter(executor_hours__period__in=last_periods).distinct()
-    count = executors.count()
-    executors = get_paginator(request, executors, 100)
-    return render(request, 'app/page/statistic.html', {
-        'executors': executors,
-        'periods': last_periods,
-        'count': count
-    })
+
+    context = {
+        'citizenships': Citizenship.objects.all(),
+        'transports': Transport.objects.all(),
+        'periods': last_periods
+    }
+    context.update(get_query_parameters(request, executors))
+    return render(request, 'app/page/statistic.html', context)
 
 
 #
@@ -353,44 +355,12 @@ def executor_list(request):
     else:
         executors = Executor.objects.filter(curator=request.user)
 
-    whatsapp_checkboxes = []
-    phone_number_checkboxes = []
-    citizenship_checkboxes = []
-    transport_checkboxes = []
-    if request.GET:
-        data = dict(request.GET)
-
-        phone_number_checkboxes = data.get('phone_number', [])
-        if 'on' in phone_number_checkboxes:
-            executors = executors.exclude(phone_number=None)
-        elif 'off' in phone_number_checkboxes:
-            executors = executors.filter(phone_number=None)
-
-        whatsapp_checkboxes = data.get('whatsapp', [])
-        if 'on' in whatsapp_checkboxes:
-            executors = executors.filter(contacts__type=Contact.TypeChoices.WHATSAPP)
-        elif 'off' in whatsapp_checkboxes:
-            executors = executors.exclude(contacts__type=Contact.TypeChoices.WHATSAPP)
-
-        citizenship_checkboxes = data.get('citizenship')
-        if citizenship_checkboxes:
-            executors = executors.filter(citizenship__in=citizenship_checkboxes)
-
-    count = executors.count()
-    executors = get_paginator(request, executors, 50)
-    citizenships = Citizenship.objects.all()
-    transports = Transport.objects.all()
-    return render(request, 'app/executor/list.html', {
-        'count': count,
-
-        'executors': executors,
-        'citizenships': citizenships,
-        'transports': transports,
-
-        'phone_number_checkboxes': phone_number_checkboxes,
-        'whatsapp_checkboxes': whatsapp_checkboxes,
-        'citizenship_checkboxes': citizenship_checkboxes,
-    })
+    context = {
+        'citizenships': Citizenship.objects.all(),
+        'transports': Transport.objects.all(),
+    }
+    context.update(get_query_parameters(request, executors))
+    return render(request, 'app/executor/list.html', context)
 
 
 @login_required
@@ -448,6 +418,7 @@ def executor_detail(request, executor_id):
         'roles': Executor.RoleChoices.choices,
         'curators': User.objects.filter(profile__role=Profile.RoleChoices.CURATOR),
         'ofcs': OFC.objects.all(),
+        'transports': Transport.objects.all(),
         'contact_types': Contact.TypeChoices.choices
     })
 

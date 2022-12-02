@@ -606,6 +606,39 @@
 
     trackingStatus()
 </script>
+<script>
+    function toggleFilter(elem) {
+        elem.classList.toggle('bxs-filter-alt');
+        elem.classList.toggle('bx-filter-alt');
+
+        let executor_list_col = document.getElementById('executor_list_col');
+        let filter_col = document.getElementById('filter_col');
+
+        executor_list_col.classList.toggle('col-lg-9');
+        filter_col.classList.toggle('col-lg-3');
+        filter_col.classList.toggle('d-none');
+    }
+
+
+    let filter_names = document.querySelectorAll("span[data-toggle]");
+    console.log(filter_names);
+    filter_names.forEach((filter_name) => {
+        filter_name.addEventListener('click', () => toggleFilterParameters(filter_name))
+    });
+
+    function toggleFilterParameters(elem) {
+        let collapse_id = elem.dataset.collapse;
+        let collapse = document.getElementById(collapse_id);
+        collapse.classList.toggle('show');
+
+        let name = elem.querySelector('span');
+        name.parentElement.classList.toggle('text-custom')
+
+        let arrow = elem.querySelector('i');
+        arrow.classList.toggle('bxs-left-arrow');
+        arrow.classList.toggle('bxs-down-arrow');
+    }
+</script>
 {% block script %}
 
 {% endblock %}

@@ -116,12 +116,11 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
         else:
             executor['role'] = Executor.RoleChoices.COLLECTOR
 
-        if 'сборщик' != cell_value.lower():
-            transport = Transport.objects.get_or_create(name=cell_value)
-            if transport[1]:
-                transport[0].save()
-            transport = transport[0]
-            executor['transport'] = transport
+        transport = Transport.objects.get_or_create(name=cell_value)
+        if transport[1]:
+            transport[0].save()
+        transport = transport[0]
+        executor['transport'] = transport
 
     if 'Расторгнут' in value:
         executor['is_terminated'] = True if 'да' in cell_value.lower() else False
@@ -258,6 +257,7 @@ def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value, p
         executor_hour['executor_fullname'] = cell_value
     elif 'Роль' in value:
         executor_hour['role'] = cell_value
+        executor_hour['transport'] = cell_value
     elif cell_value and 'ID' in value:
         executor = Executor.objects.get_or_create(executor_id=cell_value)
         if executor[1]:
@@ -295,13 +295,22 @@ def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value, p
 
 def _save_executor_hour(data: dict):
     for hour_object in data['hours']:
+        transport = Transport.objects.get_or_create(name=data.get('transport'))
+        if transport[1]:
+            transport[0].save()
+        transport = transport[0]
+        executor = data.get('executor')
         executor_hour = ExecutorHours.objects.get_or_create(
-            executor=data.get('executor'),
+            executor=executor,
             ofc=data.get('ofc'),
-            role=data.get('role'),
+            transport=transport,
             period=data.get('period'),
             file=data.get('archive_file')
         )
+        if transport != executor.transport:
+            executor.transport = transport
+            executor.save()
+
         if executor_hour[1]:
             executor_hour[0].save()
         executor_hour = executor_hour[0]

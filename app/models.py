@@ -1,4 +1,5 @@
 import os
+import socket
 import uuid
 
 from django.contrib.auth.models import User
@@ -280,6 +281,17 @@ class Executor(BaseModel):
         if whatsapp:
             return whatsapp.identifier
 
+    @property
+    def get_whatsapp_url(self):
+        try:
+            host_name = socket.gethostname()
+            print(host_name)
+        except:
+            host_name = 'localhost'
+        url = f"https://wa.me/{self.get_whatsapp}?text={host_name}" + reverse('app:executor_hours_detail',
+                                                                              args=[self.executor_id])
+        return url
+
     def get_absolute_url(self):
         return reverse('app:executor_detail', args=[self.executor_id])
 
@@ -345,6 +357,8 @@ class ExecutorHours(BaseModel):
                                verbose_name='Период')
     file = models.ForeignKey(ArchiveFile, on_delete=models.CASCADE, null=True, blank=True,
                              related_name='executor_hours', verbose_name='Файл')
+    transport = models.ForeignKey(Transport, on_delete=models.CASCADE, null=True, blank=True,
+                                  related_name='executor_hours')
 
     class Meta:
         verbose_name = 'Часы исполнителя'
