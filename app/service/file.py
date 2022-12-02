@@ -6,7 +6,7 @@ from openpyxl.reader.excel import load_workbook
 from openpyxl.utils import get_column_letter
 
 from app.models import Executor, CitizenshipType, Citizenship, OFC, ExecutorHours, ArchiveFile, Period, Day, DayHour, \
-    StatusChoices
+    StatusChoices, Transport
 from utils import set_status
 
 
@@ -115,6 +115,14 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
             executor['role'] = Executor.RoleChoices.COURIER
         else:
             executor['role'] = Executor.RoleChoices.COLLECTOR
+
+        if 'сборщик' != cell_value.lower():
+            transport = Transport.objects.get_or_create(name=cell_value)
+            if transport[1]:
+                transport[0].save()
+            transport = transport[0]
+            executor['transport'] = transport
+
     if 'Расторгнут' in value:
         executor['is_terminated'] = True if 'да' in cell_value.lower() else False
     if 'Основной договор' in value:

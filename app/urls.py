@@ -65,6 +65,9 @@ urlpatterns = [
     path('bicycle/<str:code>/update', views.bicycle_update, name='bicycle_update'),
     path('bicycle/<str:code>/delete', views.bicycle_delete, name='bicycle_delete'),
 
+    # Transport
+    path('transport', views.transport_list, name='transport_list'),
+
     # Citizenship
     path('citizenship', views.citizenship_list, name='citizenship_list'),
     path('citizenship/create', views.citizenship_create, name='citizenship_create'),

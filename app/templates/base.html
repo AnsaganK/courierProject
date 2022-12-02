@@ -88,6 +88,24 @@
             color: #fff;
         }
 
+        .btn-custom {
+            background-color: #f58555;
+            color: #fff;
+            margin: auto;
+            display: block;
+            transition: background-color .3s, color .3s;
+        }
+
+        .btn-custom:hover {
+            background-color: #fff;
+            color: #f58555;
+            border: 1px solid #f58555;
+        }
+
+        .text-custom {
+            color: #f58555;
+        }
+
     </style>
     <!-- =======================================================
     * Template Name: NiceAdmin - v2.4.1
@@ -303,7 +321,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link {% if '/transport' not in request.path %}collapsed{% endif %}"
-                   href="#">
+                   href="{% url 'app:transport_list' %}">
                     <i class="bx bx-car"></i>
                     <span>Транспорт</span>
                 </a>
