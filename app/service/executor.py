@@ -2,7 +2,7 @@ from typing import List
 
 from django.http import HttpRequest
 
-from app.models import Contact
+from app.models import Contact, Citizenship, Transport
 from utils import get_paginator
 
 
@@ -29,12 +29,17 @@ def get_query_parameters(request: HttpRequest, executors: list):
         executors = executors.filter(transport__in=transport_checkboxes)
     count = executors.count()
     executors = get_paginator(request, executors, 50)
+    citizenships = Citizenship.objects.all()
+    transports = Transport.objects.all()
 
     return {
         'phone_number_checkboxes': phone_number_checkboxes,
         'whatsapp_checkboxes': whatsapp_checkboxes,
         'citizenship_checkboxes': citizenship_checkboxes,
         'transport_checkboxes': transport_checkboxes,
+
+        'citizenships': citizenships,
+        'transports': transports,
 
         'executors': executors,
         'count': count,

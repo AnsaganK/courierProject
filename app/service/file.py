@@ -111,11 +111,6 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
         print(cell_value)
         executor['executor_id'] = cell_value
     if 'Роль' in value:
-        if 'курьер' in cell_value.lower():
-            executor['role'] = Executor.RoleChoices.COURIER
-        else:
-            executor['role'] = Executor.RoleChoices.COLLECTOR
-
         transport = Transport.objects.get_or_create(name=cell_value)
         if transport[1]:
             transport[0].save()
@@ -257,7 +252,11 @@ def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value, p
         executor_hour['executor_fullname'] = cell_value
     elif 'Роль' in value:
         executor_hour['role'] = cell_value
-        executor_hour['transport'] = cell_value
+        transport = Transport.objects.get_or_create(name=cell_value)
+        if transport[1]:
+            transport[0].save()
+        transport = transport[0]
+        executor_hour['transport'] = transport
     elif cell_value and 'ID' in value:
         executor = Executor.objects.get_or_create(executor_id=cell_value)
         if executor[1]:
@@ -273,6 +272,8 @@ def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value, p
                 executor.first_name = fullname[1]
             if len(fullname) >= 3:
                 executor.patronymic = ' '.join(fullname[2:])
+        if not executor.transport and executor_hour.get('transport'):
+            executor.transport = executor_hour.get('transport')
             executor.save()
 
         executor_hour['executor'] = executor
@@ -307,9 +308,6 @@ def _save_executor_hour(data: dict):
             period=data.get('period'),
             file=data.get('archive_file')
         )
-        if transport != executor.transport:
-            executor.transport = transport
-            executor.save()
 
         if executor_hour[1]:
             executor_hour[0].save()

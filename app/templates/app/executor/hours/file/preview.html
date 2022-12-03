@@ -53,7 +53,7 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ executor_hour.ofc }}</td>
                         <td>{{ executor_hour.executor }}</td>
-                        <td>{{ executor_hour.role }}</td>
+                        <td>{{ executor_hour.transport|default:'-' }}</td>
                         <td>
                             <a href="{{ executor_hour.executor.get_absolute_url }}">{{ executor_hour.executor.executor_id }}</a>
                         </td>

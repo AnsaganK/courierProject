@@ -59,8 +59,6 @@ def statistic(request):
     executors = Executor.objects.filter(executor_hours__period__in=last_periods).distinct()
 
     context = {
-        'citizenships': Citizenship.objects.all(),
-        'transports': Transport.objects.all(),
         'periods': last_periods
     }
     context.update(get_query_parameters(request, executors))
@@ -333,14 +331,12 @@ def executor_create(request):
     citizenships = Citizenship.objects.all()
     citizenship_types = CitizenshipType.objects.all()
     ofcs = OFC.objects.all()
-    roles = Executor.RoleChoices.choices
     curators = User.objects.filter(profile__role=Profile.RoleChoices.CURATOR)
     return render(request, 'app/executor/create.html', {
         'genders': genders,
         'citizenships': citizenships,
         'citizenship_types': citizenship_types,
         'ofcs': ofcs,
-        'roles': roles,
         'curators': curators
     })
 
@@ -367,12 +363,8 @@ def executor_list(request):
 @check_role([CURATOR])
 def executor_list_free(request):
     executors = Executor.objects.filter(curator=None)
-    count = executors.count()
-    executors = get_paginator(request, executors, 50)
-    return render(request, 'app/executor/free.html', {
-        'executors': executors,
-        'count': count
-    })
+    context = get_query_parameters(request, executors)
+    return render(request, 'app/executor/free.html', context)
 
 
 @login_required
@@ -393,12 +385,10 @@ def executor_add_for_curator(request, pk):
 @check_role([ADMIN, CURATOR])
 def executor_list_my(request):
     executors = Executor.objects.filter(curator=request.user)
-    count = executors.count()
-    executors = get_paginator(request, executors, 50)
-    return render(request, 'app/executor/list.html', {
-        'executors': executors,
-        'count': count
-    })
+
+    context = get_query_parameters(request, executors)
+
+    return render(request, 'app/executor/list.html', context)
 
 
 @login_required
@@ -415,7 +405,6 @@ def executor_detail(request, executor_id):
         'genders': Executor.GenderChoices.choices,
         'citizenships': Citizenship.objects.all(),
         'citizenship_types': CitizenshipType.objects.all(),
-        'roles': Executor.RoleChoices.choices,
         'curators': User.objects.filter(profile__role=Profile.RoleChoices.CURATOR),
         'ofcs': OFC.objects.all(),
         'transports': Transport.objects.all(),
@@ -660,7 +649,7 @@ def citizenship_create(request):
 
 @login_required
 def citizenship_list(request):
-    citizenships = Citizenship.objects.all()
+    citizenships = Citizenship.objects.all().order_by('name')
     return render(request, 'app/citizenship/list.html', {
         'citizenships': citizenships
     })

@@ -133,7 +133,8 @@ class AdditionalReason(BaseModel):
 
 
 class Tariff(BaseModel):
-    transport = models.ForeignKey(Transport, on_delete=models.CASCADE, related_name='tariff', verbose_name='Транспорт')
+    transport = models.ForeignKey(Transport, on_delete=models.SET_NULL, null=True, blank=True, related_name='tariff',
+                                  verbose_name='Транспорт')
     period = models.ForeignKey(Period, on_delete=models.CASCADE, related_name='tariff', verbose_name='Период')
     day = models.ForeignKey(Day, on_delete=models.CASCADE, null=True, blank=True, verbose_name='День')
     ofc = models.ForeignKey(OFC, on_delete=models.CASCADE, verbose_name='ЦФЗ')
@@ -203,10 +204,6 @@ class SalaryFile(BaseModel):
 
 
 class Executor(BaseModel):
-    class RoleChoices(models.TextChoices):
-        COURIER = 'COURIER', 'Курьер'
-        COLLECTOR = 'COLLECTOR', 'Сборщик'
-
     class GenderChoices(models.TextChoices):
         NOT_CHOSEN = 'NOT_CHOSEN', 'Не выбрано'
         MALE = 'MALE', 'Мужской'
@@ -217,8 +214,6 @@ class Executor(BaseModel):
 
     executor_id = models.CharField(max_length=64, unique=True, db_index=True, null=True, blank=True,
                                    verbose_name='Идентификатор')
-    role = models.CharField(max_length=128, choices=RoleChoices.choices, default=RoleChoices.COURIER,
-                            verbose_name='Роль')
     last_name = models.CharField(max_length=128, null=True, blank=True, verbose_name='Фамилия')
     first_name = models.CharField(max_length=128, null=True, blank=True, verbose_name='Имя')
     patronymic = models.CharField(max_length=128, null=True, blank=True, verbose_name='Отчество')
@@ -237,7 +232,7 @@ class Executor(BaseModel):
     OFC = models.ForeignKey(OFC, on_delete=models.DO_NOTHING, null=True, blank=True, verbose_name='ЦфЗ')
     education = models.CharField(max_length=256, null=True, blank=True, verbose_name='Образование')
 
-    transport = models.ForeignKey(Transport, on_delete=models.DO_NOTHING, null=True, blank=True,
+    transport = models.ForeignKey(Transport, on_delete=models.SET_NULL, null=True, blank=True,
                                   related_name='executors', verbose_name='Транспорт')
 
     curator = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='executors',
@@ -348,8 +343,7 @@ class ArchiveFile(BaseModel):
 class ExecutorHours(BaseModel):
     ofc = models.ForeignKey(OFC, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='executor_hours',
                             verbose_name='ЦФЗ')
-    role = models.CharField(max_length=256, null=True, blank=True, verbose_name='Роль')
-    executor = models.ForeignKey(Executor, on_delete=models.DO_NOTHING, null=True, blank=True,
+    executor = models.ForeignKey(Executor, on_delete=models.CASCADE, null=True, blank=True,
                                  related_name='executor_hours',
                                  verbose_name='Исполнитель')
     period = models.ForeignKey(Period, on_delete=models.DO_NOTHING, null=True, blank=True,
@@ -357,7 +351,7 @@ class ExecutorHours(BaseModel):
                                verbose_name='Период')
     file = models.ForeignKey(ArchiveFile, on_delete=models.CASCADE, null=True, blank=True,
                              related_name='executor_hours', verbose_name='Файл')
-    transport = models.ForeignKey(Transport, on_delete=models.CASCADE, null=True, blank=True,
+    transport = models.ForeignKey(Transport, on_delete=models.SET_NULL, null=True, blank=True,
                                   related_name='executor_hours')
 
     class Meta:
