@@ -116,6 +116,13 @@ class Transport(BaseModel):
     def get_absolute_url(self):
         pass
 
+    @property
+    def get_active_executors_count(self):
+        last_periods = Period.objects.all().order_by('-final_date')[:4]
+        last_periods = last_periods[::-1]
+        executors = Executor.objects.filter(executor_hours__period__in=last_periods, transport=self).distinct()
+        return executors.count()
+
 
 class AdditionalReason(BaseModel):
     description = models.TextField(verbose_name='Описание')

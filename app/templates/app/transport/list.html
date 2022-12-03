@@ -38,7 +38,7 @@
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ transport.name }}</td>
                         <td>{{ transport.executors.count }}</td>
-                        <td></td>
+                        <td>{{ transport.get_active_executors_count }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
