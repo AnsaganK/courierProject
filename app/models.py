@@ -80,6 +80,10 @@ class Period(BaseModel):
     def get_hours_sum(self):
         return DayHour.objects.filter(day__period=self).aggregate(Sum('hour')).get('hour__sum')
 
+    @property
+    def get_executors_count(self):
+        return Executor.objects.filter(executor_hours__period=self).distinct().count()
+
 
 class Day(BaseModel):
     period = models.ForeignKey(Period, on_delete=models.CASCADE, related_name='days', verbose_name='Период')
@@ -257,6 +261,8 @@ class Executor(BaseModel):
     med_exam_date = models.DateField(null=True, blank=True, verbose_name='Дата медкомиссии')
     individual = models.CharField(max_length=256, null=True, blank=True, verbose_name='Физическое лицо')
     note = models.TextField(null=True, blank=True, verbose_name='Примечание')
+
+    bicycle = models.OneToOneField(Bicycle, on_delete=models.SET_NULL, null=True, blank=True, related_name='executor')
 
     class Meta:
         verbose_name = 'Исполнитель'

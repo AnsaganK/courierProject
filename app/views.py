@@ -57,9 +57,8 @@ def statistic(request):
     last_periods = last_periods[::-1]
 
     executors = Executor.objects.filter(executor_hours__period__in=last_periods).distinct()
-
     context = {
-        'periods': last_periods
+        'periods': last_periods,
     }
     context.update(get_query_parameters(request, executors))
     return render(request, 'app/page/statistic.html', context)
@@ -462,7 +461,19 @@ def executor_update(request, executor_id):
             contacts = []
         form = ExecutorForm(request.POST, instance=executor)
         if form.is_valid():
-            form.save()
+            code = post['bicycle_code']
+            if code:
+                bicycle = Bicycle.objects.get_or_create(code=code[0])
+                if bicycle[1]:
+                    bicycle[0].save()
+                bicycle = bicycle[0]
+                if bicycle.executor:
+                    messages.warning(request, 'Этот велосипед уже занят')
+                    form.save()
+                else:
+                    executor = form.save(commit=False)
+                    executor.bicycle = bicycle
+                    executor.save()
 
             executor.contacts.all().delete()
             for c in contacts:
@@ -518,12 +529,12 @@ def executor_hours_file_list(request):
 def executor_hours_file_preview(request, pk):
     archive_file = get_object_or_404(ArchiveFile, pk=pk)
     executor_hours = archive_file.executor_hours.all().order_by('ofc__address')
-    days = DayHour.objects.filter(executor_hour__in=archive_file.executor_hours.all()).order_by('day_id').distinct(
-        'day').values('day__date')
+    day_hours = DayHour.objects.filter(executor_hour__in=archive_file.executor_hours.all()).order_by('day_id').distinct(
+        'day')
     return render(request, 'app/executor/hours/file/preview.html', {
         'archive_file': archive_file,
         'executor_hours': executor_hours,
-        'days': days,
+        'day_hours': day_hours,
     })
 
 

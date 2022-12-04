@@ -40,19 +40,19 @@
                     <table class="table table-bordered text-center">
                         <thead>
                         <tr class="align-middle">
-                            <th rowspan="2">ID</th>
-                            <th rowspan="2">Гражданство</th>
-                            <th rowspan="2">ФИО</th>
-                            <th rowspan="2">Ссылка</th>
-                            <th rowspan="2">Номер</th>
-                            <th rowspan="2">Рекрутер</th>
+                            <th rowspan="3">ID</th>
+                            <th rowspan="3">Гражданство</th>
+                            <th rowspan="3">ФИО</th>
+                            <th rowspan="3">Ссылка</th>
+                            <th rowspan="3">Номер</th>
+                            <th rowspan="3">Рекрутер</th>
                             {% for period in periods %}
-                                <th>{{ period.start_date|date:'d.m' }} - {{ period.final_date|date:'d.m' }}</th>
+                                <th><a href="№" class="text-custom" title="За данный период {{ period.get_executors_count }} исполнителей">{{ period.start_date|date:'d.m' }} - {{ period.final_date|date:'d.m' }}</a></th>
                             {% endfor %}
                         </tr>
                         <tr>
                             {% for period in periods %}
-                                <th>{{ period.get_hours_sum }}</th>
+                                <th>{{ executor_ids|get_hours_for_period:period.id }} Ч.</th>
                             {% endfor %}
                         </tr>
                         </thead>

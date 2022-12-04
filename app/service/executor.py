@@ -28,6 +28,8 @@ def get_query_parameters(request: HttpRequest, executors: list):
     if transport_checkboxes:
         executors = executors.filter(transport__in=transport_checkboxes)
     count = executors.count()
+    executor_ids = executors.values_list('id', flat=True)
+
     executors = get_paginator(request, executors, 50)
     citizenships = Citizenship.objects.all()
     transports = Transport.objects.all()
@@ -41,6 +43,7 @@ def get_query_parameters(request: HttpRequest, executors: list):
         'citizenships': citizenships,
         'transports': transports,
 
+        'executor_ids': executor_ids,
         'executors': executors,
         'count': count,
     }
