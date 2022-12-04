@@ -105,6 +105,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Код</th>
+                    <th scope="col">ID</th>
                     <th scope="col">Исполнитель</th>
                     <th scope="col">Действия</th>
                 </tr>
@@ -114,7 +115,10 @@
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
                         <td>{{ bicycle.code }}</td>
-                        <td> -</td>
+                        <td>{{ bicycle.get_executor.executor_id|default:'-' }}</td>
+                        <td>
+                            <a href="{{ bicycle.get_executor.get_absolute_url }}">{{ bicycle.get_executor.get_full_name|default:'-' }}</a>
+                        </td>
                         <td>
                             <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
                                data-update-url="{% url 'app:bicycle_update' bicycle.code %}"

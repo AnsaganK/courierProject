@@ -10,7 +10,7 @@ from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, 
     CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorHours, \
     Day, DayHour, Contact, Period, Transport
-from app.service.executor import get_query_parameters
+from app.service.executor import get_query_parameters, get_active_executors
 from app.service.file import get_file_data
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task
 from app.utils import check_role
@@ -34,11 +34,13 @@ def home(request):
     curator_with_teams_count = User.objects.exclude(executors=None).count()
 
     executors = Executor.objects.all()
-    last_periods = Period.objects.all().order_by('-final_date')[:4]
-    active_executors = executors.filter(executor_hours__period__in=last_periods).distinct()
+    active_executors = get_active_executors()
+    bicycles = Bicycle.objects.all()
+    bicycle_count = bicycles.count()
+    bicycle_used_count = bicycles.exclude(executor=None).count()
 
-    bicycle_count = Bicycle.objects.count()
-    bicycle_used_count = 0
+    active_executor_ids = get_active_executors().values_list('id', flat=True)
+    debtor_count = Executor.objects.exclude(id__in=active_executor_ids).exclude(bicycle=None).count()
     return render(request, 'app/page/home.html', {
         'city_count': city_count,
         'ofc_count': ofc_count,
@@ -46,7 +48,9 @@ def home(request):
         'curator_with_teams_count': curator_with_teams_count,
         'executor_count': executors.count(),
         'executor_active_count': active_executors.count(),
-        'bicycle_count': bicycle_count
+        'bicycle_count': bicycle_count,
+        'bicycle_used_count': bicycle_used_count,
+        'debtor_count': debtor_count,
     })
 
 
@@ -55,8 +59,7 @@ def home(request):
 def statistic(request):
     last_periods = Period.objects.all().order_by('-final_date')[:4]
     last_periods = last_periods[::-1]
-
-    executors = Executor.objects.filter(executor_hours__period__in=last_periods).distinct()
+    executors = get_active_executors()
     context = {
         'periods': last_periods,
     }
@@ -391,6 +394,17 @@ def executor_list_my(request):
 
 
 @login_required
+@check_role([ADMIN, CURATOR, SUPPORT])
+def executor_list_debtor(request):
+    active_executor_ids = get_active_executors().values_list('pk', flat=True)
+    executors = Executor.objects.exclude(bicycle=None).exclude(id__in=active_executor_ids)
+    executors = get_paginator(request, executors, 50)
+    return render(request, 'app/executor/debtor/list.html', {
+        'executors': executors
+    })
+
+
+@login_required
 def executor_detail(request, executor_id):
     executor = get_object_or_404(Executor, executor_id=executor_id)
     executor_hours = executor.executor_hours.all()
@@ -462,18 +476,20 @@ def executor_update(request, executor_id):
         form = ExecutorForm(request.POST, instance=executor)
         if form.is_valid():
             code = post['bicycle_code']
-            if code:
+
+            bicycle = None
+            if code and code[0]:
                 bicycle = Bicycle.objects.get_or_create(code=code[0])
                 if bicycle[1]:
                     bicycle[0].save()
                 bicycle = bicycle[0]
-                if bicycle.executor:
+                if bicycle.get_executor:
                     messages.warning(request, 'Этот велосипед уже занят')
-                    form.save()
-                else:
-                    executor = form.save(commit=False)
-                    executor.bicycle = bicycle
-                    executor.save()
+                    bicycle = executor.bicycle
+
+            executor = form.save(commit=False)
+            executor.bicycle = bicycle
+            executor.save()
 
             executor.contacts.all().delete()
             for c in contacts:

@@ -22,15 +22,19 @@
                 <div class="col-auto">
                     <a href="{% url 'app:executor_hours_file_list' %}" class="btn btn-primary mb-2">
                         <i class="bi bi-clock"></i>
-                        Файлы с часами
+                        {#                        Файлы с часами#}
                     </a>
                     <a href="{% url 'app:executor_file_list' %}" class="btn btn-primary mb-2">
                         <i class="bi bi-archive-fill"></i>
-                        Файлы с исполнителями
+                        {#                        Файлы с исполнителями#}
+                    </a>
+                    <a href="{% url 'app:executor_list_debtor' %}" class="btn btn-danger mb-2">
+                        <i class="bx bx-sad"></i>
+                        {#                        Файлы с часами#}
                     </a>
                     <a href="{% url 'app:executor_create' %}" class="btn btn-success mb-2">
                         <i class="bi bi-plus"></i>
-                        Добавить исполнителя
+                        {#                        Добавить исполнителя#}
                     </a>
                 </div>
             {% endif %}
@@ -43,7 +47,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Удалить ЦФЗ: <span id="delete_span"></span></h5>
+                    <h5 class="modal-title">Удалить исполнителя: <span id="delete_span"></span></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-footer">
@@ -83,7 +87,7 @@
                         </thead>
                         <tbody>
                         {% for executor in executors %}
-                            <tr>
+                            <tr style="{% if executor.id in active_executor_ids %} background-color: #d3ffb88f; {% else %} {# background-color: #ffe9e98f; #} {% endif %}">
                                 <th class="text-start">
                                     <a href="{{ executor.get_absolute_url }}">
                                         {{ executor.executor_id }}

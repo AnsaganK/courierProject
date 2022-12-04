@@ -2,7 +2,7 @@ from typing import List
 
 from django.http import HttpRequest
 
-from app.models import Contact, Citizenship, Transport
+from app.models import Contact, Citizenship, Transport, Period, Executor
 from utils import get_paginator
 
 
@@ -33,7 +33,7 @@ def get_query_parameters(request: HttpRequest, executors: list):
     executors = get_paginator(request, executors, 50)
     citizenships = Citizenship.objects.all()
     transports = Transport.objects.all()
-
+    active_executor_ids = get_active_executors().values_list('id', flat=True)
     return {
         'phone_number_checkboxes': phone_number_checkboxes,
         'whatsapp_checkboxes': whatsapp_checkboxes,
@@ -42,8 +42,16 @@ def get_query_parameters(request: HttpRequest, executors: list):
 
         'citizenships': citizenships,
         'transports': transports,
+        'active_executor_ids': active_executor_ids,
 
         'executor_ids': executor_ids,
         'executors': executors,
         'count': count,
     }
+
+
+def get_active_executors():
+    last_periods = Period.objects.all().order_by('-final_date')[:4]
+    last_periods = last_periods[::-1]
+    executors = Executor.objects.filter(executor_hours__period__in=last_periods).distinct()
+    return executors

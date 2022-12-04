@@ -179,6 +179,11 @@ class Bicycle(BaseModel):
     def get_absolute_url(self):
         pass
 
+    @property
+    def get_executor(self):
+        executor = Executor.objects.filter(bicycle=self).first()
+        return executor
+
 
 class CitizenshipType(BaseModel):
     name = models.CharField(max_length=64, verbose_name='Название', unique=True)

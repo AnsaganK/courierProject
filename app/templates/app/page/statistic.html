@@ -47,7 +47,9 @@
                             <th rowspan="3">Номер</th>
                             <th rowspan="3">Рекрутер</th>
                             {% for period in periods %}
-                                <th><a href="№" class="text-custom" title="За данный период {{ period.get_executors_count }} исполнителей">{{ period.start_date|date:'d.m' }} - {{ period.final_date|date:'d.m' }}</a></th>
+                                <th><span class="text-custom"
+                                          title="За данный период {{ period.get_executors_count }} исполнителей">{{ period.start_date|date:'d.m' }} - {{ period.final_date|date:'d.m' }}</span>
+                                </th>
                             {% endfor %}
                         </tr>
                         <tr>
@@ -62,10 +64,11 @@
                                 <td><a href="{{ executor.get_absolute_url }}">{{ executor.executor_id }}</a></td>
                                 <td>{{ executor.citizenship|default:'-' }}</td>
                                 <td>{{ executor.get_full_name }}</td>
-                                <td><a href="{{ executor.get_absolute_url }}?page=hours"
-                                       class="me-3" title="Просмотреть часы">
-                                    <i class="bx bx-time text-success"></i>
-                                </a></td>
+                                <td class="text-center">
+                                    <a href="{{ executor.get_absolute_url }}?page=hours" title="Просмотреть часы">
+                                        <i class="bx bx-time text-success"></i>
+                                    </a>
+                                </td>
                                 <td>{{ executor.phone_number|default:'-' }}</td>
                                 <td>{{ executor.curator.get_full_name }}</td>
                                 {% for period in periods %}
