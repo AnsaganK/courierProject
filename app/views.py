@@ -354,8 +354,8 @@ def executor_list(request):
         executors = Executor.objects.filter(curator=request.user)
 
     context = {
-        'citizenships': Citizenship.objects.all(),
-        'transports': Transport.objects.all(),
+        'executor_debtor_ids': Executor.objects.exclude(
+            id__in=get_active_executors().values_list('id', flat=True)).exclude(bicycle=None).values_list('id', flat=True)
     }
     context.update(get_query_parameters(request, executors))
     return render(request, 'app/executor/list.html', context)

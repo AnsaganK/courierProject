@@ -73,6 +73,18 @@
             <div class="col-12 col-lg-9" id="executor_list_col">
                 {% if executors %}
                     {% include 'include/pagination.html' with page=executors %}
+
+                    <div class="mb-3">
+            <span class="btn border" style="background-color: #d3ffb88f">
+                Активные
+            </span>
+                        <span class="btn border">
+                Неактивные
+            </span>
+                        <span class="btn border" style="background-color: #ffe9e98f">
+                Должники
+            </span>
+                    </div>
                     <table class="table table-bordered text-center">
                         <thead>
                         <tr>
@@ -87,7 +99,9 @@
                         </thead>
                         <tbody>
                         {% for executor in executors %}
-                            <tr style="{% if executor.id in active_executor_ids %} background-color: #d3ffb88f; {% else %} {# background-color: #ffe9e98f; #} {% endif %}">
+                            <tr style="{% if executor.id in active_executor_ids %} background-color: #d3ffb88f; {% else %}
+                                {# background-color: #ffe9e98f; #} {% endif %}
+                                    {% if executor.id in executor_debtor_ids %} background-color: #ffe9e98f; {% endif %}">
                                 <th class="text-start">
                                     <a href="{{ executor.get_absolute_url }}">
                                         {{ executor.executor_id }}
@@ -104,7 +118,11 @@
                                         <i class="bx bx-time text-primary"></i>
                                     </a>
                                     {% if executor.get_whatsapp %}
-                                        <a href="https://wa.me/{{ executor.get_whatsapp }}?text={{ request.get_host }}{% url 'app:executor_hours_detail' executor.executor_id %}"
+                                        <a href="https://wa.me/{{ executor.get_whatsapp }}?text=
+
+
+
+                                                {{ request.get_host }}{% url 'app:executor_hours_detail' executor.executor_id %}"
                                            class="me-3" title="Просмотреть часы" target="_blank">
                                             <i class="bx bxl-whatsapp text-success"></i>
                                         </a>
