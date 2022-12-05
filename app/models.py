@@ -301,7 +301,7 @@ class Executor(BaseModel):
             print(host_name)
         except:
             host_name = 'localhost'
-        url = f"https://wa.me/{self.get_whatsapp}?text={host_name}" + reverse('app:executor_hours_detail',
+        url = f"https://wa.me/{self.get_whatsapp}?text=http://{host_name}" + reverse('app:executor_hours_detail',
                                                                               args=[self.executor_id])
         return url
 

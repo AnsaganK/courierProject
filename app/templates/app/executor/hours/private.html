@@ -93,34 +93,36 @@
 <main id="main" class="main ms-0">
     <section class="section">
         <div class="row">
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>ЦФЗ</th>
-                    <th>Сотрудник</th>
-                    <th>Период</th>
-                    <th>Табельный номер</th>
-                    {% for week_day in week_days %}
-                        <th>{{ week_day }}</th>
-                    {% endfor %}
-                    <th>Итого</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for executor_hour in executor_hours %}
+            <div class="w-100 overflow-auto">
+                <table class="table table-bordered">
+                    <thead>
                     <tr>
-                        <td>{{ executor_hour.ofc }}</td>
-                        <td>{{ executor_hour.executor.get_full_name }}</td>
-                        <td>{{ executor_hour.period }}</td>
-                        <td>{{ executor_hour.executor.executor_id }}</td>
-                        {% for day_hour in executor_hour.day_hours.all %}
-                            <td>{{ day_hour.hour }}</td>
+                        <th>ЦФЗ</th>
+                        <th>Сотрудник</th>
+                        <th>Период</th>
+                        <th>Табельный номер</th>
+                        {% for week_day in week_days %}
+                            <th>{{ week_day }}</th>
                         {% endfor %}
-                        <td>{{ executor_hour.get_hours_sum }}</td>
+                        <th>Итого</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for executor_hour in executor_hours %}
+                        <tr>
+                            <td>{{ executor_hour.ofc }}</td>
+                            <td>{{ executor_hour.executor.get_full_name }}</td>
+                            <td>{{ executor_hour.period }}</td>
+                            <td>{{ executor_hour.executor.executor_id }}</td>
+                            {% for day_hour in executor_hour.day_hours.all %}
+                                <td>{{ day_hour.hour }}</td>
+                            {% endfor %}
+                            <td>{{ executor_hour.get_hours_sum }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 </main>

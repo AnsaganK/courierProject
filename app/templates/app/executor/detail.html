@@ -8,7 +8,7 @@
 {% block breadcrumb %}
     <div class="pagetitle">
         <div class="row justify-content-between align-items-center">
-            <div class="col-6">
+            <div class="col-12">
                 <h1>{{ executor.get_full_name }}</h1>
                 <nav>
                     <ol class="breadcrumb">
@@ -211,21 +211,21 @@
                                         <label for="inputText" class="col-sm-3 col-form-label">Фамилия</label>
                                         <div class="col-sm-9">
                                             <input type="text" name="last_name" class="form-control"
-                                                   value="{{ executor.last_name }}">
+                                                   value="{{ executor.last_name|default:'' }}">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-3 col-form-label">Имя</label>
                                         <div class="col-sm-9">
                                             <input type="text" name="first_name" class="form-control"
-                                                   value="{{ executor.first_name }}">
+                                                   value="{{ executor.first_name|default:'' }}">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <label for="inputText" class="col-sm-3 col-form-label">Отчество</label>
                                         <div class="col-sm-9">
                                             <input type="text" name="patronymic" class="form-control"
-                                                   value="{{ executor.patronymic }}">
+                                                   value="{{ executor.patronymic|default:'' }}">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -472,17 +472,17 @@
                          role="tabpanel">
                         <div class="mb-2">
                             <a href="{% url 'app:executor_hours_export' executor.executor_id %}"
-                               class="btn btn-outline-success">
+                               class="btn btn-outline-success m-1">
                                 <i class="bi bi-upload"></i>
                                 Выгрузить в excel
                             </a>
                             <a href="#" onclick="copy('{{ request.build_absolute_uri }}/hours')"
-                               class="btn btn-outline-success">
+                               class="btn btn-outline-success m-1">
                                 <i class="bx bx-select-multiple"></i>
                                 Скопировать
                             </a>
                             <a href="{% url 'app:executor_hours_detail' executor.executor_id %}"
-                               class="btn btn-outline-success">
+                               class="btn btn-outline-success m-1">
                                 <i class="bx bx-link"></i>
                                 Перейти
                             </a>
@@ -490,36 +490,38 @@
                         <div id="alert_div">
 
                         </div>
-                        <table class="table table-bordered text-center">
-                            <thead>
-                            <tr class="align-middle">
-                                <th>ЦФЗ</th>
-                                <th>Сотрудник</th>
-                                <th>Роль</th>
-                                <th>Период</th>
-                                <th>Табельный номер</th>
-                                {% for week_day in week_days %}
-                                    <th>{{ week_day }}</th>
-                                {% endfor %}
-                                <th>Итого</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for executor_hour in executor_hours %}
-                                <tr>
-                                    <td>{{ executor_hour.ofc }}</td>
-                                    <td>{{ executor_hour.executor.get_full_name }}</td>
-                                    <td>{{ executor_hour.transport|default:'-' }}</td>
-                                    <td>{{ executor_hour.period }}</td>
-                                    <td>{{ executor_hour.executor.executor_id }}</td>
-                                    {% for day_hour in executor_hour.day_hours.all %}
-                                        <td>{{ day_hour.hour|default:'-' }}</td>
+                        <div class="w-100 overflow-auto">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                <tr class="align-middle">
+                                    <th>ЦФЗ</th>
+                                    <th>Сотрудник</th>
+                                    <th>Роль</th>
+                                    <th>Период</th>
+                                    <th>Табельный номер</th>
+                                    {% for week_day in week_days %}
+                                        <th>{{ week_day }}</th>
                                     {% endfor %}
-                                    <td>{{ executor_hour.get_hours_sum }}</td>
+                                    <th>Итого</th>
                                 </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {% for executor_hour in executor_hours %}
+                                    <tr>
+                                        <td>{{ executor_hour.ofc }}</td>
+                                        <td>{{ executor_hour.executor.get_full_name }}</td>
+                                        <td>{{ executor_hour.transport|default:'-' }}</td>
+                                        <td>{{ executor_hour.period }}</td>
+                                        <td>{{ executor_hour.executor.executor_id }}</td>
+                                        {% for day_hour in executor_hour.day_hours.all %}
+                                            <td>{{ day_hour.hour|default:'-' }}</td>
+                                        {% endfor %}
+                                        <td>{{ executor_hour.get_hours_sum }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
 

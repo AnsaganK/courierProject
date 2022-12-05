@@ -9,7 +9,7 @@
 {% block breadcrumb %}
     <div class="pagetitle">
         <div class="row justify-content-between align-items-center">
-            <div class="col-6">
+            <div class="col-12">
                 <h1>Исполнители без кураторов</h1>
                 <nav>
                     <ol class="breadcrumb">
@@ -34,18 +34,18 @@
                    onclick="toggleFilter(this)"></i>
             </div>
         </div>
-        <div class="row justify-content-between">
+        <div class="row justify-content-between executor_table_content">
             <div class="col-12 col-lg-9" id="executor_list_col">
                 {% if executors %}
                     {% include 'include/pagination.html' with page=executors %}
-                    <table class="table table-bordered text-center">
+                    <table class="table table-sm table-bordered text-center">
                         <thead>
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Название</th>
-                            <th scope="col">Дата рожд.</th>
-                            <th scope="col">ЦФЗ</th>
-                            <th scope="col">Номер тел.</th>
+                            <th scope="col" class="additional">Дата рожд.</th>
+                            <th scope="col" class="additional">ЦФЗ</th>
+                            <th scope="col" class="additional">Номер тел.</th>
                             <th scope="col">Действия</th>
                         </tr>
                         </thead>
@@ -56,9 +56,9 @@
                                     {{ executor.executor_id }}
                                 </th>
                                 <td class="text-start">{{ executor.get_full_name }}</td>
-                                <td class="text-start">{{ executor.birth_date|default:'-' }}</td>
-                                <td class="text-start">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>
-                                <td>{{ executor.phone_number|default:'-' }}</td>
+                                <td class="text-start additional">{{ executor.birth_date|default:'-' }}</td>
+                                <td class="text-start additional">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>
+                                <td class="additional">{{ executor.phone_number|default:'-' }}</td>
                                 <td>
                                     <a href="#add_modal" data-bs-toggle="modal" data-bs-target="#add_modal"
                                        class="me-3" title="Добавить исполнителя"

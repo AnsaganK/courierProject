@@ -106,8 +106,22 @@
             color: #f58555;
         }
 
-        @media only screen and (max-width: 768px) {
+        @media only screen and (max-width: 991px) {
+            .executor_table_content{
+                flex-direction: column-reverse;
+            }
+        }
 
+        @media only screen and (max-width: 768px) {
+            .additional {
+                display: none;
+            }
+        }
+
+        @media only screen and (min-width: 769px) {
+            .mobile_additional {
+                display: none;
+            }
         }
     </style>
     <!-- =======================================================
@@ -608,7 +622,7 @@
                                         <i class="bi bi-person"></i>
                                     </div>
                                     <div class="col-11 text-end">
-                                        <a href="${executor_url}">${executor.last_name} ${executor.first_name} ${executor.patronymic}</a> <br>
+                                        <a href="${executor_url}">${executor['last_name'] ?? ''} ${executor['first_name'] ?? ''} ${executor['patronymic'] ?? ''}</a> <br>
                                         <span class="text-black-50">${executor.executor_id}</span>
                                     </div>
                                 </div>

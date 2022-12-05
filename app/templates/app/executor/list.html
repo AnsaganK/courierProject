@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load role %}
+{% load executor_tags %}
 
 
 {% block title %}
@@ -9,7 +10,7 @@
 {% block breadcrumb %}
     <div class="pagetitle">
         <div class="row justify-content-between align-items-center">
-            <div class="col-6">
+            <div class="col-12">
                 <h1>Исполнители</h1>
                 <nav>
                     <ol class="breadcrumb">
@@ -69,31 +70,31 @@
                    onclick="toggleFilter(this)"></i>
             </div>
         </div>
-        <div class="row justify-content-between">
+        <div class="row justify-content-between executor_table_content">
             <div class="col-12 col-lg-9" id="executor_list_col">
                 {% if executors %}
                     {% include 'include/pagination.html' with page=executors %}
 
                     <div class="mb-3">
-            <span class="btn border" style="background-color: #d3ffb88f">
+            <span class="mb-1 btn border" style="background-color: #d3ffb88f">
                 Активные
             </span>
-                        <span class="btn border">
+                        <span class="mb-1 btn border">
                 Неактивные
             </span>
-                        <span class="btn border" style="background-color: #ffe9e98f">
+                        <span class="mb-1 btn border" style="background-color: #ffe9e98f">
                 Должники
             </span>
                     </div>
-                    <table class="table table-bordered text-center">
+                    <table class="table table-bordered table-sm text-center">
                         <thead>
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Название</th>
-                            <th scope="col">Транспорт</th>
-                            <th scope="col">Дата рожд.</th>
-                            <th scope="col">ЦФЗ</th>
-                            <th scope="col">Номер тел.</th>
+                            <th scope="col" class="additional">Транспорт</th>
+                            <th scope="col" class="additional">Дата рожд.</th>
+                            <th scope="col" class="additional">ЦФЗ</th>
+                            <th scope="col" class="additional">Номер тел.</th>
                             <th scope="col">Действия</th>
                         </tr>
                         </thead>
@@ -108,38 +109,54 @@
                                     </a>
                                 </th>
                                 <td class="text-start">{{ executor.get_full_name }}</td>
-                                <td class="text-center">{{ executor.transport|default:'-' }}</td>
-                                <td class="text-start">{{ executor.birth_date|default:'-' }}</td>
-                                <td class="text-start">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>
-                                <td>{{ executor.phone_number|default:'-' }}</td>
+                                <td class="text-center additional">{{ executor.transport|default:'-' }}</td>
+                                <td class="text-start additional">{{ executor.birth_date|default:'-' }}</td>
+                                <td class="text-start additional">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>
+                                <td class="additional">{{ executor.phone_number|default:'-' }}</td>
                                 <td>
-                                    <a href="{{ executor.get_absolute_url }}?page=hours"
-                                       class="me-3" title="Просмотреть часы">
-                                        <i class="bx bx-time text-primary"></i>
-                                    </a>
-                                    {% if executor.get_whatsapp %}
-                                        <a href="https://wa.me/{{ executor.get_whatsapp }}?text=
-
-
-
-                                                {{ request.get_host }}{% url 'app:executor_hours_detail' executor.executor_id %}"
-                                           class="me-3" title="Просмотреть часы" target="_blank">
-                                            <i class="bx bxl-whatsapp text-success"></i>
+                                    <div class="additional row justify-content-between">
+                                        <a href="{{ executor.get_absolute_url }}?page=hours"
+                                           class="col" title="Просмотреть часы">
+                                            <i class="bx bx-time text-primary"></i>
                                         </a>
-                                    {% else %}
-                                        <a href="#"
-                                           class="me-3" title="Просмотреть часы">
-                                            <i class="bx bxl-whatsapp text-black-50"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if request.user|check_role:'admin' %}
-                                        <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
-                                           data-delete-url="{% url 'app:executor_delete' executor.pk %}"
-                                           data-name="{{ executor.get_full_name }}"
-                                           onclick="objectDelete(this)">
-                                            <i class="bi bi-trash text-danger"></i>
-                                        </a>
-                                    {% endif %}
+                                        {% if executor.get_whatsapp %}
+                                            <a href="{{ executor|get_whatsapp_url_for_executor:request.get_host }}"
+                                               class="col" title="Просмотреть часы" target="_blank">
+                                                <i class="bx bxl-whatsapp text-success"></i>
+                                            </a>
+                                        {% else %}
+                                            <a href="#"
+                                               class="col" title="Просмотреть часы">
+                                                <i class="bx bxl-whatsapp text-black-50"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if request.user|check_role:'admin' %}
+                                            <a href="#delete"
+                                               class="col"
+                                               data-bs-toggle="modal" data-bs-target="#delete_modal"
+                                               data-delete-url="{% url 'app:executor_delete' executor.pk %}"
+                                               data-name="{{ executor.get_full_name }}"
+                                               onclick="objectDelete(this)">
+                                                <i class="bi bi-trash text-danger"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="row mobile_additional">
+                                        <div class="col-12 mb-1 mt-1">
+                                            <a href="{{ executor.get_absolute_url }}?page=hours"
+                                               class="btn btn-warning w-100">Часы</a>
+                                        </div>
+                                        <div class="col-12 mb-1 mt-1">
+                                            {% if executor.get_whatsapp %}
+                                                <a href="{{ executor|get_whatsapp_url_for_executor:request.get_host }}"
+                                                   class="btn btn-success w-100">Whatsapp</a>
+                                            {% else %}
+                                                <a href="#"
+                                                   class="btn btn-secondary w-100">Whatsapp</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -152,6 +169,7 @@
                     </span>
                 {% endif %}
             </div>
+
             {% include 'include/executor/filter_form.html' %}
         </div>
     </div>
