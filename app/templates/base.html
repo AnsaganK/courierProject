@@ -106,6 +106,9 @@
             color: #f58555;
         }
 
+        @media only screen and (max-width: 768px) {
+
+        }
     </style>
     <!-- =======================================================
     * Template Name: NiceAdmin - v2.4.1
@@ -130,10 +133,24 @@
     </div><!-- End Logo -->
 
     <div class="search-bar">
-        <form class="search-form d-flex align-items-center" method="POST" action="#">
-            <input type="text" name="query" placeholder="Поиск" title="Enter search keyword">
-            <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+        <form class="search-form d-flex align-items-center" method="GET" action="#">
+            <input type="text" name="query" placeholder="Поиск" title="Enter search keyword"
+                   oninput="searchExecutors(this)">
+            <button type="button" title="Начать поиск"><i class="bi bi-search"></i></button>
         </form>
+        <div id="search_card" class="card d-none" style="position: absolute;
+    width: 360px;
+    margin-top: 10px;
+">
+            <div class="card-body  pt-2 pb-0">
+                <div id="search_result_list" class="row flex-column justify-content-center align-items-center">
+                    {% for number in '4'|linenumbers %}
+
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
     </div><!-- End Search Bar -->
 
     <nav class="header-nav ms-auto">
@@ -551,6 +568,60 @@
 
         description_textarea.value = description;
         type_select.value = type;
+    }
+</script>
+<script>
+    let search_result = document.getElementById('search_result_list');
+    let executor_detail_url = '{% url 'app:executor_detail' 'executor_id' %}';
+
+    async function searchExecutors(elem) {
+        let search_card = document.getElementById('search_card');
+        let value = elem.value;
+        console.log(value.length)
+        if (value.length > 0 && search_card.classList.contains('d-none')) {
+            search_card.classList.remove('d-none');
+            search_card.classList.add('d-block');
+            search_result.innerHTML = `
+        <div class="spinner-border text-primary mt-2 mb-3" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>`;
+        } else if (value.length === 0 && search_card.classList.contains('d-block')) {
+            search_card.classList.remove('d-block');
+            search_card.classList.add('d-none');
+        }
+
+
+        let url = "{% url 'app:executor_search' %}?query=" + value;
+        let response = await fetch(url);
+        if (response.ok) {
+            let json = await response.json();
+            console.log(json)
+            let executors = json.executors;
+            let executor_cards = '';
+            for (let i = 0; i < executors.length; i++) {
+                let executor = executors[i];
+                let executor_url = executor_detail_url.replace('executor_id', executor.executor_id);
+                let executor_card = `<div class="card text-custom mb-2 shadow-none border">
+                            <div class="card-body pt-2 pb-2">
+                                <div class="row align-items-center justify-content-between">
+                                    <div class="col-1">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <div class="col-11 text-end">
+                                        <a href="${executor_url}">${executor.last_name} ${executor.first_name} ${executor.patronymic}</a> <br>
+                                        <span class="text-black-50">${executor.executor_id}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                executor_cards += executor_card;
+            }
+            search_result.innerHTML = executor_cards;
+        } else {
+            console.log(response.status);
+        }
+
+
     }
 </script>
 <script>

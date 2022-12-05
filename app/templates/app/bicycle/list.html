@@ -100,6 +100,7 @@
 
     <div class="col">
         {% if bicycles %}
+            {% include 'include/pagination.html' with page=bicycles %}
             <table class="table table-bordered text-center">
                 <thead>
                 <tr>
@@ -138,6 +139,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% include 'include/pagination.html' with page=bicycles %}
         {% else %}
             <span class="mt-3 text-black-50 text-center d-block">
                 Данные не найдены

@@ -1,8 +1,10 @@
 import csv
+from itertools import count
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
@@ -355,7 +357,8 @@ def executor_list(request):
 
     context = {
         'executor_debtor_ids': Executor.objects.exclude(
-            id__in=get_active_executors().values_list('id', flat=True)).exclude(bicycle=None).values_list('id', flat=True)
+            id__in=get_active_executors().values_list('id', flat=True)).exclude(bicycle=None).values_list('id',
+                                                                                                          flat=True)
     }
     context.update(get_query_parameters(request, executors))
     return render(request, 'app/executor/list.html', context)
@@ -511,6 +514,26 @@ def executor_delete(request, pk):
 
 
 @login_required
+def executor_search(request):
+    if request.method == 'POST':
+        post = dict(request.POST)
+        executor_id = post['query'][0]
+        executor = get_object_or_404(Executor, executor_id=executor_id)
+        return redirect(executor.get_absolute_url())
+    elif request.method == 'GET':
+        get = dict(request.GET)
+        query = get['query'][0]
+        executors = Executor.objects.filter(
+            Q(last_name__icontains=query) | Q(first_name__icontains=query) | Q(
+                patronymic__icontains=query) | Q(executor_id__icontains=query)).order_by('-pk').values(
+            'executor_id', 'last_name', 'first_name', 'patronymic', 'id')[:5]
+        return JsonResponse({
+            'executors': list(executors)
+        })
+    return redirect(reverse('app:home'))
+
+
+@login_required
 def executor_salary_calculator(request):
     pass
 
@@ -613,6 +636,7 @@ def bicycle_create(request):
 @login_required
 def bicycle_list(request):
     bicycles = Bicycle.objects.all()
+    bicycles = get_paginator(request, bicycles, count=25)
     return render(request, 'app/bicycle/list.html', {
         'bicycles': bicycles
     })

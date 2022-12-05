@@ -30,6 +30,7 @@ urlpatterns = [
     # Executors
     path('executor', views.executor_list, name='executor_list'),
     path('executor/create', views.executor_create, name='executor_create'),
+    path('executor/search', views.executor_search, name='executor_search'),
     path('executor/my', views.executor_list_my, name='executor_list_my'),
     path('executor/free', views.executor_list_free, name='executor_list_free'),
     path('executor/debtors', views.executor_list_debtor, name='executor_list_debtor'),
