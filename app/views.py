@@ -65,7 +65,7 @@ def statistic(request):
     context = {
         'periods': last_periods,
     }
-    context.update(get_query_parameters(request, executors))
+    context.update(get_query_parameters(request, executors, paginate=False))
     return render(request, 'app/page/statistic.html', context)
 
 

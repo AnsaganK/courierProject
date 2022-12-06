@@ -6,7 +6,7 @@ from app.models import Contact, Citizenship, Transport, Period, Executor
 from utils import get_paginator
 
 
-def get_query_parameters(request: HttpRequest, executors: list):
+def get_query_parameters(request: HttpRequest, executors: list, paginate: bool = True):
     data = dict(request.GET)
     phone_number_checkboxes = data.get('phone_number', [])
     if 'on' in phone_number_checkboxes:
@@ -30,7 +30,8 @@ def get_query_parameters(request: HttpRequest, executors: list):
     count = executors.count()
     executor_ids = executors.values_list('id', flat=True)
 
-    executors = get_paginator(request, executors, 50)
+    if paginate:
+        executors = get_paginator(request, executors, 50)
     citizenships = Citizenship.objects.all()
     transports = Transport.objects.all()
     active_executor_ids = get_active_executors().values_list('id', flat=True)
@@ -47,6 +48,7 @@ def get_query_parameters(request: HttpRequest, executors: list):
         'executor_ids': executor_ids,
         'executors': executors,
         'count': count,
+        'paginate': paginate
     }
 
 

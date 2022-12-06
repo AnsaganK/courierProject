@@ -36,7 +36,9 @@
         <div class="row justify-content-between executor_table_content">
             <div class="col-12 col-lg-9" id="executor_list_col">
                 {% if executors %}
-                    {% include 'include/pagination.html' with page=executors %}
+                    {% if paginate %}
+                        {% include 'include/pagination.html' with page=executors %}
+                    {% endif %}
                     <div class="w-100 overflow-auto">
                         <table class="table table-responsive-sm table-bordered text-center">
                             <thead>
@@ -80,7 +82,10 @@
                             </tbody>
                         </table>
                     </div>
-                    {% include 'include/pagination.html' with page=executors %}
+
+                    {% if paginate %}
+                        {% include 'include/pagination.html' with page=executors %}
+                    {% endif %}
                 {% else %}
                     <span class="mt-3 text-black-50 text-center d-block">
                         Данные не найдены
