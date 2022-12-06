@@ -57,11 +57,17 @@ def home(request):
 
 
 @login_required
-@check_role([ADMIN])
+@check_role([ADMIN, CURATOR])
 def statistic(request):
     last_periods = Period.objects.all().order_by('-final_date')[:4]
     last_periods = last_periods[::-1]
     executors = get_active_executors()
+
+    user = request.user
+    profile = user.profile
+    if profile.role == CURATOR:
+        executors = executors.filter(curator=user)
+        
     context = {
         'periods': last_periods,
     }
