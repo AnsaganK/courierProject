@@ -47,6 +47,7 @@
                                 <th rowspan="3" class="additional">Гражданство</th>
                                 <th rowspan="3">ФИО</th>
                                 <th rowspan="3">Ссылка</th>
+                                <th rowspan="3" class="additional">ЦФЗ</th>
                                 <th rowspan="3" class="additional">Номер</th>
                                 <th rowspan="3" class="additional">Рекрутер</th>
                                 {% for period in periods %}
@@ -72,6 +73,7 @@
                                             <i class="bx bx-time text-success"></i>
                                         </a>
                                     </td>
+                                    <td class="additional">{{ executor.OFC|default:'-' }}</td>
                                     <td class="additional">{{ executor.phone_number|default:'-' }}</td>
                                     <td class="additional">{{ executor.curator.get_full_name }}</td>
                                     {% for period in periods %}
@@ -85,6 +87,9 @@
 
                     {% if paginate %}
                         {% include 'include/pagination.html' with page=executors %}
+                    {% else %}
+                        <hr>
+                        <span class="text-center text-black-50 d-block m-auto">Конец таблицы</span>
                     {% endif %}
                 {% else %}
                     <span class="mt-3 text-black-50 text-center d-block">

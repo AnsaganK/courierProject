@@ -27,6 +27,10 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     transport_checkboxes = data.get('transport')
     if transport_checkboxes:
         executors = executors.filter(transport__in=transport_checkboxes)
+
+    executors = executors.select_related('curator')
+    executors = executors.select_related('OFC')
+
     count = executors.count()
     executor_ids = executors.values_list('id', flat=True)
 
