@@ -69,9 +69,38 @@
                                     <td class="additional">{{ executor.citizenship|default:'-' }}</td>
                                     <td>{{ executor.get_full_name }}</td>
                                     <td class="text-center">
-                                        <a href="{{ executor.get_absolute_url }}?page=hours" title="Просмотреть часы">
-                                            <i class="bx bx-time text-success"></i>
-                                        </a>
+                                        <div class="additional row justify-content-between">
+                                            <a href="{{ executor.get_absolute_url }}?page=hours"
+                                               class="col" title="Просмотреть часы">
+                                                <i class="bx bx-time text-primary"></i>
+                                            </a>
+                                            {% if executor.get_whatsapp %}
+                                                <a href="{{ executor|get_whatsapp_url_for_executor:request.get_host }}"
+                                                   class="col" title="Просмотреть часы" target="_blank">
+                                                    <i class="bx bxl-whatsapp text-success"></i>
+                                                </a>
+                                            {% else %}
+                                                <a href="#"
+                                                   class="col" title="Просмотреть часы">
+                                                    <i class="bx bxl-whatsapp text-black-50"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        <div class="row mobile_additional">
+                                            <div class="col-12 mb-1 mt-1">
+                                                <a href="{{ executor.get_absolute_url }}?page=hours"
+                                                   class="btn btn-warning w-100">Часы</a>
+                                            </div>
+                                            <div class="col-12 mb-1 mt-1">
+                                                {% if executor.get_whatsapp %}
+                                                    <a href="{{ executor|get_whatsapp_url_for_executor:request.get_host }}"
+                                                       class="btn btn-success w-100">Whatsapp</a>
+                                                {% else %}
+                                                    <a href="#"
+                                                       class="btn btn-secondary w-100">Whatsapp</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                     </td>
                                     <td class="additional">{{ executor.OFC|default:'-' }}</td>
                                     <td class="additional">{{ executor.phone_number|default:'-' }}</td>
