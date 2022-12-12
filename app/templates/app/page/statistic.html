@@ -23,6 +23,78 @@
 {% endblock %}
 
 {% block content %}
+    <div class="modal fade" id="detail_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 1200px; width: 90%; margin: 10px auto">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Данные исполнителя: <span id="executor_id_span"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <!-- Bordered Tabs -->
+                    <ul class="nav nav-tabs nav-tabs-bordered d-flex" role="tablist">
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button
+                                    class="nav-link w-100 active"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#executor_info"
+                                    aria-selected="false" role="tab" tabindex="-1">Информация
+                            </button>
+                        </li>
+
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button
+                                    class="nav-link w-100"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#executor_hours"
+                                    aria-selected="false" role="tab" tabindex="-1">Часы
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-2">
+
+                        <div class="tab-pane fade profile-overview active show"
+                             id="executor_info" role="tabpanel">
+
+                        </div>
+                        <div class="tab-pane fade pt-3 {% if '?page=hours' in request.get_full_path %}active show{% endif %}"
+                             id="executor_hours"
+                             role="tabpanel">
+                            <div class="w-100 overflow-auto">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                    <tr class="align-middle">
+                                        <th>ЦФЗ</th>
+                                        <th>Сотрудник</th>
+                                        <th>Роль</th>
+                                        <th>Период</th>
+                                        <th>Табельный номер</th>
+                                        {% for week_day in week_days %}
+                                            <th>{{ week_day }}</th>
+                                        {% endfor %}
+                                        <th>Итого</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="executor_hours_tbody">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div><!-- End Bordered Tabs -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <a href="#" id="detail_link" target="_blank" class="btn btn-success">Перейти</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <div class="col">
         <div class="row justify-content-between mb-3 mt-3">
             <div class="col-auto">
@@ -67,7 +139,14 @@
                                 <tr>
                                     <td><a href="{{ executor.get_absolute_url }}">{{ executor.executor_id }}</a></td>
                                     <td class="additional">{{ executor.citizenship|default:'-' }}</td>
-                                    <td>{{ executor.get_full_name }}</td>
+                                    <td class="text-start"><a href="#" class="col"
+                                                              data-bs-toggle="modal" data-bs-target="#detail_modal"
+                                                              data-detail-url="{{ executor.get_absolute_url }}"
+                                                              data-detail-api-url="{{ executor.get_api_url }}"
+                                                              data-executor-id="{{ executor.executor_id }}"
+                                                              data-name="{{ executor.get_full_name }}"
+                                                              onclick="objectDetail(this)">{{ executor.get_full_name }}</a>
+                                    </td>
                                     <td class="text-center">
                                         <div class="additional row justify-content-between">
                                             <a href="{{ executor.get_absolute_url }}?page=hours"
@@ -76,13 +155,14 @@
                                             </a>
                                             {% if executor.get_whatsapp %}
                                                 <a href="{{ executor|get_whatsapp_url_for_executor:request.get_host }}"
-                                                   class="col text-success" title="Просмотреть часы" target="_blank">
-                                                    {{ executor.get_whatsapp }}
+                                                   class="col text-success" title="{{ executor.get_whatsapp }}"
+                                                   target="_blank">
+                                                    <i class="bx bxl-whatsapp text-success"></i>
                                                 </a>
                                             {% else %}
                                                 <a href="#"
-                                                   class="col" title="Просмотреть часы">
-                                                    <i class="bx bxl-whatsapp text-black-50"></i>
+                                                   class="col" title="Не найдено">
+                                                    <i class="bx bxl-whatsapp text-danger"></i>
                                                 </a>
                                             {% endif %}
                                         </div>
@@ -130,4 +210,171 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block script %}
+    <script>
+        async function objectDetail(elem) {
+            let executor_id = elem.dataset.executorId;
+            let detail_url = elem.dataset.detailUrl;
+            let detail_api_url = elem.dataset.detailApiUrl;
+            let response = await fetch(detail_api_url);
+            if (response.ok) {
+                let json = await response.json();
+                let executor_fields = json["executor"];
+                set_info(executor_fields)
+                let executor_hours = json["executor_hours"]
+                set_hours(executor_hours);
+            } else {
+                console.log(response.status);
+            }
+
+
+            let detail_link = document.getElementById('detail_link');
+            detail_link.setAttribute('href', detail_url);
+            let executor_id_span = document.getElementById('executor_id_span');
+            executor_id_span.innerText = executor_id;
+        }
+
+        function set_info(json) {
+            let info = `<h5 class="card-title">Общая информация</h5>
+                            {#                        <p class="small fst-italic"></p>#}
+
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label ">ФИО</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["last_name"] ?? ""} ${json["first_name"] ?? ""} ${json["patronymic"] ?? ""}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Пол</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["gender"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Гражданство</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["citizenship"] ?? "-"}
+                                    (Тип: ${json["citizenship_type"] ?? "-"})
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Номер телефона</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["phone_number"] ?? "-"}</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Email</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["email"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Дата рождения</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["birth_date"] ?? "-"}</div>
+                            </div>
+                            {% if executor.contacts.exists %}
+                                <hr>
+                                <h5 class="card-title">Контакты</h5>
+                                {% for contact in executor.contacts.all %}
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6 label">{{ contact.type|capfirst }}</div>
+                                        <div class="col-lg-6 col-md-6 text-end">{{ contact.identifier|default:'-' }}</div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            <hr>
+                            <h5 class="card-title">Документы</h5>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">ИНН</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["INN"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Серия и номер паспорта</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["passport_series"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Дата выдачи паспорта</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["passport_date"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Место выдачи паспорта</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["passport_place"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Образование</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["education"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Дата мед.комиссии</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["med_exam_date"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Физ.лицо</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["individual"] ?? "-"}</div>
+                            </div>
+
+                            <hr>
+                            <h5 class="card-title">Исполнитель</h5>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label ">ID</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["executor_id"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Дата заключения</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["date_conclusion"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Дата расторжения</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["date_terminated"] ?? "-"}</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Роль</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["transport"] ?? "-"}</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Основной договор</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["main_contract"] ?? "-"}</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Куратор(рекрутер)</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["curator"] ?? "-"}</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">ЦФЗ</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["OFC"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Велосипед</div>
+                                <div class="col-lg-6 col-md-6 text-warning text-end">${json["bicycle"] ?? "-"}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 label">Примечание</div>
+                                <div class="col-lg-6 col-md-6 text-end">${json["note"] ?? "-"}</div>
+                            </div>`;
+            let executor_info = document.getElementById('executor_info');
+            executor_info.innerHTML = info;
+        }
+
+        function set_hours(json) {
+            console.log(json);
+            let executor_trs = '';
+            for (let i = 0; i < json.length; i++) {
+                let executor_hour = json[i];
+                let tr = `<td>${executor_hour["ofc"] ?? "-"}</td>
+                                        <td>${executor_hour["executor"] ?? "-"}</td>
+                                        <td>${executor_hour["transport"] ?? "-"}</td>
+                                        <td>${executor_hour["period"] ?? "-"}</td>
+                                        <td>${executor_hour["executor_id"] ?? "-"}</td>`;
+
+                for (let j = 0; j < executor_hour["day_hours"].length; j++) {
+                    let hour = `<td>${executor_hour["day_hours"][j]["hour"]}</td>`
+                    tr += hour;
+                }
+                tr = `<tr> ${tr} </tr>`;
+                executor_trs += tr;
+            }
+            let tbody = document.getElementById("executor_hours_tbody");
+            tbody.innerHTML = executor_trs;
+        }
+    </script>
 {% endblock %}

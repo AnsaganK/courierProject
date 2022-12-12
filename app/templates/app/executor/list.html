@@ -121,13 +121,13 @@
                                         </a>
                                         {% if executor.get_whatsapp %}
                                             <a href="{{ executor|get_whatsapp_url_for_executor:request.get_host }}"
-                                               class="col" title="Просмотреть часы" target="_blank">
-                                                {#                                                <i class="bx bxl-whatsapp text-success"></i>#}
-                                                {{ executor.get_whatsapp }}
+                                               class="col" title="{{ executor.get_whatsapp }}" target="_blank">
+                                                <i class="bx bxl-whatsapp text-success"></i>
+                                                {#                                                {{ executor.get_whatsapp }}#}
                                             </a>
                                         {% else %}
                                             <a href="#"
-                                               class="col" title="Просмотреть часы">
+                                               class="col" title="Не найдено">
                                                 <i class="bx bxl-whatsapp text-black-50"></i>
                                             </a>
                                         {% endif %}

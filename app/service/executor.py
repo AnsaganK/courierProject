@@ -30,6 +30,8 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
 
     executors = executors.select_related('curator')
     executors = executors.select_related('OFC')
+    executors = executors.select_related('citizenship')
+
 
     count = executors.count()
     executor_ids = executors.values_list('id', flat=True)

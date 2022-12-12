@@ -1,9 +1,11 @@
 import csv
+import json
 from itertools import count
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.serializers import serialize
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse
@@ -21,6 +23,9 @@ from utils import show_form_errors, get_generated_password, get_paginator
 CURATOR = Profile.RoleChoices.CURATOR
 ADMIN = Profile.RoleChoices.ADMIN
 SUPPORT = Profile.RoleChoices.SUPPORT
+WEEK_DAYS = [
+    'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
+]
 
 
 #
@@ -67,11 +72,13 @@ def statistic(request):
     profile = user.profile
     if profile.role == CURATOR:
         executors = executors.filter(curator=user)
-        
+
     context = {
         'periods': last_periods,
     }
     context.update(get_query_parameters(request, executors, paginate=False))
+    context.update({'week_days': WEEK_DAYS})
+    context['executors'] = context['executors'][:50]
     return render(request, 'app/page/statistic.html', context)
 
 
@@ -417,13 +424,11 @@ def executor_list_debtor(request):
 def executor_detail(request, executor_id):
     executor = get_object_or_404(Executor, executor_id=executor_id)
     executor_hours = executor.executor_hours.all()
-    week_days = [
-        'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
-    ]
+
     return render(request, 'app/executor/detail.html', {
         'executor': executor,
         'executor_hours': executor_hours,
-        'week_days': week_days,
+        'week_days': WEEK_DAYS,
         'genders': Executor.GenderChoices.choices,
         'citizenships': Citizenship.objects.all(),
         'citizenship_types': CitizenshipType.objects.all(),
@@ -431,6 +436,49 @@ def executor_detail(request, executor_id):
         'ofcs': OFC.objects.all(),
         'transports': Transport.objects.all(),
         'contact_types': Contact.TypeChoices.choices
+    })
+
+
+@login_required()
+def executor_detail_json(request, executor_id):
+    executor = get_object_or_404(Executor, executor_id=executor_id)
+    executor_hours = executor.executor_hours.all()
+
+    executor_serialize = serialize('json', [executor, ]),
+    executor_json = json.loads(executor_serialize[0])[0]["fields"]
+    executor_json["transport"] = executor.transport.name if executor.transport else None
+    executor_json["OFC"] = executor.OFC.address if executor.OFC else None
+    executor_json["citizenship"] = executor.citizenship.name if executor.citizenship else None
+    executor_json["citizenship_type"] = executor.citizenship_type.name if executor.citizenship_type else None
+    executor_json["gender"] = executor.get_gender_display() if executor.gender else None
+
+    executor_hours_objects = []
+    for executor_hour in executor_hours:
+        day_hours = []
+        executor_day_hours = executor_hour.day_hours.all()
+        for index, week_day in enumerate(WEEK_DAYS):
+            try:
+                day_hour = executor_day_hours[index]
+                hour = day_hour.hour
+            except:
+                hour = '-'
+            day_hours.append({
+                'hour': hour
+            })
+        day_hours.append({"hour": executor_hour.get_hours_sum})
+        executor_hours_objects.append({
+            'executor': executor_hour.executor.get_full_name,
+            'ofc': executor_hour.ofc.address,
+            'transport': executor_hour.transport.name,
+            'period': executor_hour.period.__str__(),
+            'executor_id': executor_hour.executor.executor_id,
+            'day_hours': day_hours
+        })
+    print(executor_hours_objects)
+    return JsonResponse({
+        'executor': executor_json,
+        'executor_hours': executor_hours_objects,
+        'week_days': WEEK_DAYS,
     })
 
 

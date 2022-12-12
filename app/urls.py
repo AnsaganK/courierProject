@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 app_name = 'app'
+
 urlpatterns = [
     # Flat pages
     path('', views.home, name='home'),
@@ -39,6 +40,7 @@ urlpatterns = [
     path('executor/<int:pk>/delete', views.executor_delete, name='executor_delete'),
     path('executor/<path:executor_id>/hours/export', views.executor_hours_export, name='executor_hours_export'),
     path('executor/<path:executor_id>/hours', views.executor_hours_detail, name='executor_hours_detail'),
+    path('executor/json/<path:executor_id>', views.executor_detail_json, name='executor_detail_json'),
     path('executor/<path:executor_id>', views.executor_detail, name='executor_detail'),
 
     # Cities

@@ -61,7 +61,7 @@ class ArchiveFileAdmin(admin.ModelAdmin):
 
 @admin.register(Period)
 class PeriodAdmin(admin.ModelAdmin):
-    list_display = ['pk']
+    list_display = ['pk', 'start_date', 'final_date']
 
 
 @admin.register(Day)

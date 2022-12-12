@@ -277,6 +277,12 @@ class Executor(BaseModel):
     def __str__(self):
         return self.get_full_name
 
+    def get_absolute_url(self):
+        return reverse('app:executor_detail', args=[self.executor_id])
+
+    def get_api_url(self):
+        return reverse('app:executor_detail_json', args=[self.executor_id])
+
     @property
     def get_full_name(self):
         full_name = ''
@@ -302,11 +308,8 @@ class Executor(BaseModel):
         except:
             host_name = 'localhost'
         url = f"https://wa.me/{self.get_whatsapp}?text=http://{host_name}" + reverse('app:executor_hours_detail',
-                                                                              args=[self.executor_id])
+                                                                                     args=[self.executor_id])
         return url
-
-    def get_absolute_url(self):
-        return reverse('app:executor_detail', args=[self.executor_id])
 
 
 class Contact(BaseModel):

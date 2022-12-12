@@ -513,8 +513,12 @@
                                         <td>{{ executor_hour.transport|default:'-' }}</td>
                                         <td>{{ executor_hour.period }}</td>
                                         <td>{{ executor_hour.executor.executor_id }}</td>
-                                        {% for day_hour in executor_hour.day_hours.all %}
-                                            <td>{{ day_hour.hour|default:'-' }}</td>
+                                        {% for week_day in week_days %}
+                                            {% with forloop.counter0 as index %}
+                                                <td>
+                                                    {{ executor_hour.day_hours.all|get_hour_elem_for_index:index|default:'-' }}
+                                                </td>
+                                            {% endwith %}
                                         {% endfor %}
                                         <td>{{ executor_hour.get_hours_sum }}</td>
                                     </tr>
