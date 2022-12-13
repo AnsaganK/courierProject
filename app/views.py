@@ -78,7 +78,6 @@ def statistic(request):
     }
     context.update(get_query_parameters(request, executors, paginate=False))
     context.update({'week_days': WEEK_DAYS})
-    context['executors'] = context['executors'][:50]
     return render(request, 'app/page/statistic.html', context)
 
 

@@ -32,7 +32,9 @@ def set_executors_file_data(archive_file_id):
         columns = _get_columns(worksheet)
         _set_executor_data(worksheet, columns)
         set_status(archive_file, StatusChoices.SUCCESS)
-    except:
+    except Exception as e:
+        print(e.__class__.__name__)
+        print(e)
         set_status(archive_file, StatusChoices.ERROR)
 
 
@@ -122,9 +124,15 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
     if 'Основной договор' in value:
         executor['main_contract'] = cell_value
     if 'Дата расторжения договора' in value and cell_value:
-        executor['date_terminated'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        if type(cell_value) == str:
+            executor['date_terminated'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        elif type(cell_value) == datetime:
+            executor['date_terminated'] = cell_value
     if 'Дата заключения договора' in value:
-        executor['date_conclusion'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        if type(cell_value) == str:
+            executor['date_conclusion'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        elif type(cell_value) == datetime:
+            executor['date_conclusion'] = cell_value
     if 'Партнер' in value:
         executor['partner'] = cell_value
     if 'Тип гражданства' in value:
@@ -133,10 +141,13 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
             name__icontains='еаэс').first()
     if 'Телефон' in value:
         executor['phone_number'] = cell_value
-    if 'Эл почта' in value:
+    if 'Эл почта' in value and cell_value:
         executor['email'] = cell_value.strip()
     if 'Дата медкомиссии' in value and cell_value:
-        executor['med_exam_date'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        if type(cell_value) == str:
+            executor['med_exam_date'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        elif type(cell_value) == datetime:
+            executor['med_exam_date'] = cell_value
     if 'Гражданство' in value and cell_value:
         citizenship = Citizenship.objects.get_or_create(name=cell_value)
         if citizenship[1]:
@@ -145,7 +156,10 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
         executor['citizenship'] = citizenship
 
     if 'Дата рождения' in value and cell_value:
-        executor['birth_date'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        if type(cell_value) == str:
+            executor['birth_date'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        elif type(cell_value) == datetime:
+            executor['birth_date'] = cell_value
 
     if 'Образование' in value:
         executor['education'] = cell_value
@@ -153,10 +167,12 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
         executor[
             'gender'] = Executor.GenderChoices.MALE if 'мужской' in cell_value.lower() else Executor.GenderChoices.FEMALE
     if 'Серия и номер паспорта' in value and cell_value:
-        print(cell_value)
         executor['passport_series'] = str(cell_value).strip() if cell_value else str(cell_value)
     if 'Дата выдачи паспорта' in value and cell_value:
-        executor['passport_date'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        if type(cell_value) == str:
+            executor['passport_date'] = datetime.strptime(cell_value, '%d.%m.%Y')
+        elif type(cell_value) == datetime:
+            executor['passport_date'] = cell_value
     if 'Место выдачи паспорта' in value:
         executor['passport_place'] = cell_value
     if 'Вакцинирован против COVID19' in value:
@@ -307,12 +323,15 @@ def _save_executor_hour(data: dict):
             ofc=data.get('ofc'),
             transport=transport,
             period=data.get('period'),
-            file=data.get('archive_file')
         )
 
         if executor_hour[1]:
             executor_hour[0].save()
+
         executor_hour = executor_hour[0]
+        executor_hour.files.add(data.get('archive_file'))
+        executor_hour.save()
+
         day_hour = DayHour.objects.get_or_create(executor_hour=executor_hour, day=hour_object['day'])
         if day_hour[1]:
             day_hour[0].save()

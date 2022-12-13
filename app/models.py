@@ -375,7 +375,7 @@ class ExecutorHours(BaseModel):
     period = models.ForeignKey(Period, on_delete=models.DO_NOTHING, null=True, blank=True,
                                related_name='executor_hours',
                                verbose_name='Период')
-    file = models.ManyToManyField(ArchiveFile, null=True, blank=True,
+    files = models.ManyToManyField(ArchiveFile, null=True, blank=True,
                                   related_name='executor_hours', verbose_name='Файл')
     transport = models.ForeignKey(Transport, on_delete=models.SET_NULL, null=True, blank=True,
                                   related_name='executor_hours')
