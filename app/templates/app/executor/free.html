@@ -30,8 +30,7 @@
                 <span class="text-black-50">Всего исполнителей без кураторов: {{ count }}</span>
             </div>
             <div class="col-auto">
-                <i class="bx bxs-filter-alt" style="font-size: 24px; cursor: pointer"
-                   onclick="toggleFilter(this)"></i>
+                {% include 'include/executor/filter_icon.html' %}
             </div>
         </div>
         <div class="row justify-content-between executor_table_content">

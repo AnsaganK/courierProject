@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers import serialize
-from django.db.models import Q
+from django.db.models import Q, F, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
@@ -72,6 +72,9 @@ def statistic(request):
     profile = user.profile
     if profile.role == CURATOR:
         executors = executors.filter(curator=user)
+
+    executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
+        '-sum_hours')
 
     context = {
         'periods': last_periods,
@@ -367,12 +370,16 @@ def executor_list(request):
     else:
         executors = Executor.objects.filter(curator=request.user)
 
+    executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
+        '-sum_hours')
+
     context = {
         'executor_debtor_ids': Executor.objects.exclude(
             id__in=get_active_executors().values_list('id', flat=True)).exclude(bicycle=None).values_list('id',
                                                                                                           flat=True)
     }
     context.update(get_query_parameters(request, executors))
+    context.update({'week_days': WEEK_DAYS})
     return render(request, 'app/executor/list.html', context)
 
 
@@ -450,7 +457,8 @@ def executor_detail_json(request, executor_id):
     executor_json["citizenship"] = executor.citizenship.name if executor.citizenship else None
     executor_json["citizenship_type"] = executor.citizenship_type.name if executor.citizenship_type else None
     executor_json["gender"] = executor.get_gender_display() if executor.gender else None
-    executor_json["contacts"] = list(executor.contacts.all().values_list('type', 'identifier')) if executor.contacts.exists() else None
+    executor_json["contacts"] = list(
+        executor.contacts.all().values_list('type', 'identifier')) if executor.contacts.exists() else None
 
     executor_hours_objects = []
     for executor_hour in executor_hours:

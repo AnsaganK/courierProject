@@ -44,6 +44,79 @@
 {% endblock %}
 
 {% block content %}
+    <div class="modal fade" id="detail_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 1200px; width: 90%; margin: 10px auto">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Данные исполнителя: <span id="executor_id_span"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <!-- Bordered Tabs -->
+                    <ul class="nav nav-tabs nav-tabs-bordered d-flex" role="tablist">
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button
+                                    class="nav-link w-100 active"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#executor_info"
+                                    aria-selected="false" role="tab" tabindex="-1">Информация
+                            </button>
+                        </li>
+
+                        <li class="nav-item flex-fill" role="presentation">
+                            <button
+                                    class="nav-link w-100"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#executor_hours"
+                                    aria-selected="false" role="tab" tabindex="-1">Часы
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-2">
+
+                        <div class="tab-pane fade profile-overview active show"
+                             id="executor_info" role="tabpanel">
+
+                        </div>
+                        <div class="tab-pane fade pt-3 {% if '?page=hours' in request.get_full_path %}active show{% endif %}"
+                             id="executor_hours"
+                             role="tabpanel">
+                            <div class="w-100 overflow-auto">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                    <tr class="align-middle">
+                                        <th>ЦФЗ</th>
+                                        <th>Сотрудник</th>
+                                        <th>Роль</th>
+                                        <th>Период</th>
+                                        <th>Табельный номер</th>
+                                        {% for week_day in week_days %}
+                                            <th>{{ week_day }}</th>
+                                        {% endfor %}
+                                        <th>Итого</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="executor_hours_tbody">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div><!-- End Bordered Tabs -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <a href="#" id="detail_link" target="_blank" class="btn btn-success">Перейти</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="delete_modal" tabindex="-1" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -66,8 +139,7 @@
                 <span class="text-black-50">Всего исполнителей: {{ count }}</span>
             </div>
             <div class="col-auto">
-                <i class="bx bxs-filter-alt" style="font-size: 24px; cursor: pointer"
-                   onclick="toggleFilter(this)"></i>
+                {% include 'include/executor/filter_icon.html' %}
             </div>
         </div>
         <div class="row justify-content-between executor_table_content">
@@ -109,7 +181,14 @@
                                         {{ executor.executor_id }}
                                     </a>
                                 </th>
-                                <td class="text-start">{{ executor.get_full_name }}</td>
+                                <td class="text-start"><a href="#" class="col"
+                                                          data-bs-toggle="modal" data-bs-target="#detail_modal"
+                                                          data-detail-url="{{ executor.get_absolute_url }}"
+                                                          data-detail-api-url="{{ executor.get_api_url }}"
+                                                          data-executor-id="{{ executor.executor_id }}"
+                                                          data-name="{{ executor.get_full_name }}"
+                                                          onclick="objectDetail(this)">{{ executor.get_full_name }}</a>
+                                </td>
                                 <td class="text-center additional">{{ executor.transport|default:'-' }}</td>
                                 <td class="text-start additional">{{ executor.birth_date|default:'-' }}</td>
                                 <td class="text-start additional">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>

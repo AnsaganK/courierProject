@@ -10,6 +10,18 @@ from utils import get_paginator
 
 def get_query_parameters(request: HttpRequest, executors: list, paginate: bool = True):
     data = dict(request.GET)
+    is_filter = 0
+    for parameter in data:
+        if parameter in ['phone_number', 'whatsapp', 'citizenship', 'transport']:
+            is_filter += 1
+            print(parameter)
+
+        if parameter == 'min_hours' and data.get('min_hours')[0]:
+            is_filter += 1
+        if parameter == 'max_hours' and data.get('max_hours')[0]:
+            print(parameter, data.get('max_hours'))
+            is_filter += 1
+
     phone_number_checkboxes = data.get('phone_number', [])
     if 'on' in phone_number_checkboxes:
         executors = executors.exclude(phone_number=None)
@@ -74,7 +86,8 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
         'executor_ids': executor_ids,
         'executors': executors,
         'count': count,
-        'paginate': paginate
+        'paginate': paginate,
+        'is_filter': is_filter
     }
 
 
