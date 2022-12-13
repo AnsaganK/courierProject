@@ -485,6 +485,9 @@
         let executor_info = document.getElementById('executor_info');
         executor_info.innerHTML = preloader;
 
+        let tbody = document.getElementById("executor_hours_tbody");
+        tbody.innerHTML = preloader;
+
         let executor_id = elem.dataset.executorId;
         let detail_url = elem.dataset.detailUrl;
         let detail_api_url = elem.dataset.detailApiUrl;
