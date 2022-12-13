@@ -118,6 +118,34 @@
                         {% endfor %}
                     </div>
                 </div>
+
+                <div class="mb-3">
+                                    <span class="row justify-content-between align-items-center {% if min_hours or max_hours %} text-custom {% endif %}"
+                                          data-toggle="collapse"
+                                          data-collapse="hours_collapse"
+                                          role="button" aria-expanded="false" aria-controls="hours_collapse">
+                                        <span class="col-auto">Кол-во часов</span>
+                                        {% if min_hours or max_hours %}
+                                            <i class="col-auto bx bxs-down-arrow"></i>
+                                        {% else %}
+                                            <i class="col-auto bx bxs-left-arrow"></i>
+                                        {% endif %}
+                                    </span>
+                    <hr>
+                    <div class="collapse {% if min_hours or max_hours %} show {% endif %}"
+                         id="hours_collapse">
+                        <div class="row">
+                            <div class="col">
+                                <input type="number" name="min_hours" class="form-control" placeholder="от ..."
+                                        {% if min_hours %} value="{{ min_hours }}" {% endif %}>
+                            </div>
+                            <div class="col">
+                                <input type="number" name="max_hours" class="form-control" placeholder="до ..."
+                                        {% if max_hours %} value="{{ max_hours }}" {% endif %}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row justify-content-center">
                     <div class="col-auto">
                         <a href="{{ request.path }}" type="submit" class="btn btn-secondary">

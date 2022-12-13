@@ -127,6 +127,9 @@
                                               title="За данный период {{ period.get_executors_count }} исполнителей">{{ period.start_date|date:'d.m' }} - {{ period.final_date|date:'d.m' }}</span>
                                     </th>
                                 {% endfor %}
+                                <th rowspan="3">
+                                    За все время
+                                </th>
                             </tr>
                             <tr>
                                 {% for period in periods %}
@@ -188,6 +191,7 @@
                                     {% for period in periods %}
                                         <td>{{ executor|get_hours_for_period:period.id }}</td>
                                     {% endfor %}
+                                    <td>{{ executor.get_all_hours_sum }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -215,6 +219,16 @@
 {% block script %}
     <script>
         async function objectDetail(elem) {
+            let preloader = `<div class="spinner-border text-primary file_preloader_status" role="status" style="text-align: center;
+    display: block;
+    height: 80px !important;
+    width: 80px !important;
+    margin: 30px auto;">
+            <span class="visually-hidden">Loading...</span>
+        </div>`;
+            let executor_info = document.getElementById('executor_info');
+            executor_info.innerHTML = preloader;
+
             let executor_id = elem.dataset.executorId;
             let detail_url = elem.dataset.detailUrl;
             let detail_api_url = elem.dataset.detailApiUrl;
@@ -237,6 +251,20 @@
         }
 
         function set_info(json) {
+            let contacts = json["contacts"];
+            console.log(contacts);
+            let contacts_block = ``;
+
+            if (contacts !== null) {
+                contacts_block += `<hr><h5 class="card-title">Контакты</h5>`;
+                for (let i = 0; i < contacts.length; i++) {
+                    let contact = contacts[i];
+                    contacts_block += `<div class="row">
+                                <div class="col-lg-6 col-md-6 label">${contact[0]}</div>
+                                <div class="col-lg-6 col-md-6 text-end">${contact[1]}</div>
+                            </div>`
+                }
+            }
             let info = `<h5 class="card-title">Общая информация</h5>
                             {#                        <p class="small fst-italic"></p>#}
 
@@ -268,16 +296,7 @@
                                 <div class="col-lg-6 col-md-6 label">Дата рождения</div>
                                 <div class="col-lg-6 col-md-6 text-end">${json["birth_date"] ?? "-"}</div>
                             </div>
-                            {% if executor.contacts.exists %}
-                                <hr>
-                                <h5 class="card-title">Контакты</h5>
-                                {% for contact in executor.contacts.all %}
-                                    <div class="row">
-                                        <div class="col-lg-6 col-md-6 label">{{ contact.type|capfirst }}</div>
-                                        <div class="col-lg-6 col-md-6 text-end">{{ contact.identifier|default:'-' }}</div>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
+                            ${contacts_block ?? ""}
                             <hr>
                             <h5 class="card-title">Документы</h5>
                             <div class="row">
@@ -376,5 +395,8 @@
             let tbody = document.getElementById("executor_hours_tbody");
             tbody.innerHTML = executor_trs;
         }
+    </script>
+    <script>
+
     </script>
 {% endblock %}

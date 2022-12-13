@@ -311,6 +311,11 @@ class Executor(BaseModel):
                                                                                      args=[self.executor_id])
         return url
 
+    @property
+    def get_all_hours_sum(self):
+        day_hours = DayHour.objects.filter(executor_hour__executor=self).aggregate(hours_sum=Sum('hour'))
+        return day_hours['hours_sum']
+
 
 class Contact(BaseModel):
     class TypeChoices(models.TextChoices):
@@ -370,8 +375,8 @@ class ExecutorHours(BaseModel):
     period = models.ForeignKey(Period, on_delete=models.DO_NOTHING, null=True, blank=True,
                                related_name='executor_hours',
                                verbose_name='Период')
-    file = models.ForeignKey(ArchiveFile, on_delete=models.CASCADE, null=True, blank=True,
-                             related_name='executor_hours', verbose_name='Файл')
+    file = models.ManyToManyField(ArchiveFile, null=True, blank=True,
+                                  related_name='executor_hours', verbose_name='Файл')
     transport = models.ForeignKey(Transport, on_delete=models.SET_NULL, null=True, blank=True,
                                   related_name='executor_hours')
 

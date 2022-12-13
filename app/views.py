@@ -451,6 +451,7 @@ def executor_detail_json(request, executor_id):
     executor_json["citizenship"] = executor.citizenship.name if executor.citizenship else None
     executor_json["citizenship_type"] = executor.citizenship_type.name if executor.citizenship_type else None
     executor_json["gender"] = executor.get_gender_display() if executor.gender else None
+    executor_json["contacts"] = list(executor.contacts.all().values_list('type', 'identifier')) if executor.contacts.exists() else None
 
     executor_hours_objects = []
     for executor_hour in executor_hours:
@@ -474,6 +475,7 @@ def executor_detail_json(request, executor_id):
             'executor_id': executor_hour.executor.executor_id,
             'day_hours': day_hours
         })
+    print(executor_json)
     print(executor_hours_objects)
     return JsonResponse({
         'executor': executor_json,

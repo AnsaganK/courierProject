@@ -1,5 +1,7 @@
 from typing import List
 
+from django.contrib import messages
+from django.db.models import Sum, F
 from django.http import HttpRequest
 
 from app.models import Contact, Citizenship, Transport, Period, Executor
@@ -28,10 +30,23 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     if transport_checkboxes:
         executors = executors.filter(transport__in=transport_checkboxes)
 
+    min_hours_input = data.get('min_hours')
+    min_hours = min_hours_input[0] if type(min_hours_input) is list else ""
+    if min_hours:
+        executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour')))
+        executors = executors.filter(sum_hours__gte=int(min_hours))
+
+    max_hours_input = data.get('max_hours')
+    max_hours = max_hours_input[0] if type(max_hours_input) is list else ""
+    if max_hours:
+        executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour')))
+        executors = executors.filter(sum_hours__lte=int(max_hours))
     executors = executors.select_related('curator')
     executors = executors.select_related('OFC')
     executors = executors.select_related('citizenship')
 
+    if (min_hours and max_hours) and (int(min_hours) > int(max_hours)):
+        messages.warning(request, 'Часы: наименьшее не может быть больше наибольшего')
 
     count = executors.count()
     executor_ids = executors.values_list('id', flat=True)
@@ -41,11 +56,16 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     citizenships = Citizenship.objects.all()
     transports = Transport.objects.all()
     active_executor_ids = get_active_executors().values_list('id', flat=True)
+
+    print(min_hours_input)
     return {
         'phone_number_checkboxes': phone_number_checkboxes,
         'whatsapp_checkboxes': whatsapp_checkboxes,
         'citizenship_checkboxes': citizenship_checkboxes,
         'transport_checkboxes': transport_checkboxes,
+
+        'min_hours': min_hours,
+        'max_hours': max_hours,
 
         'citizenships': citizenships,
         'transports': transports,
