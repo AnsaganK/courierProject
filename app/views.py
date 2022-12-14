@@ -429,7 +429,7 @@ def executor_list_debtor(request):
 @login_required
 def executor_detail(request, executor_id):
     executor = get_object_or_404(Executor, executor_id=executor_id)
-    executor_hours = executor.executor_hours.all()
+    executor_hours = executor.executor_hours.all().order_by('-period__final_date')
 
     return render(request, 'app/executor/detail.html', {
         'executor': executor,
@@ -448,7 +448,7 @@ def executor_detail(request, executor_id):
 @login_required()
 def executor_detail_json(request, executor_id):
     executor = get_object_or_404(Executor, executor_id=executor_id)
-    executor_hours = executor.executor_hours.all()
+    executor_hours = executor.executor_hours.all().order_by('-period__final_date')
 
     executor_serialize = serialize('json', [executor, ]),
     executor_json = json.loads(executor_serialize[0])[0]["fields"]
@@ -493,7 +493,7 @@ def executor_detail_json(request, executor_id):
 
 def executor_hours_detail(request, executor_id):
     executor = get_object_or_404(Executor, executor_id=executor_id)
-    executor_hours = executor.executor_hours.all()
+    executor_hours = executor.executor_hours.all().order_by('-period__final_date')
     week_days = [
         'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
     ]
@@ -506,7 +506,7 @@ def executor_hours_detail(request, executor_id):
 
 def executor_hours_export(request, executor_id):
     executor = get_object_or_404(Executor, executor_id=executor_id)
-    executor_hours = executor.executor_hours.all()
+    executor_hours = executor.executor_hours.all().order_by('-period__final_date')
     week_days = [
         'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
     ]
