@@ -24,7 +24,7 @@
 
 {% block content %}
     {% include 'include/executor/detail_modal.html' %}
-    
+
     <div class="col">
         <div class="row justify-content-between mb-3 mt-3">
             <div class="col-auto">
@@ -57,7 +57,7 @@
                                     </th>
                                 {% endfor %}
                                 <th rowspan="3">
-                                    За все время
+                                    Активных часов
                                 </th>
                             </tr>
                             <tr>
@@ -120,7 +120,7 @@
                                     {% for period in periods %}
                                         <td>{{ executor|get_hours_for_period:period.id }}</td>
                                     {% endfor %}
-                                    <td>{{ executor.get_all_hours_sum }}</td>
+                                    <td>{{ executor.get_active_hours_sum }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>

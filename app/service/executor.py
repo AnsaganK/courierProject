@@ -53,6 +53,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     if max_hours:
         executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour')))
         executors = executors.filter(sum_hours__lte=int(max_hours))
+
     executors = executors.select_related('curator')
     executors = executors.select_related('OFC')
     executors = executors.select_related('citizenship')
