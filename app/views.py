@@ -621,7 +621,7 @@ def executor_hours_file_create(request):
 @login_required
 def executor_hours_file_list(request):
     files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.HOURS)
-    files = get_paginator(request, files, 10)
+    files = get_paginator(request, files, 20)
     return render(request, 'app/executor/hours/file/list.html', {
         'files': files
     })
