@@ -831,7 +831,6 @@
             let old_status = file_status.dataset.status;
             setInterval(async () => {
                 let new_status = await getFileStatus(file_status.dataset.fileId);
-                console.log(old_status, new_status);
                 if (old_status !== new_status) {
                     changeFileStatus(file_status, new_status);
                 }
