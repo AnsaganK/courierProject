@@ -70,7 +70,6 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     transports = Transport.objects.all()
     active_executor_ids = get_active_executors().values_list('id', flat=True)
 
-    print(min_hours_input)
     return {
         'phone_number_checkboxes': phone_number_checkboxes,
         'whatsapp_checkboxes': whatsapp_checkboxes,

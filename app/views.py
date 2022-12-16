@@ -602,6 +602,21 @@ def executor_salary_calculator(request):
 
 
 #
+#                                   Executor Phone Files
+#
+def executor_phone_file_list(request):
+    files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.PHONE)
+    files = get_paginator(request, files, 20)
+    return render(request, 'app/executor/phone/file/list.html', {
+        'files': files
+    })
+
+
+def executor_phone_file_parse(request, pk):
+    pass
+
+
+#
 #                                   Executor Hours Files
 #
 @login_required

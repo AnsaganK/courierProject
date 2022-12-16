@@ -350,6 +350,7 @@ class ArchiveFile(BaseModel):
         CITY = 'city', 'Город'
         OFC = 'ofc', 'ЦФЗ'
         TRANSPORT = 'transport', 'Транспорт'
+        PHONE = 'phone', 'Номера тел.'
 
     file = models.FileField(upload_to='archive_files', verbose_name='Файл')
     type = models.CharField(max_length=64, choices=TypeChoices.choices, null=True, blank=True, verbose_name='Тип')

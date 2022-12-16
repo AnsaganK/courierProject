@@ -21,22 +21,26 @@
             </div>
             {% if request.user|check_role:'admin' %}
                 <div class="col-auto">
-                    <a href="{% url 'app:executor_hours_file_list' %}" class="btn btn-primary mb-2">
+                    <a href="{% url 'app:executor_hours_file_list' %}" class="btn btn-primary mb-2" title="Файлы с часами">
                         <i class="bi bi-clock"></i>
                         {#                        Файлы с часами#}
                     </a>
-                    <a href="{% url 'app:executor_file_list' %}" class="btn btn-primary mb-2">
+                    <a href="{% url 'app:executor_file_list' %}" class="btn btn-primary mb-2" title="Файлы с исполнителями">
                         <i class="bi bi-archive-fill"></i>
                         {#                        Файлы с исполнителями#}
                     </a>
-                    <a href="{% url 'app:executor_list_debtor' %}" class="btn btn-danger mb-2">
+                    <a href="{% url 'app:executor_phone_file_list' %}" class="btn btn-primary mb-2" title="Файлы с номерами телефонов">
+                        <i class="bi bi-phone"></i>
+                        {#                        Файлы с исполнителями#}
+                    </a>
+                    <a href="{% url 'app:executor_list_debtor' %}" class="btn btn-danger mb-2" title="Список должников">
                         <i class="bx bx-sad"></i>
                         {#                        Файлы с часами#}
                     </a>
-                    <a href="{% url 'app:executor_create' %}" class="btn btn-success mb-2">
-                        <i class="bi bi-plus"></i>
+{#                    <a href="{% url 'app:executor_create' %}" class="btn btn-success mb-2">#}
+{#                        <i class="bi bi-plus"></i>#}
                         {#                        Добавить исполнителя#}
-                    </a>
+{#                    </a>#}
                 </div>
             {% endif %}
         </div>

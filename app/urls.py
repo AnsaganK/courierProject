@@ -17,6 +17,10 @@ urlpatterns = [
     path('staff/<int:pk>/update', views.user_update, name='user_update'),
     path('staff/<int:pk>/delete', views.user_delete, name='user_delete'),
 
+    # Executor phone Files
+    path('executor/phones/file', views.executor_phone_file_list, name='executor_phone_file_list'),
+    path('executor/phones/file/<int:pk>/parse', views.executor_phone_file_parse, name='executor_phones_file_parse'),
+
     # Executor hours Files
     path('executor/hours/file', views.executor_hours_file_list, name='executor_hours_file_list'),
     path('executor/hours/file/<int:pk>/preview', views.executor_hours_file_preview, name='executor_hours_file_preview'),
