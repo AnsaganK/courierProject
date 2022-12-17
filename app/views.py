@@ -16,7 +16,8 @@ from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, Citiz
     Day, DayHour, Contact, Period, Transport
 from app.service.executor import get_query_parameters, get_active_executors
 from app.service.file import get_file_data
-from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task
+from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task, \
+    create_executor_phones_for_file_task
 from app.utils import check_role
 from utils import show_form_errors, get_generated_password, get_paginator
 
@@ -604,7 +605,7 @@ def executor_salary_calculator(request):
 #
 #                                   Executor Phone Files
 #
-def executor_phone_file_list(request):
+def executor_phones_file_list(request):
     files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.PHONE)
     files = get_paginator(request, files, 20)
     return render(request, 'app/executor/phone/file/list.html', {
@@ -612,8 +613,24 @@ def executor_phone_file_list(request):
     })
 
 
-def executor_phone_file_parse(request, pk):
-    pass
+def executor_phones_file_create(request):
+    if request.method == 'POST':
+        form = ArchiveFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = form.save()
+            file.type = ArchiveFile.TypeChoices.PHONE
+            file.save()
+            messages.success(request, f'Файл {file.filename} сохранен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:executor_phones_file_list'))
+
+
+def executor_phones_file_parse(request, pk):
+    file = get_object_or_404(ArchiveFile, pk=pk)
+    create_executor_phones_for_file_task.delay(pk)
+    messages.success(request, f'Начата выгрузка телефонов исполнителей из файла "{file.filename}" ')
+    return redirect(reverse('app:executor_phones_file_list'))
 
 
 #

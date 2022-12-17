@@ -18,8 +18,9 @@ urlpatterns = [
     path('staff/<int:pk>/delete', views.user_delete, name='user_delete'),
 
     # Executor phone Files
-    path('executor/phones/file', views.executor_phone_file_list, name='executor_phone_file_list'),
-    path('executor/phones/file/<int:pk>/parse', views.executor_phone_file_parse, name='executor_phones_file_parse'),
+    path('executor/phones/file', views.executor_phones_file_list, name='executor_phones_file_list'),
+    path('executor/phones/file/create', views.executor_phones_file_create, name='executor_phones_file_create'),
+    path('executor/phones/file/<int:pk>/parse', views.executor_phones_file_parse, name='executor_phones_file_parse'),
 
     # Executor hours Files
     path('executor/hours/file', views.executor_hours_file_list, name='executor_hours_file_list'),

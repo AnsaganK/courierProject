@@ -2,7 +2,7 @@ from celery import shared_task
 
 from app.models import ArchiveFile, City, OFC, StatusChoices
 from app.service.file import get_file_data, set_executors_file_data, \
-    set_executor_hours_file_data
+    set_executor_hours_file_data, set_executor_phones_file_data
 from utils import set_status
 
 
@@ -38,3 +38,8 @@ def create_executors_for_file_task(pk: int):
 @shared_task
 def create_executor_hours_for_file_task(pk: int):
     set_executor_hours_file_data(archive_file_id=pk)
+
+
+@shared_task
+def create_executor_phones_for_file_task(pk: int):
+    set_executor_phones_file_data(archive_file_id=pk)

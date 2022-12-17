@@ -2,11 +2,13 @@ import datetime
 from datetime import datetime
 
 import openpyxl
+from django.db.models import F, Value
+from django.db.models.functions import Concat
 from openpyxl.reader.excel import load_workbook
 from openpyxl.utils import get_column_letter
 
 from app.models import Executor, CitizenshipType, Citizenship, OFC, ExecutorHours, ArchiveFile, Period, Day, DayHour, \
-    StatusChoices, Transport
+    StatusChoices, Transport, Contact
 from utils import set_status
 
 
@@ -339,3 +341,47 @@ def _save_executor_hour(data: dict):
         day_hour.hour = hour_object.get('hour')
         day_hour.save()
         # ExecutorHours.objects.filter(pk=executor_hour.id).update(hour=hour_object['hour'])
+
+
+#
+#                                 Executor Phones File Task
+#
+def set_executor_phones_file_data(archive_file_id: int):
+    archive_file = ArchiveFile.objects.get(pk=archive_file_id)
+    set_status(archive_file, StatusChoices.WAIT)
+    try:
+        workbook = load_workbook(archive_file.file)
+        worksheet = workbook.active
+
+        max_row = worksheet.max_row
+        for row in range(1, max_row + 1):
+            fullname = worksheet[f'A{row}'].value
+            fullname = fullname.split(' ')
+            fullname = [i for i in fullname if i != '']
+            last_name = None
+            first_name = None
+            patronymic = None
+            if len(fullname) >= 1:
+                last_name = fullname[0]
+            if len(fullname) >= 2:
+                first_name = fullname[1]
+            if len(fullname) >= 3:
+                patronymic = ' '.join(fullname[2:])
+            number = worksheet[f'B{row}'].value
+            executors = Executor.objects.filter(last_name=last_name, first_name=first_name, patronymic=patronymic)
+            if executors.exists():
+                for executor in executors:
+                    contact = Contact.objects.create(identifier=number, type=Contact.TypeChoices.WHATSAPP,
+                                                     executor=executor)
+                    contact.save()
+                    executor.phone_number = number
+                    executor.save()
+                print(f'{executors.count()} {fullname} {number}')
+            else:
+                # print(f'{last_name}, {first_name}, {patronymic}')
+                print(f'NONE {fullname} {number}')
+        set_status(archive_file, StatusChoices.SUCCESS)
+    except Exception as e:
+        print(e)
+        print(e.__class__.__name__)
+        set_status(archive_file, StatusChoices.ERROR)
