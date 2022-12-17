@@ -27,6 +27,7 @@ urlpatterns = [
     path('executor/hours/file/<int:pk>/preview', views.executor_hours_file_preview, name='executor_hours_file_preview'),
     path('executor/hours/file/create', views.executor_hours_file_create, name='executor_hours_file_create'),
     path('executor/hours/file/<int:pk>/parse', views.executor_hours_file_parse, name='executor_hours_file_parse'),
+    path('executor/hours/file/<int:pk>/delete', views.executor_hours_file_delete, name='executor_hours_file_delete'),
 
     # Executor list Files
     path('executor/file', views.executor_file_list, name='executor_file_list'),

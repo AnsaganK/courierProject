@@ -680,6 +680,22 @@ def executor_hours_file_parse(request, pk):
     return redirect(reverse('app:executor_hours_file_list'))
 
 
+@login_required
+def executor_hours_file_delete(request, pk):
+    file = get_object_or_404(ArchiveFile, pk=pk)
+    filename = file.filename
+    executor_hours = file.executor_hours.all()
+    periods = Period.objects.filter(executor_hours__in=executor_hours)
+    periods_list = [period.__str__() for period in periods.distinct()]
+    periods = Period.objects.filter(id__in=set(periods.values_list('pk', flat=True)))
+    print(executor_hours.delete())
+    print(periods.delete())
+    print(file.delete())
+
+    messages.success(request, f'Данные "{filename}" за период {periods_list} удалены')
+    return redirect(reverse('app:executor_hours_file_list'))
+
+
 #
 #                                   Executor File views
 #

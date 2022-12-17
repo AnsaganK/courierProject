@@ -58,6 +58,22 @@
         </div>
     </div>
 
+    <!-- Delete Fil Modal -->
+    <div class="modal fade" id="delete_modal" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Удалить файл: <span id="delete_span"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <a href="#" id="delete_link" class="btn btn-danger">Удалить</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <div class="col">
         {% if files %}
             <table class="table table-bordered text-center">
@@ -90,6 +106,12 @@
                             </a>
                             <a href="{{ file.file.url }}" class="me-3" title="Скачать файл">
                                 <i class="bi bi-cloud-download-fill text-primary"></i>
+                            </a>
+                            <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
+                               data-delete-url="{% url 'app:executor_hours_file_delete' file.pk %}"
+                               data-name="{{ file.filename }}"
+                               onclick="objectDelete(this)">
+                                <i class="bi bi-trash text-danger"></i>
                             </a>
                         </td>
                     </tr>
