@@ -387,8 +387,9 @@ def executor_list(request):
 @login_required
 @check_role([CURATOR])
 def executor_list_free(request):
-    executors = Executor.objects.filter(curator=None)
+    executors = get_active_executors().filter(curator=None)
     context = get_query_parameters(request, executors)
+    context.update({'week_days': WEEK_DAYS})
     return render(request, 'app/executor/free.html', context)
 
 

@@ -23,6 +23,7 @@
 {% endblock %}
 
 {% block content %}
+    {% include 'include/executor/detail_modal.html' %}
     {% include 'include/executor/executor_add_modal.html' %}
     <div class="col">
         <div class="row justify-content-between mb-3 mt-3">
@@ -54,7 +55,14 @@
                                 <th class="text-start">
                                     {{ executor.executor_id }}
                                 </th>
-                                <td class="text-start">{{ executor.get_full_name }}</td>
+                                <td class="text-start"><a href="#" class="col"
+                                                          data-bs-toggle="modal" data-bs-target="#detail_modal"
+                                                          data-detail-url="{{ executor.get_absolute_url }}"
+                                                          data-detail-api-url="{{ executor.get_api_url }}"
+                                                          data-executor-id="{{ executor.executor_id }}"
+                                                          data-name="{{ executor.get_full_name }}"
+                                                          onclick="objectDetail(this)">{{ executor.get_full_name }}</a>
+                                </td>
                                 <td class="text-start additional">{{ executor.birth_date|default:'-' }}</td>
                                 <td class="text-start additional">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>
                                 <td class="additional">{{ executor.phone_number|default:'-' }}</td>

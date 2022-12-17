@@ -689,14 +689,15 @@
 
         let full_name_span = document.getElementById('full_name_span');
         let birth_date_span = document.getElementById('birth_date_span');
-        let executor_id_span = document.getElementById('executor_id_span');
+        let executor_id_span = document.getElementById('executor_id_span_for_add');
         let phone_number_span = document.getElementById('phone_number_span');
 
         let full_name = elem.dataset.fullName;
         let birth_date = elem.dataset.birthDate;
         let executor_id = elem.dataset.executorId;
         let phone_number = elem.dataset.phoneNumber;
-
+        console.log(executor_id_span)
+        console.log(executor_id)
         full_name_span.innerText = full_name;
         birth_date_span.innerText = birth_date;
         executor_id_span.innerText = executor_id;
