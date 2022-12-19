@@ -299,7 +299,7 @@ class Executor(BaseModel):
         whatsapp = self.contacts.filter(type=Contact.TypeChoices.WHATSAPP).first()
         if whatsapp:
             return whatsapp.identifier
-
+        return None
     @property
     def get_whatsapp_url(self):
         try:

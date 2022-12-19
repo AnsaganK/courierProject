@@ -85,6 +85,27 @@ def statistic(request):
     return render(request, 'app/page/statistic.html', context)
 
 
+@login_required
+@check_role([ADMIN, CURATOR])
+def statistic_json(request):
+    last_periods = Period.objects.all().order_by('-final_date')[:4]
+    last_periods = last_periods[::-1]
+    executors = get_active_executors()
+
+    user = request.user
+    profile = user.profile
+    if profile.role == CURATOR:
+        executors = executors.filter(curator=user)
+
+    executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
+        '-sum_hours')
+
+    executors = get_query_parameters(request, executors, paginate=True, returned_json=True)
+    return JsonResponse(
+        executors
+    )
+
+
 #
 #                               City views
 #

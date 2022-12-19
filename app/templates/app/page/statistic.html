@@ -28,7 +28,12 @@
     <div class="col">
         <div class="row justify-content-between mb-3 mt-3">
             <div class="col-auto">
-                <span class="text-black-50">Всего активных: {{ count }}</span>
+                <span class="text-black-50">Всего активных: {{ count }}</span><br>
+                <span class="text-black-50">Загружено:
+                    <span id="load_executors_count_span">{{ executors.object_list.count }}</span>
+                    <span> / </span>
+                    <span id="load_executors_page_span">1</span> стр.
+                </span>
             </div>
             <div class="col-auto">
                 {% include 'include/executor/filter_icon.html' %}
@@ -37,11 +42,9 @@
         <div class="row justify-content-between executor_table_content">
             <div class="col-12 col-lg-9" id="executor_list_col">
                 {% if executors %}
-                    {% if paginate %}
-                        {% include 'include/pagination.html' with page=executors %}
-                    {% endif %}
                     <div class="w-100 overflow-auto">
-                        <table class="table table-responsive-sm table-bordered text-center">
+                        <table id="statistic_table" class="table table-responsive-sm table-bordered text-center"
+                               data-current-page="1" data-next-page="{{ executors.next_page_number }}">
                             <thead>
                             <tr class="align-middle">
                                 <th rowspan="3">ID</th>
@@ -127,12 +130,8 @@
                         </table>
                     </div>
 
-                    {% if paginate %}
-                        {% include 'include/pagination.html' with page=executors %}
-                    {% else %}
-                        <hr>
-                        <span class="text-center text-black-50 d-block m-auto">Конец таблицы</span>
-                    {% endif %}
+                    <hr>
+                    <span id="end_line" class="text-center text-black-50 d-block d-none m-auto">Конец таблицы</span>
                 {% else %}
                     <span class="mt-3 text-black-50 text-center d-block">
                         Данные не найдены
@@ -145,3 +144,224 @@
 
 {% endblock %}
 
+{% block script %}
+    <script>
+        let pages = [];
+        let statistic_table = document.getElementById('statistic_table');
+        let tbody = statistic_table.querySelector('tbody');
+
+        let load_executors_count_span = document.getElementById('load_executors_count_span')
+        let load_executors_page_span = document.getElementById('load_executors_page_span')
+
+        let thead = statistic_table.querySelector('thead');
+        let columns_count = thead.querySelectorAll('th').length;
+        let preloader = `<tr>
+    <td colspan="${columns_count}">
+<div class="spinner-border text-primary file_preloader_status" role="status" style="text-align: center;
+    display: block;
+    height: 80px !important;
+    width: 80px !important;
+    margin: 30px auto;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+</td>
+</tr>`;
+
+        // «База данных»
+
+        const post = {
+            title: 'Заголовок поста',
+            body: 'Текст поста в лучшей на свете социальной сети Switter. Все совпадения вымышлены и случайны.',
+            likes: 77,
+            reposts: 7,
+        }
+
+        // «Сервер API»
+
+        const server = {
+            posts(page = 2) {
+                const finished = page >= 5
+                const next = finished ? null : page + 1
+                const posts = Array(5).fill(post)
+
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve({posts, next})
+                    }, 0)
+                })
+            }
+        }
+
+        // Клиент
+
+        let isLoading = false
+        let shouldLoad = true
+
+        function appendPost(postData) {
+            if (!postData) return;
+            const main = document.querySelector('main')
+            const postNode = composePost(postData)
+            main.append(postNode)
+        }
+
+        function composePost(postData) {
+            if (!postData) return
+            const template = document.getElementById('post_template')
+            const post = template.content.cloneNode(true)
+            const likesButton = post.querySelector('button:first-child')
+            const repostsButton = post.querySelector('button:last-child')
+
+            const {title, body, likes, reposts} = postData
+            post.querySelector('h2').innerText = title
+            post.querySelector('p').innerText = body
+            likesButton.innerText += likes
+            likesButton.ariaLabel += likes
+            repostsButton.innerText += reposts
+            repostsButton.ariaLabel += reposts
+
+            return post
+        }
+
+
+        async function fetchPosts() {
+            if (isLoading || !shouldLoad) return isLoading = true
+            let next_page = statistic_table.dataset.nextPage;
+            if (next_page > 0) {
+                tbody.innerHTML += preloader;
+                statistic_table.setAttribute('data-next-page', 0);
+                pages.push(next_page);
+
+                // link for own executors get parameters
+                let url = `{% url 'app:statistic_json' %}?page=${next_page}`;
+                let response = await fetch(url);
+                if (response.ok) {
+                    let json = await response.json();
+                    statistic_table.setAttribute('data-next-page', json.has_next ? json.next_page : 0);
+                    if (json.has_next === false) {
+                        let end_line = document.getElementById('end_line');
+                        end_line.classList.remove('d-none');
+                    }
+                    let executors = json.executors;
+
+                    let trs = '';
+                    executors.forEach((executor) => {
+                        let whatsapp_desktop_icon = `<a href="#"
+                                                   class="col" title="Не найдено">
+                                                    <i class="bx bxl-whatsapp text-danger"></i>
+                                                </a>`;
+                        let whatsapp_mobile_icon = `<a href="#"
+                                                       class="btn btn-secondary w-100">Whatsapp</a>`
+                        let hours = '';
+
+                        // URL Whatsapp
+                        if (executor.get_whatsapp !== null) {
+                            whatsapp_desktop_icon = `<a href="#"
+                                                   class="col text-success" title="${executor.get_whatsapp}"
+                                                   target="_blank">
+                                                    <i class="bx bxl-whatsapp text-success"></i>
+                                                </a>`;
+                            whatsapp_mobile_icon = `<a href="#"
+                                                       class="btn btn-success w-100">${executor.get_whatsapp}</a>`
+                        }
+                        if (executor.hours.length > 0) {
+                            executor.hours.forEach((hour) => {
+                                hours += `<td>${hour.hour}</td>`
+                            })
+                        }
+
+                        let executor_tr = `<tr>
+                                    <td><a href="${executor["get_absolute_url"] ?? '-'}">${executor["executor_id"] ?? '-'}</a></td>
+                                    <td class="additional">${executor["citizenship"] ?? '-'}</td>
+                                    <td class="text-start"><a href="#" class="col"
+                                                              data-bs-toggle="modal" data-bs-target="#detail_modal"
+                                                              data-detail-url="${executor["get_absolute_url"] ?? '-'}"
+                                                              data-detail-api-url="${executor["get_api_url"] ?? '-'}"
+                                                              data-executor-id="${executor["executor_id"] ?? '-'}"
+                                                              data-name="${executor["full_name"] ?? '-'}"
+                                                              onclick="objectDetail(this)">${executor["full_name"] ?? '-'}</a>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="additional row justify-content-between">
+                                            <a href="${executor["get_absolute_url"] ?? '-'}?page=hours"
+                                               class="col" title="Просмотреть часы">
+                                                <i class="bx bx-time text-primary"></i>
+                                            </a>
+                                            ${whatsapp_desktop_icon}
+                                        </div>
+                                        <div class="row mobile_additional">
+                                            <div class="col-12 mb-1 mt-1">
+                                                <a href="${executor["get_absolute_url"] ?? '-'}?page=hours"
+                                                   class="btn btn-warning w-100">Часы</a>
+                                            </div>
+                                            <div class="col-12 mb-1 mt-1">
+                                                ${whatsapp_mobile_icon}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="additional">${executor["OFC"] ?? '-'}</td>
+                                    <td class="additional">${executor["phone_number"] ?? '-'}</td>
+                                    <td class="additional">${executor["curator"] ?? '-'}</td>
+                                    ${hours}
+                                    <td>${executor["hours_sum"] ?? '-'}</td>
+                                </tr>`;
+                        trs += executor_tr;
+                    })
+                    let last_tr = tbody.querySelector('tr:last-child');
+                    last_tr.remove()
+
+                    tbody.innerHTML += trs;
+                    load_executors_count_span.innerText = tbody.children.length;
+                    load_executors_page_span.innerText = json.page;
+                } else {
+                    console.log(response.status);
+                }
+
+            }
+
+
+            {#const {posts, next} = await server.posts(nextPage)#}
+            {#nextPage = next#}
+            {##}
+            {#posts.forEach(appendPost)#}
+
+            // Здесь можно менять адресную строку,
+            // чтобы сохранить положение прокрутки.
+
+            {#if (!next) shouldLoad = false#}
+            {#isLoading = false#}
+        }
+
+        function throttle(callee, timeout) {
+            let timer = null
+
+            return function perform(...args) {
+                if (timer) return
+
+                timer = setTimeout(() => {
+                    callee(...args)
+
+                    clearTimeout(timer)
+                    timer = null
+                }, timeout)
+            }
+        }
+
+        async function checkPosition() {
+            const height = document.body.offsetHeight
+            const screenHeight = window.innerHeight
+            const scrolled = window.scrollY
+
+            const threshold = height - screenHeight / 2
+            const position = scrolled + screenHeight
+
+            if (position >= threshold) {
+                await fetchPosts()
+            }
+        }
+
+        (() => {
+            window.addEventListener('scroll', throttle(checkPosition))
+            window.addEventListener('resize', throttle(checkPosition))
+        })()
+    </script>
+{% endblock %}

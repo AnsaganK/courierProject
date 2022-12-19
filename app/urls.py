@@ -7,6 +7,7 @@ urlpatterns = [
     # Flat pages
     path('', views.home, name='home'),
     path('statistic', views.statistic, name='statistic'),
+    path('statistic/json', views.statistic_json, name='statistic_json'),
 
     # Staffs
     path('staff/curator', views.curator_list, name='curator_list'),

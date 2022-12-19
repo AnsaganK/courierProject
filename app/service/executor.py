@@ -5,10 +5,11 @@ from django.db.models import Sum, F
 from django.http import HttpRequest
 
 from app.models import Contact, Citizenship, Transport, Period, Executor
+from app.templatetags.executor_tags import get_hours_for_period
 from utils import get_paginator
 
 
-def get_query_parameters(request: HttpRequest, executors: list, paginate: bool = True):
+def get_query_parameters(request: HttpRequest, executors: list, paginate: bool = True, returned_json: bool = False):
     data = dict(request.GET)
     is_filter = 0
     for parameter in data:
@@ -63,9 +64,37 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
 
     count = executors.count()
     executor_ids = executors.values_list('id', flat=True)
-
+    last_periods = Period.objects.all().order_by('-final_date')[:4]
     if paginate:
         executors = get_paginator(request, executors, 50)
+        if returned_json:
+            executors_json = []
+            for executor in executors:
+                # print(executor)
+                executor_json = {
+                    'executor_id': executor.executor_id,
+                    'citizenship': executor.citizenship.name if executor.citizenship else '-',
+                    'full_name': executor.get_full_name,
+                    'phone_number': executor.phone_number,
+                    'OFC': executor.OFC.address if executor.OFC else '-',
+                    'curator': executor.curator.profile.get_full_name if executor.curator else '-',
+                    'get_whatsapp': executor.get_whatsapp,
+                    'get_absolute_url': executor.get_absolute_url(),
+                    'get_api_url': executor.get_api_url(),
+                    'hours': [{
+                        'hour': get_hours_for_period(executor, last_period)
+                    } for last_period in last_periods],
+                    'hours_sum': executor.get_active_hours_sum
+                }
+                executors_json.append(executor_json)
+            context = {
+                'executors': executors_json,
+                'next_page': executors.next_page_number() if executors.has_next() else 0,
+                'has_next': executors.has_next(),
+                'page': executors.number,
+            }
+            # print(context)
+            return context
     citizenships = Citizenship.objects.all()
     transports = Transport.objects.all()
     active_executor_ids = get_active_executors().values_list('id', flat=True)
@@ -82,9 +111,9 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
         'citizenships': citizenships,
         'transports': transports,
         'active_executor_ids': active_executor_ids,
-
         'executor_ids': executor_ids,
         'executors': executors,
+
         'count': count,
         'paginate': paginate,
         'is_filter': is_filter
