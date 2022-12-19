@@ -80,7 +80,7 @@ def statistic(request):
     context = {
         'periods': last_periods,
     }
-    context.update(get_query_parameters(request, executors, paginate=False))
+    context.update(get_query_parameters(request, executors, paginate=True))
     context.update({'week_days': WEEK_DAYS})
     return render(request, 'app/page/statistic.html', context)
 
