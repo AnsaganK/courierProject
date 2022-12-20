@@ -30,7 +30,8 @@ class BaseModel(models.Model):
 
 
 class City(BaseModel):
-    name = models.CharField(max_length=256, unique=True, verbose_name='название города')
+    name = models.CharField(max_length=256, unique=True, verbose_name='Название города')
+    short_name = models.CharField(max_length=256, null=True, blank=True, unique=True, verbose_name='Код города')
 
     class Meta:
         verbose_name = 'Город'

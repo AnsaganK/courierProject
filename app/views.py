@@ -76,7 +76,7 @@ def statistic(request):
         executors = executors.filter(curator=user)
 
     executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
-        '-sum_hours')
+        'sum_hours')
 
     context = {
         'periods': last_periods,
@@ -99,7 +99,7 @@ def statistic_json(request):
         executors = executors.filter(curator=user)
 
     executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
-        '-sum_hours')
+        'sum_hours')
 
     executors = get_query_parameters(request, executors, paginate=True, returned_json=True)
     return JsonResponse(
