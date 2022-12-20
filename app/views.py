@@ -25,7 +25,8 @@ CURATOR = Profile.RoleChoices.CURATOR
 ADMIN = Profile.RoleChoices.ADMIN
 SUPPORT = Profile.RoleChoices.SUPPORT
 WEEK_DAYS = [
-    'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
+    # 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
+    'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВСК'
 ]
 
 
