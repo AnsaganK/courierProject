@@ -146,6 +146,8 @@
 
 {% block script %}
     <script>
+
+        let get_parameters = window.location.search.replace('?', '&');
         let pages = [];
         let statistic_table = document.getElementById('statistic_table');
         let tbody = statistic_table.querySelector('tbody');
@@ -232,7 +234,7 @@
                 pages.push(next_page);
 
                 // link for own executors get parameters
-                let url = `{% url 'app:statistic_json' %}?page=${next_page}`;
+                let url = `{% url 'app:statistic_json' %}?page=${next_page}${get_parameters}`;
                 let response = await fetch(url);
                 if (response.ok) {
                     let json = await response.json();
