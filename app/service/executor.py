@@ -67,7 +67,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     last_periods = Period.objects.all().order_by('-final_date')[:4]
     last_periods = last_periods[::-1]
     if paginate:
-        executors = get_paginator(request, executors, 50)
+        executors = get_paginator(request, executors, 40)
         if returned_json:
             executors_json = []
             for executor in executors:
