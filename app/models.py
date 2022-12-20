@@ -10,6 +10,8 @@ from django.dispatch import receiver
 
 from django.shortcuts import reverse
 
+from constants import HOST
+
 
 class StatusChoices(models.TextChoices):
     WAIT = 'WAIT', 'Ожидание'
@@ -300,15 +302,11 @@ class Executor(BaseModel):
         if whatsapp:
             return whatsapp.identifier
         return None
+
     @property
     def get_whatsapp_url(self):
-        try:
-            host_name = socket.gethostname()
-            print(host_name)
-        except:
-            host_name = 'localhost'
-        url = f"https://wa.me/{self.get_whatsapp}?text=http://{host_name}" + reverse('app:executor_hours_detail',
-                                                                                     args=[self.executor_id])
+        url = f"https://wa.me/{self.get_whatsapp}?text=http://{HOST}" + reverse('app:executor_hours_detail',
+                                                                                args=[self.executor_id])
         return url
 
     @property

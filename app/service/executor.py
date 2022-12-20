@@ -80,6 +80,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
                     'OFC': executor.OFC.address if executor.OFC else '-',
                     'curator': executor.curator.profile.get_full_name if executor.curator else '-',
                     'get_whatsapp': executor.get_whatsapp,
+                    'get_whatsapp_url': executor.get_whatsapp_url,
                     'get_absolute_url': executor.get_absolute_url(),
                     'get_api_url': executor.get_api_url(),
                     'hours': [{

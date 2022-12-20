@@ -89,7 +89,7 @@
                                                 <i class="bx bx-time text-primary"></i>
                                             </a>
                                             {% if executor.get_whatsapp %}
-                                                <a href="{{ executor|get_whatsapp_url_for_executor:request.get_host }}"
+                                                <a href="{{ executor.get_whatsapp_url }}"
                                                    class="col text-success" title="{{ executor.get_whatsapp }}"
                                                    target="_blank">
                                                     <i class="bx bxl-whatsapp text-success"></i>
@@ -108,7 +108,7 @@
                                             </div>
                                             <div class="col-12 mb-1 mt-1">
                                                 {% if executor.get_whatsapp %}
-                                                    <a href="{{ executor|get_whatsapp_url_for_executor:request.get_host }}"
+                                                    <a href="{{ executor.get_whatsapp_url }}"
                                                        class="btn btn-success w-100">{{ executor.get_whatsapp }}</a>
                                                 {% else %}
                                                     <a href="#"
@@ -255,12 +255,12 @@
 
                         // URL Whatsapp
                         if (executor.get_whatsapp !== null) {
-                            whatsapp_desktop_icon = `<a href="#"
+                            whatsapp_desktop_icon = `<a href="${executor.get_whatsapp_url}"
                                                    class="col text-success" title="${executor.get_whatsapp}"
                                                    target="_blank">
                                                     <i class="bx bxl-whatsapp text-success"></i>
                                                 </a>`;
-                            whatsapp_mobile_icon = `<a href="#"
+                            whatsapp_mobile_icon = `<a href="${executor.get_whatsapp_url}"
                                                        class="btn btn-success w-100">${executor.get_whatsapp}</a>`
                         }
                         if (executor.hours.length > 0) {
