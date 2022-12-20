@@ -44,7 +44,8 @@
                 {% if executors %}
                     <div class="w-100 overflow-auto">
                         <table id="statistic_table" class="table table-responsive-sm table-bordered text-center"
-                               data-current-page="1" data-next-page="{{ executors.next_page_number }}">
+                               data-current-page="1" data-next-page="
+                                {% if executors.has_next %}{{ executors.next_page_number }}{% else %}0{% endif %}">
                             <thead>
                             <tr class="align-middle">
                                 <th rowspan="3">ID</th>
