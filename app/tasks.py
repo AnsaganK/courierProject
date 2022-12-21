@@ -1,6 +1,7 @@
 from celery import shared_task
 
 from app.models import ArchiveFile, City, OFC, StatusChoices
+from app.service.city import add_city_for_ofc
 from app.service.file import get_file_data, set_executors_file_data, \
     set_executor_hours_file_data, set_executor_phones_file_data
 from utils import set_status
@@ -25,6 +26,8 @@ def create_cities_for_file_task(pk: int):
                 ofc = OFC.objects.get_or_create(address=address, code=code, city=city)
                 if ofc[1]:
                     ofc[0].save()
+                    add_city_for_ofc(ofc=ofc[0], many=False)
+
         set_status(archive_file, StatusChoices.SUCCESS)
     except:
         set_status(archive_file, StatusChoices.ERROR)

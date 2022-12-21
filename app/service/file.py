@@ -9,6 +9,7 @@ from openpyxl.utils import get_column_letter
 
 from app.models import Executor, CitizenshipType, Citizenship, OFC, ExecutorHours, ArchiveFile, Period, Day, DayHour, \
     StatusChoices, Transport, Contact
+from app.service.city import add_city_for_ofc
 from utils import set_status
 
 
@@ -200,6 +201,7 @@ def _check_and_save_executor_attribute(executor: dict, value, cell_value):
         ofc = OFC.objects.get_or_create(address=cell_value)
         if ofc[1]:
             ofc[0].save()
+            add_city_for_ofc(ofc=ofc[0], many=False)
         ofc = ofc[0]
         executor['OFC'] = ofc
 
@@ -265,6 +267,7 @@ def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value, p
         ofc = OFC.objects.get_or_create(address=cell_value)
         if ofc[1]:
             ofc[0].save()
+            add_city_for_ofc(ofc=ofc[0], many=False)
         ofc = ofc[0]
         executor_hour['ofc'] = ofc
     elif 'Исполнитель' in value:
