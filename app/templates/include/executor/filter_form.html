@@ -127,7 +127,7 @@
                             <input type="checkbox" name="city"
                                    id="city_{{ city.pk }}"
                                    class="d-none"
-                                    {% if city.id|stringformat:'i' in transport_checkboxes %}
+                                    {% if city.id|stringformat:'i' in city_checkboxes %}
                                    checked {% endif %}
                                    value="{{ city.pk }}">
                             <label class="check_label" for="city_{{ city.pk }}">
