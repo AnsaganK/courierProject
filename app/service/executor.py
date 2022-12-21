@@ -157,7 +157,7 @@ def get_active_executors():
 
 def add_ofc_for_executor(executor: Executor = None, many: bool = True):
     if many:
-        executors = Executor.objects.filter(OFC=None, executor_hours=None)
+        executors = Executor.objects.filter(OFC=None).exclude(executor_hours=None)
         for executor in executors:
             last_executor_hours = executor.executor_hours.order_by('period__final_date').last()
             if last_executor_hours:
