@@ -108,7 +108,34 @@
                         {% endfor %}
                     </div>
                 </div>
-
+                <div class="mb-3">
+                                    <span class="row justify-content-between align-items-center {% if city_checkboxes %} text-custom {% endif %}"
+                                          data-toggle="collapse"
+                                          data-collapse="city_collapse"
+                                          role="button" aria-expanded="false" aria-controls="city_collapse">
+                                        <span class="col-auto">Город</span>
+                                        {% if city_checkboxes %}
+                                            <i class="col-auto bx bxs-down-arrow"></i>
+                                        {% else %}
+                                            <i class="col-auto bx bxs-left-arrow"></i>
+                                        {% endif %}
+                                    </span>
+                    <hr>
+                    <div class="collapse {% if city_checkboxes %} show {% endif %}"
+                         id="city_collapse">
+                        {% for city in cities %}
+                            <input type="checkbox" name="city"
+                                   id="city_{{ city.pk }}"
+                                   class="d-none"
+                                    {% if city.id|stringformat:'i' in transport_checkboxes %}
+                                   checked {% endif %}
+                                   value="{{ city.pk }}">
+                            <label class="check_label" for="city_{{ city.pk }}">
+                                {{ city.name }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
                 <div class="mb-3">
                                     <span class="row justify-content-between align-items-center {% if transport_checkboxes %} text-custom {% endif %}"
                                           data-toggle="collapse"

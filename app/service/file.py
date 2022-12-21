@@ -10,6 +10,7 @@ from openpyxl.utils import get_column_letter
 from app.models import Executor, CitizenshipType, Citizenship, OFC, ExecutorHours, ArchiveFile, Period, Day, DayHour, \
     StatusChoices, Transport, Contact
 from app.service.city import add_city_for_ofc
+from app.service.executor import add_ofc_for_executor
 from utils import set_status
 
 
@@ -300,6 +301,7 @@ def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value, p
 
         executor_hour['executor'] = executor
         executor_hour['executor_id'] = cell_value
+        add_ofc_for_executor(executor=executor, many=False)
     else:
         try:
             day = datetime.strptime(value, '%d.%m.%y')

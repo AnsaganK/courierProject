@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db.models import Sum, F
 from django.http import HttpRequest
 
-from app.models import Contact, Citizenship, Transport, Period, Executor
+from app.models import Contact, Citizenship, Transport, Period, Executor, City, ExecutorHours
 from app.templatetags.executor_tags import get_hours_for_period
 from utils import get_paginator
 
@@ -13,10 +13,10 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     data = dict(request.GET)
     is_filter = 0
     for parameter in data:
-        if parameter in ['phone_number', 'whatsapp', 'citizenship', 'transport']:
+        if parameter in ['phone_number', 'whatsapp', 'citizenship', 'city', 'transport']:
             is_filter += 1
             print(parameter)
-            
+
         if parameter == 'sort_type' and data.get('sort_type')[0]:
             is_filter += 1
 
@@ -41,6 +41,11 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     citizenship_checkboxes = data.get('citizenship')
     if citizenship_checkboxes:
         executors = executors.filter(citizenship__in=citizenship_checkboxes)
+
+    city_checkboxes = data.get('city')
+    if city_checkboxes:
+        print(city_checkboxes)
+        executors = executors.filter(OFC__city_id__in=city_checkboxes)
 
     transport_checkboxes = data.get('transport')
     if transport_checkboxes:
@@ -116,6 +121,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
             # print(context)
             return context
     citizenships = Citizenship.objects.all()
+    cities = City.objects.all().order_by('name')
     transports = Transport.objects.all()
     active_executor_ids = get_active_executors().values_list('id', flat=True)
 
@@ -130,6 +136,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
         'max_hours': max_hours,
 
         'citizenships': citizenships,
+        'cities': cities,
         'transports': transports,
         'active_executor_ids': active_executor_ids,
         'executor_ids': executor_ids,
@@ -146,3 +153,20 @@ def get_active_executors():
     last_periods = last_periods[::-1]
     executors = Executor.objects.filter(executor_hours__period__in=last_periods).distinct()
     return executors
+
+
+def add_ofc_for_executor(executor: Executor = None, many: bool = True):
+    if many:
+        executors = Executor.objects.filter(OFC=None, executor_hours=None)
+        for executor in executors:
+            last_executor_hours = ExecutorHours.objects.filter(executor=executor).order_by('period__final_date').last()
+            if last_executor_hours:
+                ofc = last_executor_hours.ofc
+                executor.OFC = ofc
+                executor.save()
+    else:
+        last_executor_hours = executor.executor_hours.order_by('period__final_date').last()
+        if last_executor_hours:
+            ofc = last_executor_hours.ofc
+            executor.OFC = ofc
+            executor.save()
