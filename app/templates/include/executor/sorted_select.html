@@ -1,0 +1,9 @@
+<select name="sort_type" id="" class="form-control">
+    <option value="">По умолчанию</option>
+    <option value="hours_asc" {% if sort_type == 'hours_asc' %} selected {% endif %}>По часам | возр.</option>
+    <option value="hours_desc" {% if sort_type == 'hours_desc' %} selected {% endif %}>По часам | убыв.</option>
+    <option value="name_asc" {% if sort_type == 'name_asc' %} selected {% endif %}>По ФИО | возр.</option>
+    <option value="name_desc" {% if sort_type == 'name_desc' %} selected {% endif %}>По ФИО | убыв.</option>
+    <option value="id_asc" {% if sort_type == 'id_asc' %} selected {% endif %}>По ID | возр.</option>
+    <option value="id_desc" {% if sort_type == 'id_desc' %} selected {% endif %}>По ID | убыв.</option>
+</select>

@@ -16,6 +16,9 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
         if parameter in ['phone_number', 'whatsapp', 'citizenship', 'transport']:
             is_filter += 1
             print(parameter)
+            
+        if parameter == 'sort_type' and data.get('sort_type')[0]:
+            is_filter += 1
 
         if parameter == 'min_hours' and data.get('min_hours')[0]:
             is_filter += 1
@@ -43,17 +46,31 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     if transport_checkboxes:
         executors = executors.filter(transport__in=transport_checkboxes)
 
+    executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour')))
     min_hours_input = data.get('min_hours')
     min_hours = min_hours_input[0] if type(min_hours_input) is list else ""
     if min_hours:
-        executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour')))
         executors = executors.filter(sum_hours__gte=int(min_hours))
 
     max_hours_input = data.get('max_hours')
     max_hours = max_hours_input[0] if type(max_hours_input) is list else ""
     if max_hours:
-        executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour')))
         executors = executors.filter(sum_hours__lte=int(max_hours))
+
+    sort_type = data.get('sort_type')
+    sort_type = sort_type[0] if type(sort_type) is list else ""
+    if sort_type == 'name_asc':
+        executors = executors.order_by('last_name')
+    if sort_type == 'name_desc':
+        executors = executors.order_by('-last_name')
+    if sort_type == 'hours_asc':
+        executors = executors.order_by('sum_hours')
+    if sort_type == 'hours_desc':
+        executors = executors.order_by('-sum_hours')
+    if sort_type == 'id_asc':
+        executors = executors.order_by('executor_id')
+    if sort_type == 'id_desc':
+        executors = executors.order_by('-executor_id')
 
     executors = executors.select_related('curator')
     executors = executors.select_related('OFC')
@@ -86,7 +103,8 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
                     'hours': [{
                         'hour': get_hours_for_period(executor, last_period)
                     } for last_period in last_periods],
-                    'hours_sum': executor.get_active_hours_sum
+                    'hours_sum': executor.get_active_hours_sum,
+                    'sort_type': sort_type
                 }
                 executors_json.append(executor_json)
             context = {
@@ -106,6 +124,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
         'whatsapp_checkboxes': whatsapp_checkboxes,
         'citizenship_checkboxes': citizenship_checkboxes,
         'transport_checkboxes': transport_checkboxes,
+        'sort_type': sort_type,
 
         'min_hours': min_hours,
         'max_hours': max_hours,
