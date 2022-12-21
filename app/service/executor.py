@@ -129,6 +129,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
         'phone_number_checkboxes': phone_number_checkboxes,
         'whatsapp_checkboxes': whatsapp_checkboxes,
         'citizenship_checkboxes': citizenship_checkboxes,
+        'city_checkboxes': city_checkboxes,
         'transport_checkboxes': transport_checkboxes,
         'sort_type': sort_type,
 
