@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.serializers import serialize
-from django.db.models import Q, F, Sum
+from django.db.models import Q, F, Sum, Value
+from django.db.models.functions import Concat
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
@@ -610,9 +611,13 @@ def executor_search(request):
     elif request.method == 'GET':
         get = dict(request.GET)
         query = get['query'][0]
-        executors = Executor.objects.filter(
-            Q(last_name__icontains=query) | Q(first_name__icontains=query) | Q(
-                patronymic__icontains=query) | Q(executor_id__icontains=query)).order_by('-pk').values(
+        executors = Executor.objects.annotate(
+            fullname=Concat(F('last_name'), Value(' '), F('first_name'), Value(' '), F('patronymic'))
+        ).filter(
+            Q(fullname__icontains=query) | Q(executor_id__icontains=query)
+            # Q(last_name__icontains=query) | Q(first_name__icontains=query) | Q(
+            #     patronymic__icontains=query) | Q(executor_id__icontains=query)
+        ).order_by('-pk').values(
             'executor_id', 'last_name', 'first_name', 'patronymic', 'id')[:5]
         return JsonResponse({
             'executors': list(executors)
