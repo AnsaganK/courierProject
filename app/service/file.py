@@ -329,7 +329,6 @@ def _save_executor_hour(data: dict):
 
         if executor_hour[1]:
             executor_hour[0].save()
-
         executor_hour = executor_hour[0]
         executor_hour.files.add(data.get('archive_file'))
         executor_hour.save()
@@ -340,7 +339,12 @@ def _save_executor_hour(data: dict):
         day_hour = day_hour[0]
         day_hour.hour = hour_object.get('hour')
         day_hour.save()
-        # ExecutorHours.objects.filter(pk=executor_hour.id).update(hour=hour_object['hour'])
+
+    executor = data.get('executor')
+    if executor:
+        executor.OFC = data.get('ofc')
+        executor.save()
+    # ExecutorHours.objects.filter(pk=executor_hour.id).update(hour=hour_object['hour'])
 
 
 #
