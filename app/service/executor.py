@@ -159,7 +159,7 @@ def add_ofc_for_executor(executor: Executor = None, many: bool = True):
     if many:
         executors = Executor.objects.filter(OFC=None, executor_hours=None)
         for executor in executors:
-            last_executor_hours = ExecutorHours.objects.filter(executor=executor).order_by('period__final_date').last()
+            last_executor_hours = executor.executor_hours.order_by('period__final_date').last()
             if last_executor_hours:
                 ofc = last_executor_hours.ofc
                 executor.OFC = ofc
