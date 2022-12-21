@@ -6,7 +6,8 @@ from app.models import City, OFC, Transport, AdditionalReason, Tariff, Bicycle, 
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'name']
+    list_display = ['pk', 'name', 'short_name']
+    list_editable = ['short_name']
 
 
 @admin.register(OFC)
