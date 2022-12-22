@@ -44,7 +44,6 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
 
     city_checkboxes = data.get('city')
     if city_checkboxes:
-        print(city_checkboxes)
         executors = executors.filter(OFC__city_id__in=city_checkboxes)
 
     transport_checkboxes = data.get('transport')
