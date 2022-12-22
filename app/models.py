@@ -330,10 +330,10 @@ class Contact(BaseModel):
         VK = 'vk', 'vk'
         OK = 'ok', 'ok'
 
-    identifier = models.CharField(max_length=256, verbose_name='Идентификатор')
+    identifier = models.CharField(max_length=256, null=True, blank=True, verbose_name='Идентификатор')
     executor = models.ForeignKey(Executor, null=True, blank=True, on_delete=models.CASCADE, related_name='contacts',
                                  verbose_name='Исполнитель')
-    type = models.CharField(max_length=64, null=True, blank=True, verbose_name='Тип ')
+    type = models.CharField(max_length=64, null=True, blank=True, verbose_name='Тип')
 
     class Meta:
         verbose_name = 'Контакт'

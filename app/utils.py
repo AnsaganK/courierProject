@@ -14,7 +14,7 @@ def check_role(roles: list, redirect_url: Optional[str] = None):
                 return function(request, *args, **kwargs)
             if redirect_url:
                 return redirect(redirect_url)
-            return render(request, '403.html')
+            return render(request, 'error/403.html')
 
         return wrapper
 

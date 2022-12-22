@@ -1,7 +1,7 @@
 from typing import List
 
 from django.contrib import messages
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Count
 from django.http import HttpRequest
 
 from app.models import Contact, Citizenship, Transport, Period, Executor, City, ExecutorHours
@@ -170,3 +170,13 @@ def add_ofc_for_executor(executor: Executor = None, many: bool = True):
             ofc = last_executor_hours.ofc
             executor.OFC = ofc
             executor.save()
+
+
+def delete_duplicate_whatsapp_for_executor(many: bool = True):
+    executors = Executor.objects.filter(
+        contacts__type=Contact.TypeChoices.WHATSAPP
+    )
+    for executor in executors:
+        contacts = executor.contacts.filter(type=Contact.TypeChoices.WHATSAPP)
+        for contact in contacts:
+            print(contact)

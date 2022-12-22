@@ -14,14 +14,14 @@ urlpatterns += [
 ]
 
 if settings.DEBUG:
-    if settings.DEBUG:
-        import debug_toolbar
+    import debug_toolbar
 
-        urlpatterns = [
-                          path('__debug__/', include(debug_toolbar.urls)),
-                      ] + urlpatterns
+    urlpatterns = [
+                      path('__debug__/', include(debug_toolbar.urls)),
+                  ] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
+handler500 = 'app.views.error_500_view'
 handler404 = 'app.views.error_404_view'
 handler403 = 'app.views.error_403_view'

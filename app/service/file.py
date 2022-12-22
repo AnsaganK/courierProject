@@ -381,9 +381,21 @@ def set_executor_phones_file_data(archive_file_id: int):
             executors = Executor.objects.filter(last_name=last_name, first_name=first_name, patronymic=patronymic)
             if executors.exists():
                 for executor in executors:
-                    contact = Contact.objects.create(identifier=number, type=Contact.TypeChoices.WHATSAPP,
-                                                     executor=executor)
+
+                    contacts = Contact.objects.filter(
+                        executor=executor,
+                        type=Contact.TypeChoices.WHATSAPP
+                    )
+                    if contacts.exists():
+                        contact = contacts.first()
+                        contact.identifier = number
+                    else:
+                        contact = Contact.objects.create(
+                            identifier=number,
+                            type=Contact.TypeChoices.WHATSAPP,
+                            executor=executor)
                     contact.save()
+
                     executor.phone_number = number
                     executor.save()
                 print(f'{executors.count()} {fullname} {number}')

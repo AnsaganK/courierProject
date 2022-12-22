@@ -407,6 +407,28 @@ def executor_list(request):
     return render(request, 'app/executor/list.html', context)
 
 
+@login_required()
+def executor_list_export(request):
+    user = request.user
+    profile = user.profile
+    if profile.role == ADMIN:
+        executors = Executor.objects.all()
+    else:
+        executors = Executor.objects.filter(curator=request.user)
+
+    executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
+        '-sum_hours')
+
+    context = {
+        'executor_debtor_ids': Executor.objects.exclude(
+            id__in=get_active_executors().values_list('id', flat=True)).exclude(bicycle=None).values_list('id',
+                                                                                                          flat=True)
+    }
+    context.update(get_query_parameters(request, executors))
+    context.update({'week_days': WEEK_DAYS})
+    return render(request, 'app/executor/list.html', context)
+
+
 @login_required
 @check_role([CURATOR])
 def executor_list_free(request):
@@ -993,9 +1015,18 @@ def archive_file_get_status(request, pk):
 #
 #                                   Error pages
 #
+
+def csrf_failure(request, reason=""):
+    return render(request, 'error/403_csrf.html')
+
+
+def error_500_view(request, *args, **kwargs):
+    return render(request, 'error/500.html')
+
+
 def error_404_view(request, exception):
-    return render(request, '404.html')
+    return render(request, 'error/404.html')
 
 
 def error_403_view(request, exception):
-    return render(request, '403.html')
+    return render(request, 'error/403.html')
