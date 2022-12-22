@@ -241,6 +241,8 @@ def set_executor_hours_file_data(archive_file_id: int):
                 columns = _get_columns(worksheet, row=row)
                 print(columns)
                 _set_executor_hours_data(worksheet, row, columns, archive_file=archive_file, period=period)
+        add_ofc_for_executor(many=True)
+
         set_status(archive_file, StatusChoices.SUCCESS)
     except:
         set_status(archive_file, StatusChoices.ERROR)
@@ -301,7 +303,6 @@ def _check_and_save_executor_hours_attribute(executor_hour, value, cell_value, p
 
         executor_hour['executor'] = executor
         executor_hour['executor_id'] = cell_value
-        add_ofc_for_executor(executor=executor, many=False)
     else:
         try:
             day = datetime.strptime(value, '%d.%m.%y')
