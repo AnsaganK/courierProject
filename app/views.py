@@ -15,8 +15,10 @@ from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, 
     CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorHours, \
     Day, DayHour, Contact, Period, Transport
-from app.service.executor import get_query_parameters, get_active_executors
+from app.service.executor import get_query_parameters, get_active_executors, get_filtered_executors
+from app.service.export import generate_file_for_executors
 from app.service.file import get_file_data
+from app.service.period import get_last_periods
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task, \
     create_executor_phones_for_file_task
 from app.utils import check_role
@@ -67,10 +69,10 @@ def home(request):
 @login_required
 @check_role([ADMIN, CURATOR])
 def statistic(request):
-    last_periods = Period.objects.all().order_by('-final_date')[:4]
-    last_periods = last_periods[::-1]
     executors = get_active_executors()
-
+    if request.GET.get('export') == 'true':
+        file = generate_file_for_executors(request, executors)
+        return file
     user = request.user
     profile = user.profile
     if profile.role == CURATOR:
@@ -79,9 +81,7 @@ def statistic(request):
     executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
         'sum_hours')
 
-    context = {
-        'periods': last_periods,
-    }
+    context = {'periods': get_last_periods()}
     context.update(get_query_parameters(request, executors, paginate=True))
     context.update({'week_days': WEEK_DAYS})
     return render(request, 'app/page/statistic.html', context)
@@ -90,8 +90,7 @@ def statistic(request):
 @login_required
 @check_role([ADMIN, CURATOR])
 def statistic_json(request):
-    last_periods = Period.objects.all().order_by('-final_date')[:4]
-    last_periods = last_periods[::-1]
+    last_periods = get_last_periods()
     executors = get_active_executors()
 
     user = request.user

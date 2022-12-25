@@ -1,0 +1,6 @@
+<a href="{% if '?' in request.get_full_path %}{{ request.get_full_path }}&export=true{% else %}?export=true{% endif %}"
+   target=_blank">
+    <i class="bx bxs-file-export text-success"
+       style="font-size: 24px; cursor: pointer;"
+       onclick=""></i>
+</a>
