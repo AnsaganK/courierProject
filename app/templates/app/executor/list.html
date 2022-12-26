@@ -21,15 +21,18 @@
             </div>
             {% if request.user|check_role:'admin' %}
                 <div class="col-auto">
-                    <a href="{% url 'app:executor_hours_file_list' %}" class="btn btn-primary mb-2" title="Файлы с часами">
+                    <a href="{% url 'app:executor_hours_file_list' %}" class="btn btn-primary mb-2"
+                       title="Файлы с часами">
                         <i class="bi bi-clock"></i>
                         {#                        Файлы с часами#}
                     </a>
-                    <a href="{% url 'app:executor_file_list' %}" class="btn btn-primary mb-2" title="Файлы с исполнителями">
+                    <a href="{% url 'app:executor_file_list' %}" class="btn btn-primary mb-2"
+                       title="Файлы с исполнителями">
                         <i class="bi bi-archive-fill"></i>
                         {#                        Файлы с исполнителями#}
                     </a>
-                    <a href="{% url 'app:executor_phones_file_list' %}" class="btn btn-primary mb-2" title="Файлы с номерами телефонов">
+                    <a href="{% url 'app:executor_phones_file_list' %}" class="btn btn-primary mb-2"
+                       title="Файлы с номерами телефонов">
                         <i class="bi bi-phone"></i>
                         {#                        Файлы с исполнителями#}
                     </a>
@@ -37,15 +40,16 @@
                         <i class="bx bx-sad"></i>
                         {#                        Файлы с часами#}
                     </a>
-{#                    <a href="{% url 'app:executor_create' %}" class="btn btn-success mb-2">#}
-{#                        <i class="bi bi-plus"></i>#}
-                        {#                        Добавить исполнителя#}
-{#                    </a>#}
+                    {#                    <a href="{% url 'app:executor_create' %}" class="btn btn-success mb-2">#}
+                    {#                        <i class="bi bi-plus"></i>#}
+                    {#                        Добавить исполнителя#}
+                    {#                    </a>#}
                 </div>
             {% endif %}
         </div>
     </div><!-- End Page Title -->
 {% endblock %}
+
 
 {% block content %}
     {% include 'include/executor/detail_modal.html' %}

@@ -6,6 +6,7 @@ app_name = 'app'
 urlpatterns = [
     # Flat pages
     path('', views.home, name='home'),
+    path('profile', views.profile, name='profile'),
     path('statistic', views.statistic, name='statistic'),
     path('statistic/json', views.statistic_json, name='statistic_json'),
 
@@ -17,6 +18,9 @@ urlpatterns = [
     path('staff/<int:pk>', views.user_detail, name='user_delete'),
     path('staff/<int:pk>/update', views.user_update, name='user_update'),
     path('staff/<int:pk>/delete', views.user_delete, name='user_delete'),
+
+    # Curator
+    path('staff/curator/<str:username>', views.curator_detail, name='curator_detail'),
 
     # Executor phone Files
     path('executor/phones/file', views.executor_phones_file_list, name='executor_phones_file_list'),

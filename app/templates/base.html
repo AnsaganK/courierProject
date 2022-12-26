@@ -213,7 +213,7 @@
                     </li>
 
                     <li>
-                        <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                        <a class="dropdown-item d-flex align-items-center" href="{% url 'app:profile' %}">
                             <i class="bi bi-person"></i>
                             <span>Профиль</span>
                         </a>
@@ -257,162 +257,13 @@
 
 </header><!-- End Header -->
 
-<!-- ======= Sidebar ======= -->
-<aside id="sidebar" class="sidebar">
-
-    <ul class="sidebar-nav" id="sidebar-nav">
-        <hr>
-        <li class="nav-heading">Основное</li>
-        <hr>
-        {% if request.user|check_role:'admin' %}
-            <li class="nav-item">
-                <a class="nav-link {% if request.path != '/' %}collapsed{% endif %}" href="{% url 'app:home' %}">
-                    <i class="bi bi-grid"></i>
-                    <span>Главная</span>
-                </a>
-            </li><!-- End Dashboard Nav -->
-        {% endif %}
-
-        <li class="nav-item">
-            <a class="nav-link {% if request.path != '/statistic' %}collapsed{% endif %}"
-               href="{% url 'app:statistic' %}">
-                <i class="bi bi-bar-chart"></i>
-                <span>Статистика</span>
-            </a>
-        </li><!-- End Dashboard Nav -->
-        {% if request.user|check_role:'admin' %}
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
-                    <i class="bi bi-calculator"></i>
-                    <span>Калькулятор</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}
-                {% else %}collapsed{% endif %}"
-                   data-bs-target="#forms-service-nav"
-                   data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-person-badge"></i>
-                    <span>Упр. персонал</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="forms-service-nav"
-                    class="nav-content {% if '/staff/curator' in request.path or '/staff/admin' in request.path or '/staff/support' in request.path %}
-                    {% else %}collapse{% endif %} "
-                    data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="{% url 'app:curator_list' %}"
-                           class="{% if '/staff/curator' in request.path %}active{% endif %}">
-                            <i class="bi bi-circle"></i><span>Кураторы</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'app:support_list' %}"
-                           class="{% if '/staff/support' in request.path %}active{% endif %}">
-                            <i class="bi bi-circle"></i><span>Тех. поддержка</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'app:admin_list' %}"
-                           class="{% if '/staff/admin' in request.path %}active{% endif %}">
-                            <i class="bi bi-circle"></i><span>Админы</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if '/executor' not in request.path %}collapsed{% endif %}"
-                   href="{% url 'app:executor_list' %}">
-                    <i class="bi bi-people"></i>
-                    <span>Исполнители</span>
-                </a>
-            </li>
-        {% endif %}
-        {% if request.user|check_role:'curator' %}
-            <li class="nav-item">
-                <a class="nav-link {% if '/executor' not in request.path or '/free' in request.path %}collapsed{% endif %}"
-                   href="{% url 'app:executor_list_my' %}">
-                    <i class="bi bi-people"></i>
-                    <span>Мои исполнители ({{ request.user.executors.count }})</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if '/executor/free' not in request.path %}collapsed{% endif %}"
-                   href="{% url 'app:executor_list_free' %}">
-                    <i class="bi bi-people"></i>
-                    <span>Свободные исполнители</span>
-                </a>
-            </li>
-        {% endif %}
-        {% if request.user|check_role:'admin' %}
-            <li class="nav-item">
-                <a class="nav-link {% if '/bicycle' not in request.path %}collapsed{% endif %}"
-                   href="{% url 'app:bicycle_list' %}">
-                    <i class="bi bi-bicycle"></i>
-                    <span>Велосипеды</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if '/transport' not in request.path %}collapsed{% endif %}"
-                   href="{% url 'app:transport_list' %}">
-                    <i class="bx bx-car"></i>
-                    <span>Транспорт</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link
-                        {% if '/city' in request.path or '/OFC' in request.path %}{% else %}collapsed{% endif %}"
-                   data-bs-target="#forms-nav"
-                   data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-cursor-fill"></i>
-                    <span>Места</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="forms-nav" class="nav-content
-                    {% if '/city' in request.path or '/OFC' in request.path %}{% else %}collapse{% endif %} "
-                    data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="{% url 'app:city_list' %}" class="{% if '/city' in request.path %}active{% endif %}">
-                            <i class="bi bi-circle"></i><span>Города</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'app:ofc_list' %}" class="{% if '/OFC' in request.path %}active{% endif %}">
-                            <i class="bi bi-circle"></i><span>ЦФЗ</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        {% endif %}
-
-        {% if request.user|check_role:'admin' %}
-            <hr>
-            <li class="nav-heading">Прочее</li>
-            <hr>
-            <li class="nav-item">
-                <a class="nav-link {% if '/archive' not in request.path %}collapsed{% endif %}"
-                   href="{% url 'app:archive_file_list' %}">
-                    <i class="bx bx-archive"></i>
-                    <span>Архив</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if '/citizenship' != request.path %}collapsed{% endif %}"
-                   href="{% url 'app:citizenship_list' %}">
-                    <i class="bx bxs-flag-alt"></i>
-                    <span>Гражданства</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {% if '/citizenship/type' not in request.path %}collapsed{% endif %}"
-                   href="{% url 'app:citizenship_type_list' %}">
-                    <i class="bx bx-command"></i>
-                    <span>Типы гражданства</span>
-                </a>
-            </li>
-            </ul>
-        {% endif %}
-
-</aside><!-- End Sidebar-->
+{% block sidebar %}
+    {% if request.user|check_role:'admin' %}
+        {% include 'include/sidebar/admin.html' %}
+    {% elif request.user|check_role:'curator' %}
+        {% include 'include/sidebar/curator_preview.html' %}
+    {% endif %}
+{% endblock %}
 
 <main id="main" class="main">
 

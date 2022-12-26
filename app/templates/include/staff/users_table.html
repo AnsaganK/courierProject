@@ -23,6 +23,9 @@
                 <td>{{ user.profile.password1 }}</td>
                 <td>{{ user.executors.count }}</td>
                 <td>
+                    <a href="" class="me-3">
+                        <i class="bi bi-arrow-right-square text-success"></i>
+                    </a>
                     <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
                        data-update-url="{% url 'app:user_update' user.pk %}"
                        data-last-name="{{ user.last_name }}"

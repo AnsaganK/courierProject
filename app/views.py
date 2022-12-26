@@ -19,18 +19,16 @@ from app.service.executor import get_query_parameters, get_active_executors, get
 from app.service.export import generate_file_for_executors
 from app.service.file import get_file_data
 from app.service.period import get_last_periods
+from app.service.staff import get_executors_context_for_user
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task, \
     create_executor_phones_for_file_task
-from app.utils import check_role
+from app.utils import check_role, WEEK_DAYS
 from utils import show_form_errors, get_generated_password, get_paginator
 
 CURATOR = Profile.RoleChoices.CURATOR
 ADMIN = Profile.RoleChoices.ADMIN
 SUPPORT = Profile.RoleChoices.SUPPORT
-WEEK_DAYS = [
-    # 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'
-    'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВСК'
-]
+ACCOUNTANT = Profile.RoleChoices.ACCOUNTANT
 
 
 #
@@ -85,6 +83,25 @@ def statistic(request):
     context.update(get_query_parameters(request, executors, paginate=True))
     context.update({'week_days': WEEK_DAYS})
     return render(request, 'app/page/statistic.html', context)
+
+
+@login_required
+def profile(request):
+    user = request.user
+    role = user.profile.role
+    if role == ADMIN:
+        return render(request, 'app/staff/admin/profile.html', {
+            'user': user
+        })
+    elif role == CURATOR:
+        return render(request, 'app/staff/curator/profile.html', {
+            'user': user
+        })
+    elif role == SUPPORT:
+        return render(request, 'app/staff/support/profile.html', {
+            'user': user
+        })
+    return redirect(reverse('app:home'))
 
 
 @login_required
@@ -296,6 +313,13 @@ def curator_list(request):
 
 @login_required
 @check_role([ADMIN])
+def curator_detail(request, username):
+    user = get_object_or_404(User, username=username)
+    return render('')
+
+
+@login_required
+@check_role([ADMIN])
 def support_list(request):
     supports = User.objects.filter(profile__role=Profile.RoleChoices.SUPPORT)
     roles = Profile.RoleChoices.choices
@@ -387,46 +411,16 @@ def executor_create(request):
 @check_role([ADMIN, CURATOR])
 def executor_list(request):
     user = request.user
-    profile = user.profile
-    if profile.role == ADMIN:
-        executors = Executor.objects.all()
-    else:
-        executors = Executor.objects.filter(curator=request.user)
-
-    executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
-        '-sum_hours')
-
-    context = {
-        'executor_debtor_ids': Executor.objects.exclude(
-            id__in=get_active_executors().values_list('id', flat=True)).exclude(bicycle=None).values_list('id',
-                                                                                                          flat=True)
-    }
-    context.update(get_query_parameters(request, executors))
-    context.update({'week_days': WEEK_DAYS})
+    context = get_executors_context_for_user(request, user)
     return render(request, 'app/executor/list.html', context)
 
 
-@login_required()
-def executor_list_export(request):
-    user = request.user
-    profile = user.profile
-    if profile.role == ADMIN:
-        executors = Executor.objects.all()
-    else:
-        executors = Executor.objects.filter(curator=request.user)
-
-    executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
-        '-sum_hours')
-
-    context = {
-        'executor_debtor_ids': Executor.objects.exclude(
-            id__in=get_active_executors().values_list('id', flat=True)).exclude(bicycle=None).values_list('id',
-                                                                                                          flat=True)
-    }
-    context.update(get_query_parameters(request, executors))
-    context.update({'week_days': WEEK_DAYS})
+@login_required
+@check_role([ADMIN])
+def executor_list_by_curator(request, username):
+    user = get_object_or_404(User, username=username)
+    context = get_executors_context_for_user(request, user)
     return render(request, 'app/executor/list.html', context)
-
 
 @login_required
 @check_role([CURATOR])

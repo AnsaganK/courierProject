@@ -5,6 +5,10 @@ from django.shortcuts import render, redirect, reverse
 
 from app.models import Profile
 
+WEEK_DAYS = [
+    'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВСК'
+]
+
 
 def check_role(roles: list, redirect_url: Optional[str] = None):
     def decorator(function):
