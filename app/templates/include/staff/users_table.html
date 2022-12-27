@@ -17,7 +17,11 @@
             <tr>
                 <th scope="row">{{ forloop.counter }}</th>
                 <td>
-                    <a href="{% url 'app:curator_preview_statistic' user.username %}">{{ user.profile.get_full_name }}</a>
+                    {% if user.profile.role == 'curator' %}
+                        <a href="{% url 'app:curator_preview_statistic' user.username %}">{{ user.profile.get_full_name }}</a>
+                    {% else %}
+                        {{ user.profile.get_full_name }}
+                    {% endif %}
                 </td>
                 <td>{{ user.email|default:' - ' }}</td>
                 <td>{{ user.profile.phone_number|default:' - ' }}</td>

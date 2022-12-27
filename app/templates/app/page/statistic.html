@@ -43,12 +43,12 @@
         <div class="row justify-content-between executor_table_content">
             <div class="col-12 col-lg-9" id="executor_list_col">
                 {% if executors %}
-                    <div class="w-100 overflow-auto">
+                    <div class="w-100 overflow_div">
                         <table id="statistic_table" class="table table-responsive-sm table-bordered text-center"
                                data-current-page="1"
                                data-next-page="{% if executors.has_next %}{{ executors.next_page_number }}{% else %}0
 {% endif %}">
-                            <thead>
+                            <thead class="sticky_thead">
                             <tr class="align-middle">
                                 <th rowspan="3">#</th>
                                 <th rowspan="3">ID</th>
@@ -59,7 +59,7 @@
                                 <th rowspan="3" class="additional">Номер</th>
                                 <th rowspan="3" class="additional">Рекрутер</th>
                                 {% for period in periods %}
-                                    <th><span class="text-custom"
+                                    <th><span style="position:sticky;margin-top: 100px"
                                               title="За данный период {{ period.get_executors_count }} исполнителей">{{ period.start_date|date:'d.m' }} - {{ period.final_date|date:'d.m' }}</span>
                                     </th>
                                 {% endfor %}
@@ -69,7 +69,7 @@
                             </tr>
                             <tr>
                                 {% for period in periods %}
-                                    <th>{{ executor_ids|get_hours_for_period:period.id }} Ч.</th>
+                                    <th>{{ executor_ids|get_hours_for_period:period.id }}</th>
                                 {% endfor %}
                             </tr>
                             </thead>
