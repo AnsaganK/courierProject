@@ -546,6 +546,7 @@ def executor_detail_json(request, executor_id):
 
     executor_serialize = serialize('json', [executor, ]),
     executor_json = json.loads(executor_serialize[0])[0]["fields"]
+    executor_json["curator"] = executor.curator.profile.get_full_name if executor.curator else None
     executor_json["transport"] = executor.transport.name if executor.transport else None
     executor_json["OFC"] = executor.OFC.address if executor.OFC else None
     executor_json["citizenship"] = executor.citizenship.name if executor.citizenship else None

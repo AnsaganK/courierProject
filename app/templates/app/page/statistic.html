@@ -125,7 +125,7 @@
                                     </td>
                                     <td class="additional">{{ executor.OFC|default:'-' }}</td>
                                     <td class="additional">{{ executor.phone_number|default:'-' }}</td>
-                                    <td class="additional">{{ executor.curator.get_full_name }}</td>
+                                    <td class="additional">{{ executor.curator.get_full_name|default:'-' }}</td>
                                     {% for period in periods %}
                                         <td>{{ executor|get_hours_for_period:period.id }}</td>
                                     {% endfor %}
