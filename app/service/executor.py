@@ -106,7 +106,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     count = executors.count()
     executor_ids = executors.values_list('id', flat=True)
     if paginate:
-        executors = get_paginator(request, executors, 40)
+        executors = get_paginator(request, executors, 10)
         if returned_json:
             last_periods = get_last_periods()
             executors_json = _get_executor_json_list(executors, last_periods)

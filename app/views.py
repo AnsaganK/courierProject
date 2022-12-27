@@ -106,10 +106,14 @@ def profile(request):
 @login_required
 @check_role([ADMIN, CURATOR])
 def statistic_json(request):
-    last_periods = get_last_periods()
     executors = get_active_executors()
 
-    user = request.user
+    username = request.GET.get('curator')
+    if username:
+        user = get_object_or_404(User, username=username)
+    else:
+        user = request.user
+
     profile = user.profile
     if profile.role == CURATOR:
         executors = executors.filter(curator=user)
