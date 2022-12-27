@@ -304,7 +304,7 @@ def user_create(request):
 @login_required
 @check_role([ADMIN])
 def curator_list(request):
-    curators = User.objects.filter(profile__role=Profile.RoleChoices.CURATOR)
+    curators = User.objects.filter(profile__role=Profile.RoleChoices.CURATOR).order_by('-pk')
     roles = Profile.RoleChoices.choices
     password = get_generated_password()
     return render(request, 'app/staff/curator/list.html', {
