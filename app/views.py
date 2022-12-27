@@ -23,6 +23,7 @@ from app.service.staff import get_executors_context_for_user
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task, \
     create_executor_phones_for_file_task
 from app.utils import check_role, WEEK_DAYS
+from constants import HOST
 from utils import show_form_errors, get_generated_password, get_paginator
 
 CURATOR = Profile.RoleChoices.CURATOR
@@ -538,7 +539,9 @@ def executor_detail(request, executor_id):
         'curators': User.objects.filter(profile__role=Profile.RoleChoices.CURATOR),
         'ofcs': OFC.objects.all(),
         'transports': Transport.objects.all(),
-        'contact_types': Contact.TypeChoices.choices
+        'contact_types': Contact.TypeChoices.choices,
+
+        'host': HOST
     })
 
 

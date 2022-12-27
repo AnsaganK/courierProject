@@ -476,12 +476,13 @@
                                 <i class="bi bi-upload"></i>
                                 Выгрузить в excel
                             </a>
-                            <a href="#" onclick="copy('{{ request.build_absolute_uri }}/hours')"
+                            <a href="#"
+                               onclick="copy('{{ host }}{% url 'app:executor_hours_detail' executor.executor_id %}')"
                                class="btn btn-outline-success m-1">
                                 <i class="bx bx-select-multiple"></i>
                                 Скопировать
                             </a>
-                            <a href="{% url 'app:executor_hours_detail' executor.executor_id %}"
+                            <a href="{{ host }}{% url 'app:executor_hours_detail' executor.executor_id %}"
                                class="btn btn-outline-success m-1">
                                 <i class="bx bx-link"></i>
                                 Перейти
