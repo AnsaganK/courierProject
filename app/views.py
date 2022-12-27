@@ -358,7 +358,7 @@ def curator_preview_executor_list(request, username):
 @check_role([ADMIN])
 def curator_preview_executor_free_list(request, username):
     user = get_object_or_404(User, username=username)
-    executors = get_active_executors().filter(curator=None)
+    executors = get_active_executors().filter(curator=None).order_by('-created_at')
     context = get_query_parameters(request, executors)
     context.update({'week_days': WEEK_DAYS})
     context.update({'curator': user, 'is_curator_preview': True})
@@ -465,7 +465,7 @@ def executor_list(request):
 @login_required
 @check_role([CURATOR])
 def executor_list_free(request):
-    executors = get_active_executors().filter(curator=None)
+    executors = get_active_executors().filter(curator=None).order_by('-created_at')
     context = get_query_parameters(request, executors)
     context.update({'week_days': WEEK_DAYS})
     return render(request, 'app/executor/free.html', context)
