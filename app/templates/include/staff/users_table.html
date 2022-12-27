@@ -16,7 +16,9 @@
         {% for user in users %}
             <tr>
                 <th scope="row">{{ forloop.counter }}</th>
-                <td>{{ user.profile.get_full_name }}</td>
+                <td>
+                    <a href="{% url 'app:curator_preview_statistic' user.username %}">{{ user.profile.get_full_name }}</a>
+                </td>
                 <td>{{ user.email|default:' - ' }}</td>
                 <td>{{ user.profile.phone_number|default:' - ' }}</td>
                 <td>{{ user.username }}</td>

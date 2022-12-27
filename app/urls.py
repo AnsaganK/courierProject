@@ -21,6 +21,10 @@ urlpatterns = [
 
     # Curator
     path('staff/curator/<str:username>', views.curator_detail, name='curator_detail'),
+    path('staff/curator/<str:username>/statistic', views.curator_preview_statistic, name='curator_preview_statistic'),
+    path('staff/curator/<str:username>/executors', views.curator_preview_executor_list, name='curator_preview_executor_list'),
+    path('staff/curator/<str:username>/free', views.curator_preview_executor_free_list, name='curator_preview_executor_free_list'),
+    path('staff/curator/<str:username>/add/<int:pk>', views.executor_add_for_curator_by_admin, name='executor_add_for_curator_by_admin'),
 
     # Executor phone Files
     path('executor/phones/file', views.executor_phones_file_list, name='executor_phones_file_list'),

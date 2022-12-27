@@ -69,7 +69,11 @@
                                 <td>
                                     <a href="#add_modal" data-bs-toggle="modal" data-bs-target="#add_modal"
                                        class="me-3" title="Добавить исполнителя"
+                                            {% if is_curator_preview %}
+                                       data-add-url="{% url 'app:executor_add_for_curator_by_admin' curator.username executor.pk %}"
+                                            {% else %}
                                        data-add-url="{% url 'app:executor_add_for_curator' executor.pk %}"
+                                            {% endif %}
                                        data-full-name="{{ executor.get_full_name }}"
                                        data-executor-id="{{ executor.executor_id|default:'-' }}"
                                        data-birth-date="{{ executor.birth_date|default:'-' }}"

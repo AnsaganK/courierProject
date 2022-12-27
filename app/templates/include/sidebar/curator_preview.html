@@ -5,8 +5,15 @@
         <hr>
         <li class="nav-heading">Управление</li>
         <li class="nav-item">
+            <a class="nav-link bg-secondary text-white"
+               href="">
+                <i class="bi bi-person text-white"></i>
+            <span>{{ curator.get_full_name }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link {% if '/' != request.path %}collapsed{% endif %}"
-               href="{% url 'app:home' %}">
+               href="{% url 'app:curator_list' %}">
                 <i class="bx bx-log-out"></i>
                 <span>Назад</span>
             </a>
@@ -15,22 +22,22 @@
         <hr>
         <li class="nav-heading">Основное</li>
         <li class="nav-item">
-            <a class="nav-link {% if request.path != '/statistic' %}collapsed{% endif %}"
-               href="{% url 'app:statistic' %}">
+            <a class="nav-link {% if curator.username|add:'/statistic' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:curator_preview_statistic' curator.username %}">
                 <i class="bi bi-bar-chart"></i>
                 <span>Статистика</span>
             </a>
         </li><!-- End Dashboard Nav -->
         <li class="nav-item">
             <a class="nav-link {% if '/executor' not in request.path or '/free' in request.path %}collapsed{% endif %}"
-               href="{% url 'app:executor_list_my' %}">
+               href="{% url 'app:curator_preview_executor_list' curator.username %}">
                 <i class="bi bi-people"></i>
-                <span>Мои исполнители ({{ request.user.executors.count }})</span>
+                <span>Мои исполнители ({{ curator.executors.count }})</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if '/executor/free' not in request.path %}collapsed{% endif %}"
-               href="{% url 'app:executor_list_free' %}">
+            <a class="nav-link {% if curator.username|add:'/free' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:curator_preview_executor_free_list' curator.username %}">
                 <i class="bi bi-people"></i>
                 <span>Свободные исполнители</span>
             </a>

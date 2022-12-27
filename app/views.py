@@ -79,9 +79,8 @@ def statistic(request):
     executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
         'sum_hours')
 
-    context = {'periods': get_last_periods()}
+    context = {'periods': get_last_periods(), 'week_days': WEEK_DAYS}
     context.update(get_query_parameters(request, executors, paginate=True))
-    context.update({'week_days': WEEK_DAYS})
     return render(request, 'app/page/statistic.html', context)
 
 
@@ -315,7 +314,51 @@ def curator_list(request):
 @check_role([ADMIN])
 def curator_detail(request, username):
     user = get_object_or_404(User, username=username)
-    return render('')
+    return render(request, 'app/staff/curator/profile.html', {
+        'user': user
+    })
+
+
+@login_required
+@check_role([ADMIN])
+def curator_preview_statistic(request, username):
+    user = get_object_or_404(User, username=username)
+    profile = user.profile
+
+    executors = get_active_executors()
+    if request.GET.get('export') == 'true':
+        file = generate_file_for_executors(request, executors)
+        return file
+    if profile.role == CURATOR:
+        executors = executors.filter(curator=user)
+
+    executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
+        'sum_hours')
+
+    context = {'periods': get_last_periods(), 'week_days': WEEK_DAYS}
+    context.update(get_query_parameters(request, executors, paginate=True))
+    context.update({'curator': user, 'is_curator_preview': True})
+    return render(request, 'app/page/statistic.html', context)
+
+
+@login_required
+@check_role([ADMIN])
+def curator_preview_executor_list(request, username):
+    user = get_object_or_404(User, username=username)
+    context = get_executors_context_for_user(request, user)
+    context.update({'curator': user, 'is_curator_preview': True})
+    return render(request, 'app/executor/list.html', context)
+
+
+@login_required
+@check_role([ADMIN])
+def curator_preview_executor_free_list(request, username):
+    user = get_object_or_404(User, username=username)
+    executors = get_active_executors().filter(curator=None)
+    context = get_query_parameters(request, executors)
+    context.update({'week_days': WEEK_DAYS})
+    context.update({'curator': user, 'is_curator_preview': True})
+    return render(request, 'app/executor/free.html', context)
 
 
 @login_required
@@ -416,19 +459,26 @@ def executor_list(request):
 
 
 @login_required
-@check_role([ADMIN])
-def executor_list_by_curator(request, username):
-    user = get_object_or_404(User, username=username)
-    context = get_executors_context_for_user(request, user)
-    return render(request, 'app/executor/list.html', context)
-
-@login_required
 @check_role([CURATOR])
 def executor_list_free(request):
     executors = get_active_executors().filter(curator=None)
     context = get_query_parameters(request, executors)
     context.update({'week_days': WEEK_DAYS})
     return render(request, 'app/executor/free.html', context)
+
+
+@login_required
+@check_role([ADMIN])
+def executor_add_for_curator_by_admin(request, username, pk):
+    user = get_object_or_404(User, username=username)
+    executor = get_object_or_404(Executor, pk=pk)
+    if not executor.curator:
+        executor.curator = user
+        executor.save()
+        messages.success(request, f'Исполнитель "{executor.get_full_name}" добавлен')
+    else:
+        messages.error(request, f'У данного исполнителя есть куратор: {executor.curator.get_full_name()}')
+    return redirect(reverse('app:curator_preview_executor_free_list', args=[username]))
 
 
 @login_required

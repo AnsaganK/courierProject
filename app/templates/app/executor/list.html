@@ -19,7 +19,7 @@
                     </ol>
                 </nav>
             </div>
-            {% if request.user|check_role:'admin' %}
+            {% if request.user|check_role:'admin' and not is_curator_preview%}
                 <div class="col-auto">
                     <a href="{% url 'app:executor_hours_file_list' %}" class="btn btn-primary mb-2"
                        title="Файлы с часами">
@@ -149,7 +149,7 @@
                                                 <i class="bx bxl-whatsapp text-danger"></i>
                                             </a>
                                         {% endif %}
-                                        {% if request.user|check_role:'admin' %}
+                                        {% if request.user|check_role:'admin' and not is_curator_preview %}
                                             <a href="#delete"
                                                class="col"
                                                data-bs-toggle="modal" data-bs-target="#delete_modal"
