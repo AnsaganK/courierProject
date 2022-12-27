@@ -68,6 +68,9 @@ def home(request):
 @check_role([ADMIN, CURATOR])
 def statistic(request):
     executors = get_active_executors()
+
+    if request.user.profile.role == CURATOR:
+        executors = executors.filter(curator=request.user)
     if request.GET.get('export') == 'true':
         file = generate_file_for_executors(request, executors)
         return file
@@ -329,7 +332,7 @@ def curator_preview_statistic(request, username):
     user = get_object_or_404(User, username=username)
     profile = user.profile
 
-    executors = get_active_executors()
+    executors = get_active_executors().filter(curator=user)
     if request.GET.get('export') == 'true':
         file = generate_file_for_executors(request, executors)
         return file
