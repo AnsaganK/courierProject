@@ -486,6 +486,12 @@ def executor_add_for_curator_by_admin(request, username, pk):
         messages.success(request, f'Исполнитель "{executor.get_full_name}" добавлен')
     else:
         messages.error(request, f'У данного исполнителя есть куратор: {executor.curator.get_full_name()}')
+
+    next = request.GET.get('next')
+    if next:
+        next_url = f'http://{HOST}{request.build_absolute_uri().split("?next=")[1]}'
+        return redirect(next_url)
+
     return redirect(reverse('app:curator_preview_executor_free_list', args=[username]))
 
 
@@ -500,6 +506,12 @@ def executor_add_for_curator(request, pk):
         messages.success(request, f'Исполнитель "{executor.get_full_name}" добавлен')
     else:
         messages.error(request, f'У данного исполнителя есть куратор: {executor.curator.get_full_name()}')
+
+    next = request.GET.get('next')
+    if next:
+        next_url = f'http://{HOST}{request.build_absolute_uri().split("?next=")[1]}'
+        return redirect(next_url)
+
     return redirect(reverse('app:executor_list_free'))
 
 
