@@ -6,9 +6,9 @@
         <li class="nav-heading">Управление</li>
         <li class="nav-item">
             <a class="nav-link bg-secondary text-white"
-               href="">
+               href="#">
                 <i class="bi bi-person text-white"></i>
-            <span>{{ curator.get_full_name }}</span>
+                <span>{{ curator.get_full_name }}</span>
             </a>
         </li>
         <li class="nav-item">
@@ -40,6 +40,13 @@
                href="{% url 'app:curator_preview_executor_free_list' curator.username %}">
                 <i class="bi bi-people"></i>
                 <span>Свободные исполнители</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/executor/sum' not in request.path %}collapsed{% endif %}"
+               href="">
+                <i class="bx bx-money"></i>
+                <span>Оплата</span>
             </a>
         </li>
     </ul>
