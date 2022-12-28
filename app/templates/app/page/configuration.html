@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Конфигурация
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="pagetitle">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+                <h1>Концигурация</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item active">Концигурация</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="col-12">
+
+        <div class="card">
+            <div class="card-body pt-3">
+                <div class="row justify-content-center">
+                    <h5 class="card-title text-center">Конфигурационные данные</h5>
+                    <span class="text-center text-black-50 mt-1 mb-4">Последнее изм.: {{ executor_config.updated_at }}</span>
+
+                    <div class="col-6">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <div class="row mb-3">
+                                <label for="internship_hours" class="col-sm-3 col-form-label">Кол-во часов за
+                                    стажировку</label>
+                                <div class="col-sm-9">
+                                    <input type="number" id="internship_hours" name="internship_hours"
+                                           class="form-control"
+                                           value="{{ executor_config.internship_hours }}">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="initial_hours" class="col-sm-3 col-form-label">Базовое кол-во часов</label>
+                                <div class="col-sm-9">
+                                    <input type="number" id="initial_hours" name="initial_hours" class="form-control"
+                                           value="{{ executor_config.initial_hours }}">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="referral_executor_sum" class="col-sm-3 col-form-label">Вознаграждение за
+                                    "ПРИВЕДИ
+                                    ДРУГА"</label>
+                                <div class="col-sm-9">
+                                    <input type="number" id="referral_executor_sum" name="referral_executor_sum"
+                                           class="form-control"
+                                           value="{{ executor_config.referral_executor_sum }}">
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Изменить данные</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -12,9 +12,10 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
-    CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorForm
+    CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorForm, \
+    ExecutorConfigForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorHours, \
-    Day, DayHour, Contact, Period, Transport
+    Day, DayHour, Contact, Period, Transport, ExecutorConfig
 from app.service.executor import get_query_parameters, get_active_executors, get_filtered_executors
 from app.service.export import generate_file_for_executors
 from app.service.file import get_file_data
@@ -129,6 +130,27 @@ def statistic_json(request):
     return JsonResponse(
         executors
     )
+
+
+@login_required
+@check_role([ADMIN])
+def configuration(request):
+    executor_config = ExecutorConfig.objects.first()
+    if request.method == 'POST':
+        form = ExecutorConfigForm(request.POST, instance=executor_config)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Конфигурация успешно изменена')
+        else:
+            show_form_errors(request, form.errors)
+        return redirect(reverse('app:configuration'))
+    if not executor_config:
+        executor_config = ExecutorConfig.objects.create()
+        executor_config.save()
+
+    return render(request, 'app/page/configuration.html', {
+        'executor_config': executor_config
+    })
 
 
 #
@@ -298,11 +320,12 @@ def user_create(request):
             if profile_form.is_valid():
                 profile = profile_form.save()
                 messages.success(request, f'{profile.get_role_display()} создан')
+                return redirect(user.profile.get_redirect_url_by_role())
             else:
                 show_form_errors(request, profile_form.errors)
         else:
             show_form_errors(request, user_form.errors)
-    return redirect(reverse('app:curator_list'))
+    return redirect('app:home')
 
 
 @login_required
@@ -377,6 +400,19 @@ def support_list(request):
     password = get_generated_password()
     return render(request, 'app/staff/support/list.html', {
         'supports': supports,
+        'password': password,
+        'roles': roles
+    })
+
+
+@login_required
+@check_role([ADMIN])
+def accountant_list(request):
+    accountants = User.objects.filter(profile__role=Profile.RoleChoices.ACCOUNTANT)
+    roles = Profile.RoleChoices.choices
+    password = get_generated_password()
+    return render(request, 'app/staff/accountant/list.html', {
+        'accountants': accountants,
         'password': password,
         'roles': roles
     })

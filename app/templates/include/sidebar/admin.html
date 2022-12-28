@@ -26,7 +26,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if '/staff/curator' in request.path or '/staff/admin' in request.path %}
+            <a class="nav-link {% if '/staff/curator' in request.path or '/staff/admin' in request.path or '/staff/support' in request.path or '/staff/accountant' in request.path %}
                 {% else %}collapsed{% endif %}"
                data-bs-target="#forms-service-nav"
                data-bs-toggle="collapse" href="#">
@@ -34,7 +34,7 @@
                 <span>Упр. персонал</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="forms-service-nav"
-                class="nav-content {% if '/staff/curator' in request.path or '/staff/admin' in request.path or '/staff/support' in request.path %}
+                class="nav-content {% if '/staff/curator' in request.path or '/staff/admin' in request.path or '/staff/support' in request.path or '/staff/accountant' in request.path %}
                     {% else %}collapse{% endif %} "
                 data-bs-parent="#sidebar-nav">
                 <li>
@@ -47,6 +47,12 @@
                     <a href="{% url 'app:support_list' %}"
                        class="{% if '/staff/support' in request.path %}active{% endif %}">
                         <i class="bi bi-circle"></i><span>Тех. поддержка</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'app:accountant_list' %}"
+                       class="{% if '/staff/accountant' in request.path %}active{% endif %}">
+                        <i class="bi bi-circle"></i><span>Бухгалтера</span>
                     </a>
                 </li>
                 <li>
@@ -125,6 +131,13 @@
                href="{% url 'app:citizenship_type_list' %}">
                 <i class="bx bx-command"></i>
                 <span>Типы гражданства</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/configuration' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:configuration' %}">
+                <i class="bx bx-wrench"></i>
+                <span>Конфигурация</span>
             </a>
         </li>
     </ul>

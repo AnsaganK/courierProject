@@ -9,10 +9,12 @@ urlpatterns = [
     path('profile', views.profile, name='profile'),
     path('statistic', views.statistic, name='statistic'),
     path('statistic/json', views.statistic_json, name='statistic_json'),
+    path('configuration', views.configuration, name='configuration'),
 
     # Staffs
     path('staff/curator', views.curator_list, name='curator_list'),
     path('staff/support', views.support_list, name='support_list'),
+    path('staff/accountant', views.accountant_list, name='accountant_list'),
     path('staff/admin', views.admin_list, name='admin_list'),
     path('staff/create', views.user_create, name='user_create'),
     path('staff/<int:pk>', views.user_detail, name='user_delete'),
@@ -22,9 +24,12 @@ urlpatterns = [
     # Curator
     path('staff/curator/<str:username>', views.curator_detail, name='curator_detail'),
     path('staff/curator/<str:username>/statistic', views.curator_preview_statistic, name='curator_preview_statistic'),
-    path('staff/curator/<str:username>/executors', views.curator_preview_executor_list, name='curator_preview_executor_list'),
-    path('staff/curator/<str:username>/free', views.curator_preview_executor_free_list, name='curator_preview_executor_free_list'),
-    path('staff/curator/<str:username>/add/<int:pk>', views.executor_add_for_curator_by_admin, name='executor_add_for_curator_by_admin'),
+    path('staff/curator/<str:username>/executors', views.curator_preview_executor_list,
+         name='curator_preview_executor_list'),
+    path('staff/curator/<str:username>/free', views.curator_preview_executor_free_list,
+         name='curator_preview_executor_free_list'),
+    path('staff/curator/<str:username>/add/<int:pk>', views.executor_add_for_curator_by_admin,
+         name='executor_add_for_curator_by_admin'),
 
     # Executor phone Files
     path('executor/phones/file', views.executor_phones_file_list, name='executor_phones_file_list'),

@@ -2,7 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from app.models import Profile, City, Bicycle, Citizenship, CitizenshipType, OFC, ArchiveFile, Executor, Contact
+from app.models import Profile, City, Bicycle, Citizenship, CitizenshipType, OFC, ArchiveFile, Executor, Contact, \
+    ExecutorConfig
 
 
 #
@@ -112,3 +113,12 @@ class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
         fields = ['identifier', 'type']
+
+
+#
+#                           Config Forms
+#
+class ExecutorConfigForm(forms.ModelForm):
+    class Meta:
+        model = ExecutorConfig
+        fields = '__all__'

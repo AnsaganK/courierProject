@@ -426,6 +426,47 @@ class DayHour(BaseModel):
         pass
 
 
+class ExecutorConfig(BaseModel):
+    internship_hours = models.IntegerField(default=4)
+    initial_hours = models.IntegerField(default=50)
+
+    referral_executor_sum = models.IntegerField(default=3000)
+
+    class Meta:
+        verbose_name = 'Конфиг исполнителей'
+        verbose_name_plural = 'Конфиг исполнителей'
+        ordering = ['-pk']
+
+    def __str__(self):
+        return str(self.pk)
+
+    @property
+    def current(self):
+        return ExecutorConfig.objects.all().order_by('-pk').first()
+
+    def save(self, *args, **kwargs):
+        if ExecutorConfig.objects.count() > 1:
+            return False  # or you can raise validation error
+        super(ExecutorConfig, self).save(*args, **kwargs)
+
+
+class CuratorPayment(models.Model):
+    curator = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='payments')
+    payment_for_internship = models.IntegerField(default=500, verbose_name='Оплата за стажировку')
+    payment_for_hours = models.IntegerField(default=2500, verbose_name='Оплата за часы')
+
+    class Meta:
+        verbose_name = 'Оплата куратору'
+        verbose_name_plural = 'Оплаты кураторам'
+        ordering = ['-pk']
+
+    def __str__(self):
+        return self.curator.get_full_name() if self.curator else str(self.pk)
+
+    def get_absolute_url(self):
+        pass
+
+
 class Profile(BaseModel):
     class RoleChoices(models.TextChoices):
         CURATOR = 'curator', 'Куратор'
@@ -449,6 +490,16 @@ class Profile(BaseModel):
 
     def get_absolute_url(self):
         pass
+
+    def get_redirect_url_by_role(self):
+        if self.role == self.RoleChoices.CURATOR:
+            return reverse('app:curator_list')
+        elif self.role == self.RoleChoices.SUPPORT:
+            return reverse('app:support_list')
+        elif self.role == self.RoleChoices.ACCOUNTANT:
+            return reverse('app:accountant_list')
+        elif self.role == self.RoleChoices.ADMIN:
+            return reverse('app:admin_list')
 
     @property
     def get_full_name(self):
