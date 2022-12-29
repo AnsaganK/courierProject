@@ -87,9 +87,9 @@ urlpatterns = [
     # Bicycle
     path('bicycle', views.bicycle_list, name='bicycle_list'),
     path('bicycle/create', views.bicycle_create, name='bicycle_create'),
-    path('bicycle/<str:code>', views.bicycle_detail, name='bicycle_detail'),
-    path('bicycle/<str:code>/update', views.bicycle_update, name='bicycle_update'),
-    path('bicycle/<str:code>/delete', views.bicycle_delete, name='bicycle_delete'),
+    path('bicycle/<int:pk>', views.bicycle_detail, name='bicycle_detail'),
+    path('bicycle/<int:pk>/update', views.bicycle_update, name='bicycle_update'),
+    path('bicycle/<int:pk>/delete', views.bicycle_delete, name='bicycle_delete'),
 
     # Transport
     path('transport', views.transport_list, name='transport_list'),

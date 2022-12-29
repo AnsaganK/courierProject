@@ -70,7 +70,7 @@ class ProfileForm(forms.ModelForm):
 class BicycleForm(forms.ModelForm):
     class Meta:
         model = Bicycle
-        fields = ['code']
+        fields = ['name']
 
 
 #

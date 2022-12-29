@@ -164,6 +164,34 @@
                         {% endfor %}
                     </div>
                 </div>
+                <div class="mb-3">
+                                    <span class="row justify-content-between align-items-center {% if bicycle_checkboxes %} text-custom {% endif %}"
+                                          data-toggle="collapse"
+                                          data-collapse="bicycle_collapse"
+                                          role="button" aria-expanded="false" aria-controls="bicycle_collapse">
+                                        <span class="col-auto">Велосипед</span>
+                                        {% if bicycle_checkboxes %}
+                                            <i class="col-auto bx bxs-down-arrow"></i>
+                                        {% else %}
+                                            <i class="col-auto bx bxs-left-arrow"></i>
+                                        {% endif %}
+                                    </span>
+                    <hr>
+                    <div class="collapse {% if bicycle_checkboxes %} show {% endif %}"
+                         id="bicycle_collapse">
+                        {% for bicycle in bicycles %}
+                            <input type="checkbox" name="bicycle"
+                                   id="bicycle_{{ bicycle.pk }}"
+                                   class="d-none"
+                                    {% if bicycle.id|stringformat:'i' in bicycle_checkboxes %}
+                                   checked {% endif %}
+                                   value="{{ bicycle.pk }}">
+                            <label class="check_label" for="bicycle_{{ bicycle.pk }}">
+                                {{ bicycle.name }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
 
                 <div class="mb-3">
                                     <span class="row justify-content-between align-items-center {% if min_hours or max_hours %} text-custom {% endif %}"

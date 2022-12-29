@@ -32,7 +32,7 @@ class TariffAdmin(admin.ModelAdmin):
 
 @admin.register(Bicycle)
 class BicycleAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'code']
+    list_display = ['pk', 'name']
 
 
 @admin.register(Citizenship)

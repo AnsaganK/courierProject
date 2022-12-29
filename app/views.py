@@ -614,6 +614,7 @@ def executor_detail(request, executor_id):
         'curators': User.objects.filter(profile__role=Profile.RoleChoices.CURATOR),
         'ofcs': OFC.objects.all(),
         'transports': Transport.objects.all(),
+        'bicycles': Bicycle.objects.all(),
         'contact_types': Contact.TypeChoices.choices,
 
         'host': HOST
@@ -632,6 +633,7 @@ def executor_detail_json(request, executor_id):
     executor_json["OFC"] = executor.OFC.address if executor.OFC else None
     executor_json["citizenship"] = executor.citizenship.name if executor.citizenship else None
     executor_json["citizenship_type"] = executor.citizenship_type.name if executor.citizenship_type else None
+    executor_json["bicycle"] = executor.bicycle.name if executor.bicycle else None
     executor_json["gender"] = executor.get_gender_display() if executor.gender else None
     executor_json["contacts"] = list(
         executor.contacts.all().values_list('type', 'identifier')) if executor.contacts.exists() else None
@@ -717,20 +719,20 @@ def executor_update(request, executor_id):
             contacts = []
         form = ExecutorForm(request.POST, instance=executor)
         if form.is_valid():
-            code = post['bicycle_code']
-
-            bicycle = None
-            if code and code[0]:
-                bicycle = Bicycle.objects.get_or_create(code=code[0])
-                if bicycle[1]:
-                    bicycle[0].save()
-                bicycle = bicycle[0]
-                if bicycle.get_executor:
-                    messages.warning(request, 'Этот велосипед уже занят')
-                    bicycle = executor.bicycle
-
-            executor = form.save(commit=False)
-            executor.bicycle = bicycle
+            # code = post['bicycle_code']
+            #
+            # bicycle = None
+            # if code and code[0]:
+            #     bicycle = Bicycle.objects.get_or_create(code=code[0])
+            #     if bicycle[1]:
+            #         bicycle[0].save()
+            #     bicycle = bicycle[0]
+            #     if bicycle.get_executor:
+            #         messages.warning(request, 'Этот велосипед уже занят')
+            #         bicycle = executor.bicycle
+            #
+            # executor = form.save(commit=False)
+            # executor.bicycle = bicycle
             executor.save()
 
             executor.contacts.all().delete()
@@ -917,7 +919,7 @@ def bicycle_create(request):
         form = BicycleForm(request.POST)
         if form.is_valid():
             bicycle = form.save()
-            messages.success(request, f'Велосипед "{bicycle.code}" создан')
+            messages.success(request, f'Велосипед "{bicycle.name}" создан')
         else:
             show_form_errors(request, form.errors)
     return redirect(reverse('app:bicycle_list'))
@@ -933,32 +935,32 @@ def bicycle_list(request):
 
 
 @login_required
-def bicycle_detail(request, code):
-    bicycle = get_object_or_404(Bicycle, code=code)
+def bicycle_detail(request, pk):
+    bicycle = get_object_or_404(Bicycle, pk=pk)
     return render(request, 'app/bicycle/detail.html', {
         'bicycle': bicycle
     })
 
 
 @login_required
-def bicycle_update(request, code):
-    bicycle = get_object_or_404(Bicycle, code=code)
+def bicycle_update(request, pk):
+    bicycle = get_object_or_404(Bicycle, pk=pk)
     if request.method == 'POST':
         form = BicycleForm(request.POST, instance=bicycle)
         if form.is_valid():
             form.save()
-            messages.success(request, f'Велосипед "{bicycle.code}" изменен')
+            messages.success(request, f'Велосипед "{bicycle.name}" изменен')
         else:
             show_form_errors(request, form.errors)
     return redirect(reverse('app:bicycle_list'))
 
 
 @login_required
-def bicycle_delete(request, code):
-    bicycle = get_object_or_404(Bicycle, code=code)
-    code = bicycle.code
+def bicycle_delete(request, pk):
+    bicycle = get_object_or_404(Bicycle, pk=pk)
+    name = bicycle.name
     bicycle.delete()
-    messages.success(request, f'Велосипед "{code}" удален')
+    messages.success(request, f'Велосипед "{name}" удален')
     return redirect(reverse('app:bicycle_list'))
 
 

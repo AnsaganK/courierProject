@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db.models import Sum, F, Count
 from django.http import HttpRequest
 
-from app.models import Contact, Citizenship, Transport, Period, Executor, City, ExecutorHours
+from app.models import Contact, Citizenship, Transport, Period, Executor, City, ExecutorHours, Bicycle
 from app.service.period import get_last_periods
 from app.templatetags.executor_tags import get_hours_for_period
 from utils import get_paginator
@@ -14,7 +14,7 @@ def get_filtered_executors(request: HttpRequest, executors) -> dict:
     data = dict(request.GET)
     is_filter = 0
     for parameter in data:
-        if parameter in ['phone_number', 'whatsapp', 'citizenship', 'city', 'transport']:
+        if parameter in ['phone_number', 'whatsapp', 'citizenship', 'city', 'transport', 'bicycle']:
             is_filter += 1
             print(parameter)
 
@@ -50,6 +50,11 @@ def get_filtered_executors(request: HttpRequest, executors) -> dict:
     transport_checkboxes = data.get('transport')
     if transport_checkboxes:
         executors = executors.filter(transport__in=transport_checkboxes)
+
+    bicycle_checkboxes = data.get('bicycle')
+    if bicycle_checkboxes:
+        executors = executors.filter(bicycle__in=bicycle_checkboxes)
+
 
     executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour')))
     min_hours_input = data.get('min_hours')
@@ -90,6 +95,7 @@ def get_filtered_executors(request: HttpRequest, executors) -> dict:
         'citizenship_checkboxes': citizenship_checkboxes,
         'city_checkboxes': city_checkboxes,
         'transport_checkboxes': transport_checkboxes,
+        'bicycle_checkboxes': bicycle_checkboxes,
         'sort_type': sort_type,
 
         'min_hours': min_hours,
@@ -121,12 +127,14 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
     citizenships = Citizenship.objects.all()
     cities = City.objects.all().order_by('name')
     transports = Transport.objects.all()
+    bicycles = Bicycle.objects.all()
     active_executor_ids = get_active_executors().values_list('id', flat=True)
     filtered_context.update({
         'executors': executors,
         'citizenships': citizenships,
         'cities': cities,
         'transports': transports,
+        'bicycles': bicycles,
         'active_executor_ids': active_executor_ids,
         'executor_ids': executor_ids,
 

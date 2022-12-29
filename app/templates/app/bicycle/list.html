@@ -41,7 +41,7 @@
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Код #</label>
                             <div class="col-sm-10">
-                                <input type="text" name="code" class="form-control">
+                                <input type="text" required name="name" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                         <div class="row mb-3">
                             <label for="inputText" class="col-sm-2 col-form-label">Код #</label>
                             <div class="col-sm-10">
-                                <input id="update_input" type="text" name="code" class="form-control">
+                                <input id="update_input" type="text" name="name" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                     <th scope="col">#</th>
                     <th scope="col">Код</th>
                     <th scope="col">ID</th>
-                    <th scope="col">Исполнитель</th>
+                    <th scope="col">Исполнителей</th>
                     <th scope="col">Действия</th>
                 </tr>
                 </thead>
@@ -115,22 +115,22 @@
                 {% for bicycle in bicycles %}
                     <tr>
                         <th scope="row">{{ forloop.counter }}</th>
-                        <td>{{ bicycle.code }}</td>
+                        <td>{{ bicycle.name }}</td>
                         <td>{{ bicycle.get_executor.executor_id|default:'-' }}</td>
                         <td>
-                            <a href="{{ bicycle.get_executor.get_absolute_url }}">{{ bicycle.get_executor.get_full_name|default:'-' }}</a>
+                            <a href="#">{{ bicycle.executors.count|default:'0' }}</a>
                         </td>
                         <td>
                             <a href="#update" data-bs-toggle="modal" data-bs-target="#update_modal"
-                               data-update-url="{% url 'app:bicycle_update' bicycle.code %}"
-                               data-name="{{ bicycle.code }}"
+                               data-update-url="{% url 'app:bicycle_update' bicycle.pk %}"
+                               data-name="{{ bicycle.name }}"
                                class="me-3"
                                onclick="objectUpdate(this)">
                                 <i class="bi bi-gear text-primary"></i>
                             </a>
                             <a href="#delete" data-bs-toggle="modal" data-bs-target="#delete_modal"
-                               data-delete-url="{% url 'app:bicycle_delete' bicycle.code %}"
-                               data-name="{{ bicycle.code }}"
+                               data-delete-url="{% url 'app:bicycle_delete' bicycle.pk %}"
+                               data-name="{{ bicycle.name }}"
                                onclick="objectDelete(this)">
                                 <i class="bi bi-trash text-danger"></i>
                             </a>

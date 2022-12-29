@@ -169,7 +169,7 @@ class Tariff(BaseModel):
 
 
 class Bicycle(BaseModel):
-    code = models.CharField(max_length=256, unique=True, verbose_name='Код велосипеда')
+    name = models.CharField(max_length=256, unique=True, null=True, blank=True, verbose_name='Название велосипеда')
 
     class Meta:
         verbose_name = 'Велосипед'
@@ -177,7 +177,7 @@ class Bicycle(BaseModel):
         ordering = ['-pk']
 
     def __str__(self):
-        return self.code
+        return self.name
 
     def get_absolute_url(self):
         pass
@@ -254,7 +254,7 @@ class Executor(BaseModel):
     transport = models.ForeignKey(Transport, on_delete=models.SET_NULL, null=True, blank=True,
                                   related_name='executors', verbose_name='Транспорт')
 
-    curator = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='executors',
+    curator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='executors',
                                 verbose_name='Куратор')
     is_active = models.BooleanField(default=True, verbose_name='Активен')
     is_terminated = models.BooleanField(default=False, verbose_name='Расторгнут')
@@ -270,7 +270,7 @@ class Executor(BaseModel):
     individual = models.CharField(max_length=256, null=True, blank=True, verbose_name='Физическое лицо')
     note = models.TextField(null=True, blank=True, verbose_name='Примечание')
 
-    bicycle = models.OneToOneField(Bicycle, on_delete=models.SET_NULL, null=True, blank=True, related_name='executor')
+    bicycle = models.ForeignKey(Bicycle, on_delete=models.SET_NULL, null=True, blank=True, related_name='executors')
 
     class Meta:
         verbose_name = 'Исполнитель'
