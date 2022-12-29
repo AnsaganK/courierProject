@@ -26,6 +26,7 @@ urlpatterns = [
     path('staff/curator/<str:username>', views.curator_detail, name='curator_detail'),
     path('staff/curator/<str:username>/update', views.curator_update, name='curator_update'),
     path('staff/curator/<str:username>/statistic', views.curator_preview_statistic, name='curator_preview_statistic'),
+    path('staff/curator/<str:username>/payment', views.curator_payment, name='curator_payment'),
     path('staff/curator/<str:username>/executors', views.curator_preview_executor_list,
          name='curator_preview_executor_list'),
     path('staff/curator/<str:username>/free', views.curator_preview_executor_free_list,

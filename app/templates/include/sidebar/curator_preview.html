@@ -2,8 +2,16 @@
 <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
 
+        <li class="nav-item">
+            <a class="nav-link {% if '/' != request.path %}collapsed{% endif %}"
+               href="{% url 'app:curator_list' %}">
+                <i class="bx bx-log-out"></i>
+                <span>Назад</span>
+            </a>
+        </li>
         <hr>
         <li class="nav-heading">Управление</li>
+
         <li class="nav-item">
             <a class="nav-link bg-secondary text-white"
                href="{% url 'app:curator_detail' curator.username %}">
@@ -11,11 +19,12 @@
                 <span>{{ curator.get_full_name }}</span>
             </a>
         </li>
+
         <li class="nav-item">
-            <a class="nav-link {% if '/' != request.path %}collapsed{% endif %}"
-               href="{% url 'app:curator_list' %}">
-                <i class="bx bx-log-out"></i>
-                <span>Назад</span>
+            <a class="nav-link {% if '/payment' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:curator_payment' curator.username %}">
+                <i class="bx bx-money"></i>
+                <span>Выплаты</span>
             </a>
         </li>
 
@@ -40,13 +49,6 @@
                href="{% url 'app:curator_preview_executor_free_list' curator.username %}">
                 <i class="bi bi-people"></i>
                 <span>Свободные исполнители</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if '/executor/sum' not in request.path %}collapsed{% endif %}"
-               href="">
-                <i class="bx bx-money"></i>
-                <span>Оплата</span>
             </a>
         </li>
     </ul>

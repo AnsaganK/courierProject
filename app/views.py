@@ -420,6 +420,19 @@ def curator_preview_executor_free_list(request, username):
 
 
 @login_required
+@check_role([ADMIN, ACCOUNTANT])
+def curator_payment(request, username):
+    user = get_object_or_404(User, username=username)
+    periods = Period.objects.all()
+    context = {
+        'curator': user,
+        'periods': periods
+    }
+    context.update({'curator': user, 'is_curator_preview': True})
+    return render(request, 'app/staff/curator/payment.html', context)
+
+
+@login_required
 @check_role([ADMIN])
 def support_list(request):
     supports = User.objects.filter(profile__role=Profile.RoleChoices.SUPPORT)
