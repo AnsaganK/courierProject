@@ -14,7 +14,7 @@ from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, 
     CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorForm, \
     ExecutorConfigForm, CuratorUpdateForm, CuratorProfileUpdateForm, CuratorPaymentForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, DayHour, \
-    Contact, Period, Transport, ExecutorConfig
+    Contact, Period, Transport, ExecutorConfig, PaymentForCurators
 from app.service.executor import get_query_parameters, get_active_executors
 from app.service.export import generate_file_for_executors
 from app.service.period import get_last_periods
@@ -420,15 +420,29 @@ def curator_preview_executor_free_list(request, username):
 
 @login_required
 @check_role([ADMIN, ACCOUNTANT])
-def curator_payment(request, username):
+def curator_payments(request, username):
     user = get_object_or_404(User, username=username)
-    periods = Period.objects.all()
+    periods = Period.objects.all().order_by('-final_date')
+    payments = PaymentForCurators.objects.filter(user=user).values_list('period_id', flat=True)
+    paid_payments = payments.filter(is_paid=True)
     context = {
         'curator': user,
-        'periods': periods
+        'periods': periods,
+        # 'curator_payments': payments,
+        'paid_payments': paid_payments,
     }
     context.update({'curator': user, 'is_curator_preview': True})
     return render(request, 'app/staff/curator/payment.html', context)
+
+@login_required
+@check_role([ADMIN, ACCOUNTANT])
+def curator_payment_detail(request, username, period_id):
+    period = get_object_or_404(Period, id=period_id)
+    user =get_object_or_404(User, username=username)
+
+    curator_payment = PaymentForCurators.objects.filter(period_id=period_id, user__username=username).first()
+
+    return redirect(reverse('app:home'))
 
 
 @login_required

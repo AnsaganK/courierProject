@@ -470,6 +470,24 @@ class PaymentForCurators(BaseModel):
     def __str__(self):
         return str(self.pk)
 
+    def get_absolute_url(self):
+        return reverse('app')
+    @property
+    def get_status(self):
+        print(1)
+        if self.is_paid:
+            return {
+                'status': 'success',
+            }
+        elif Period.objects.last() == self.period:
+            return {
+                'status': ''
+            }
+        else:
+            return {
+                'status': 'danger'
+            }
+
 
 class UserPayment(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='payment_info')

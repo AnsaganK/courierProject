@@ -14,12 +14,31 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'app:curator_list' %}">Кураторы</a></li>
-                        <li class="breadcrumb-item"><a
-                                href="{% url 'app:curator_detail' curator.username %}">{{ curator.get_full_name }}</a></li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'app:curator_detail' curator.username %}">
+                                {{ curator.get_full_name }}
+                            </a>
+                        </li>
                         <li class="breadcrumb-item active">Выплаты</li>
                     </ol>
                 </nav>
             </div>
         </div>
     </div><!-- End Page Title -->
+{% endblock %}
+
+{% block content %}
+    <div class="col-12">
+        <div class="row">
+            {% for period in periods %}
+                    <a href="{% url 'app:curator_payment_detail' curator.username period.id %}" class="p-3 m-2 {% if period.pk in paid_payments %} bg-success {% else %} bg-warning {% endif %}" style="
+                    background-color: grey;
+                    color: white;
+                    cursor: pointer;
+                    border-radius: 10px;
+                    transition: all .2s;
+                    font-size: 13px; width: fit-content">{{ period }}</a>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
