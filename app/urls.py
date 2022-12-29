@@ -1,4 +1,5 @@
 from django.urls import path
+
 from . import views
 
 app_name = 'app'
@@ -17,12 +18,13 @@ urlpatterns = [
     path('staff/accountant', views.accountant_list, name='accountant_list'),
     path('staff/admin', views.admin_list, name='admin_list'),
     path('staff/create', views.user_create, name='user_create'),
-    path('staff/<int:pk>', views.user_detail, name='user_delete'),
+    path('staff/<int:pk>', views.user_detail, name='user_detail'),
     path('staff/<int:pk>/update', views.user_update, name='user_update'),
     path('staff/<int:pk>/delete', views.user_delete, name='user_delete'),
 
     # Curator
     path('staff/curator/<str:username>', views.curator_detail, name='curator_detail'),
+    path('staff/curator/<str:username>/update', views.curator_update, name='curator_update'),
     path('staff/curator/<str:username>/statistic', views.curator_preview_statistic, name='curator_preview_statistic'),
     path('staff/curator/<str:username>/executors', views.curator_preview_executor_list,
          name='curator_preview_executor_list'),

@@ -1,6 +1,5 @@
 import csv
 import json
-from itertools import count
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -13,12 +12,11 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 
 from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, BicycleForm, UserUpdateForm, \
     CitizenshipForm, CitizenshipTypeForm, OFCForm, ArchiveFileForm, ArchiveFileUpdateForm, ExecutorForm, \
-    ExecutorConfigForm
-from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, ExecutorHours, \
-    Day, DayHour, Contact, Period, Transport, ExecutorConfig
-from app.service.executor import get_query_parameters, get_active_executors, get_filtered_executors
+    ExecutorConfigForm, CuratorUpdateForm, CuratorProfileUpdateForm, CuratorPaymentForm
+from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, DayHour, \
+    Contact, Period, Transport, ExecutorConfig
+from app.service.executor import get_query_parameters, get_active_executors
 from app.service.export import generate_file_for_executors
-from app.service.file import get_file_data
 from app.service.period import get_last_periods
 from app.service.staff import get_executors_context_for_user
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task, \
@@ -98,8 +96,8 @@ def profile(request):
             'user': user
         })
     elif role == CURATOR:
-        return render(request, 'app/staff/curator/profile.html', {
-            'user': user
+        return render(request, 'app/staff/curator/detail.html', {
+            'curator': user
         })
     elif role == SUPPORT:
         return render(request, 'app/staff/support/profile.html', {
@@ -345,9 +343,38 @@ def curator_list(request):
 @check_role([ADMIN])
 def curator_detail(request, username):
     user = get_object_or_404(User, username=username)
-    return render(request, 'app/staff/curator/profile.html', {
-        'user': user
-    })
+    context = {'user': user}
+    context.update({'curator': user, 'is_curator_preview': True})
+    return render(request, 'app/staff/curator/profile.html', context)
+
+
+@login_required()
+@check_role([ADMIN, CURATOR])
+def curator_update(request, username):
+    curator = get_object_or_404(User, username=username)
+    if request.method == 'POST':
+        user_form = CuratorUpdateForm(request.POST, instance=curator)
+        if user_form.is_valid():
+            user = user_form.save()
+
+            profile_form = CuratorProfileUpdateForm(request.POST, instance=user.profile)
+            if profile_form.is_valid():
+                profile = profile_form.save()
+                messages.success(request, f'Данные "{profile.get_full_name}" изменены')
+            else:
+                show_form_errors(request, profile_form.errors)
+
+            payment_form = CuratorPaymentForm(request.POST, instance=user.payment_info)
+            if payment_form.is_valid():
+                payment_form.save()
+            else:
+                show_form_errors(request, profile_form.errors)
+
+        else:
+            show_form_errors(request, user_form.errors)
+    if request.user == curator:
+        return redirect(reverse('app:profile'))
+    return redirect(reverse('app:curator_detail', args=[username]))
 
 
 @login_required

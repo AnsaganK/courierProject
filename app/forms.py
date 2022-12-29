@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 from app.models import Profile, City, Bicycle, Citizenship, CitizenshipType, OFC, ArchiveFile, Executor, Contact, \
-    ExecutorConfig
+    ExecutorConfig, UserPayment
 
 
 #
@@ -32,6 +32,24 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'last_name', 'first_name', 'email', 'password']
+
+
+class CuratorUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['last_name', 'first_name', 'email']
+
+
+class CuratorProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['patronymic', 'phone_number']
+
+
+class CuratorPaymentForm(forms.ModelForm):
+    class Meta:
+        model = UserPayment
+        fields = ['payment_for_internship_hours', 'payment_for_initial_hours']
 
 
 class ProfileCreateForm(forms.ModelForm):

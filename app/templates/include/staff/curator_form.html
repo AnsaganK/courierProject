@@ -1,0 +1,78 @@
+{% load role %}
+
+<form class="row justify-content-center" action="{% url 'app:curator_update' curator.username %}"
+      method="post">
+    {% csrf_token %}
+    <div class="col-lg-6">
+        <div class="card-body">
+            <h5 class="card-title text-center">Личные данные</h5>
+
+            {#                            <span class="text-end d-block">Общие данные</span>#}
+            <hr>
+            <div class="row mb-3">
+                <label for="inputText" class="col-sm-3 col-form-label">Фамилия</label>
+                <div class="col-sm-9">
+                    <input type="text" name="last_name" class="form-control"
+                           value="{{ curator.last_name|default:'' }}">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="inputText" class="col-sm-3 col-form-label">Имя</label>
+                <div class="col-sm-9">
+                    <input type="text" name="first_name" class="form-control"
+                           value="{{ curator.first_name|default:'' }}">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="inputText" class="col-sm-3 col-form-label">Отчество</label>
+                <div class="col-sm-9">
+                    <input type="text" name="patronymic" class="form-control"
+                           value="{{ curator.profile.patronymic|default:'' }}">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="inputText" class="col-sm-3 col-form-label">Email</label>
+                <div class="col-sm-9">
+                    <input type="email" name="email" class="form-control"
+                           value="{{ curator.email|default:'' }}">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="inputText" class="col-sm-3 col-form-label">Номер телефона</label>
+                <div class="col-sm-9">
+                    <input type="text" name="phone_number" class="form-control"
+                           value="{{ curator.profile.phone_number|default:'' }}">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if request.user|check_role:'admin' %}
+        <div class="col-lg-6">
+            <div class="card-body">
+                <h5 class="card-title text-center">Рабочие данные</h5>
+                {#                            <span class="text-end d-block">Общие данные</span>#}
+                <hr>
+                <div class="row mb-3">
+                    <label for="inputText" class="col-sm-3 col-form-label">Ставка за стажировку</label>
+                    <div class="col-sm-9">
+                        <input type="number" name="payment_for_internship_hours" class="form-control"
+                               value="{{ curator.payment_info.payment_for_internship_hours|default:'0' }}">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="inputText" class="col-sm-3 col-form-label">Ставка за базовые
+                        часы</label>
+                    <div class="col-sm-9">
+                        <input type="number" name="payment_for_initial_hours" class="form-control"
+                               value="{{ curator.payment_info.payment_for_initial_hours|default:'0' }}">
+                    </div>
+                    <span class="text-center text-black-50 mt-1 mb-4">Последнее изм.: {{ curator.payment_info.updated_at }}</span>
+
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Изменить данные</button>
+    </div>
+</form>

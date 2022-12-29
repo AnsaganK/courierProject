@@ -445,23 +445,45 @@ class ExecutorConfig(BaseModel):
         return ExecutorConfig.objects.all().order_by('-pk').first()
 
     def save(self, *args, **kwargs):
-        if ExecutorConfig.objects.count() > 1:
+        if ExecutorConfig.objects.count() >= 1 and not self.pk:
             return False  # or you can raise validation error
         super(ExecutorConfig, self).save(*args, **kwargs)
 
 
-class CuratorPayment(models.Model):
-    curator = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='payments')
-    payment_for_internship = models.IntegerField(default=500, verbose_name='Оплата за стажировку')
-    payment_for_hours = models.IntegerField(default=2500, verbose_name='Оплата за часы')
+class PaymentForCurators(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
+    period = models.ForeignKey(Period, on_delete=models.CASCADE, verbose_name='Период оплаты')
+
+    payment_for_internship_hours = models.IntegerField(default=500, verbose_name='Оплата за стажировку')
+    payment_for_initial_hours = models.IntegerField(default=2500, verbose_name='Оплата за часы')
+
+    is_paid = models.BooleanField(default=False)
+    amount = models.IntegerField(default=0)
+    internship_executors = models.ManyToManyField(Executor, related_name='internship_payments')
+    initial_executors = models.ManyToManyField(Executor, related_name='initial_payments')
 
     class Meta:
-        verbose_name = 'Оплата куратору'
-        verbose_name_plural = 'Оплаты кураторам'
+        verbose_name = 'Оплата кураторам по периодам'
+        verbose_name_plural = 'Оплата кураторам по периодам'
         ordering = ['-pk']
 
     def __str__(self):
-        return self.curator.get_full_name() if self.curator else str(self.pk)
+        return str(self.pk)
+
+
+class UserPayment(BaseModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='payment_info')
+
+    payment_for_internship_hours = models.IntegerField(default=500, verbose_name='Оплата за стажировку')
+    payment_for_initial_hours = models.IntegerField(default=2500, verbose_name='Оплата за часы')
+
+    class Meta:
+        verbose_name = 'Сумма для выплат упр.персоналу'
+        verbose_name_plural = 'Сумма для выплат упр.персоналу'
+        ordering = ['-pk']
+
+    def __str__(self):
+        return self.user.get_full_name() if self.user else str(self.pk)
 
     def get_absolute_url(self):
         pass
@@ -519,8 +541,10 @@ class Profile(BaseModel):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+        UserPayment.objects.create(user=instance)
 
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+    instance.payment_info.save()

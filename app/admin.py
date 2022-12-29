@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from app.models import City, OFC, Transport, AdditionalReason, Tariff, Bicycle, Citizenship, Executor, Profile, \
-    ExecutorHours, Period, Day, DayHour, ArchiveFile, ExecutorConfig
+    ExecutorHours, Period, Day, DayHour, ArchiveFile, ExecutorConfig, UserPayment
 
 
 @admin.register(City)
@@ -78,3 +78,8 @@ class ProfileAdmin(admin.ModelAdmin):
 @admin.register(ExecutorConfig)
 class ExecutorConfigAdmin(admin.ModelAdmin):
     list_display = ['pk', 'internship_hours', 'initial_hours']
+
+
+@admin.register(UserPayment)
+class UserPaymentAdmin(admin.ModelAdmin):
+    list_display = ['pk']

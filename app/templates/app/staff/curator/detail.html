@@ -1,10 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load role %}
 
-</body>
-</html>
+{% block title %}
+    Профиль
+{% endblock %}
+
+{% block breadcrumb %}
+    {% include 'include/staff/profile_breadcrumb.html' %}
+{% endblock %}
+
+
+{% block content %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% include 'include/staff/curator_form.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
