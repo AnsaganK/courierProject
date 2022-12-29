@@ -47,7 +47,6 @@ def home(request):
     active_executors = get_active_executors()
     bicycles = Bicycle.objects.all()
     bicycle_count = bicycles.count()
-    bicycle_used_count = bicycles.exclude(executor=None).count()
 
     active_executor_ids = get_active_executors().values_list('id', flat=True)
     debtor_count = Executor.objects.exclude(id__in=active_executor_ids).exclude(bicycle=None).count()
@@ -59,7 +58,7 @@ def home(request):
         'executor_count': executors.count(),
         'executor_active_count': active_executors.count(),
         'bicycle_count': bicycle_count,
-        'bicycle_used_count': bicycle_used_count,
+        'bicycle_used_count': bicycle_count,
         'debtor_count': debtor_count,
     })
 
