@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load executor_tags %}
+{% load executor_tags role %}
 
 {% block title %}
     Выплата куратору {{ curator.get_full_name }}
@@ -14,17 +14,26 @@
                 <nav>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'app:curator_list' %}">Кураторы</a></li>
-                        <li class="breadcrumb-item">
-                            <a href="{% url 'app:curator_detail' curator.username %}">
-                                {{ curator.get_full_name }}
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="{% url 'app:curator_payments' curator.username %}">
-                                Выплаты
-                            </a>
-                        </li>
+                        {% if not request.user|check_role:'curator' %}
+                            <li class="breadcrumb-item"><a href="{% url 'app:curator_list' %}">Кураторы</a></li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'app:curator_detail' curator.username %}">
+                                    {{ curator.get_full_name }}
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'app:curator_preview_payments' curator.username %}">
+                                    Выплаты
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'app:curator_payments' %}">
+                                    Выплаты
+                                </a>
+                            </li>
+                        {% endif %}
+
                         <li class="breadcrumb-item active">{{ period }}</li>
                     </ol>
                 </nav>

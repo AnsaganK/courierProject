@@ -419,10 +419,10 @@ def curator_preview_executor_free_list(request, username):
 
 
 @login_required
-@check_role([ADMIN, ACCOUNTANT])
-def curator_payments(request, username):
+@check_role([ADMIN, ACCOUNTANT, CURATOR])
+def curator_preview_payments(request, username):
     user = get_object_or_404(User, username=username)
-    periods = Period.objects.all().order_by('-final_date')
+    periods = Period.objects.all().order_by('final_date')
     payments = PaymentForCurators.objects.filter(user=user).values_list('period_id', flat=True)
     paid_payments = payments.filter(is_paid=True)
     context = {
@@ -437,8 +437,8 @@ def curator_payments(request, username):
 
 # Refactor
 @login_required
-@check_role([ADMIN, ACCOUNTANT])
-def curator_payment_detail(request, username, period_id):
+@check_role([ADMIN, ACCOUNTANT, CURATOR])
+def curator_preview_payment_detail(request, username, period_id):
     period = get_object_or_404(Period, id=period_id)
     user = get_object_or_404(User, username=username)
 
@@ -453,12 +453,6 @@ def curator_payment_detail(request, username, period_id):
         executor_hours__day_hours__in=current_day_hours
     ).exclude(
         executor_hours__day_hours__in=previous_day_hours
-        # ).filter(
-        #     executor_hours__period__final_date__lte=period.final_date
-        # ).annotate(
-        #     period_hours_sum=Sum('executor_hours__day_hours__hour', default=0)
-        # ).filter(
-        #     period_hours_sum__gt=config.internship_hours
     ).distinct().order_by(
         'last_name'
     )
@@ -507,6 +501,20 @@ def curator_payment_detail(request, username, period_id):
     }
     context.update({'curator': user, 'is_curator_preview': True})
     return render(request, 'app/staff/curator/payment/detail.html', context)
+
+
+@login_required
+@check_role([CURATOR])
+def curator_payments(request):
+    username = request.user.username
+    return curator_preview_payments(request, username)
+
+
+@login_required
+@check_role([CURATOR])
+def curator_payment_detail(request, period_id):
+    username = request.user.username
+    return curator_preview_payment_detail(request, username, period_id)
 
 
 @login_required

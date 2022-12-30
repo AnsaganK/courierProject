@@ -22,7 +22,7 @@
 
         <li class="nav-item">
             <a class="nav-link {% if '/payment' not in request.path %}collapsed{% endif %}"
-               href="{% url 'app:curator_payments' curator.username %}">
+               href="{% url 'app:curator_preview_payments' curator.username %}">
                 <i class="bx bx-money"></i>
                 <span>Выплаты</span>
             </a>

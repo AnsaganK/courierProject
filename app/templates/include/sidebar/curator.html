@@ -25,10 +25,10 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if '/executor/sum' not in request.path %}collapsed{% endif %}"
-               href="">
+            <a class="nav-link {% if '/payment' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:curator_payments' %}">
                 <i class="bx bx-money"></i>
-                <span>Оплата</span>
+                <span>Выплаты</span>
             </a>
         </li>
     </ul>

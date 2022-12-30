@@ -270,12 +270,12 @@
 </header><!-- End Header -->
 
 {% block sidebar %}
-    {% if is_curator_preview %}
-        {% include 'include/sidebar/curator_preview.html' with curator=curator %}
-    {% elif request.user|check_role:'admin' %}
+    {% if request.user|check_role:'curator' %}
+        {% include 'include/sidebar/curator.html' with curator=curator %}
+    {% elif  is_curator_preview  %}
+        {% include 'include/sidebar/curator_preview.html' %}
+    {% elif  request.user|check_role:'admin' %}
         {% include 'include/sidebar/admin.html' %}
-    {% elif request.user|check_role:'curator' %}
-        {% include 'include/sidebar/curator.html' %}
     {% endif %}
 {% endblock %}
 

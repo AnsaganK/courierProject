@@ -26,14 +26,18 @@ urlpatterns = [
     path('staff/curator/<str:username>', views.curator_detail, name='curator_detail'),
     path('staff/curator/<str:username>/update', views.curator_update, name='curator_update'),
     path('staff/curator/<str:username>/statistic', views.curator_preview_statistic, name='curator_preview_statistic'),
-    path('staff/curator/<str:username>/payment', views.curator_payments, name='curator_payments'),
-    path('staff/curator/<str:username>/payment/<int:period_id>', views.curator_payment_detail, name='curator_payment_detail'),
+    path('staff/curator/<str:username>/payment', views.curator_preview_payments, name='curator_preview_payments'),
+    path('staff/curator/<str:username>/payment/<int:period_id>', views.curator_preview_payment_detail, name='curator_preview_payment_detail'),
     path('staff/curator/<str:username>/executors', views.curator_preview_executor_list,
          name='curator_preview_executor_list'),
     path('staff/curator/<str:username>/free', views.curator_preview_executor_free_list,
          name='curator_preview_executor_free_list'),
     path('staff/curator/<str:username>/add/<int:pk>', views.executor_add_for_curator_by_admin,
          name='executor_add_for_curator_by_admin'),
+
+    path('profile/payment', views.curator_payments, name='curator_payments'),
+    path('profile/payment/<int:period_id>', views.curator_payment_detail,
+         name='curator_payment_detail'),
 
     # Executor phone Files
     path('executor/phones/file', views.executor_phones_file_list, name='executor_phones_file_list'),
