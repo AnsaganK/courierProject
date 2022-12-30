@@ -458,6 +458,8 @@ class PaymentForCurators(BaseModel):
     payment_for_initial_hours = models.IntegerField(default=2500, verbose_name='Оплата за часы')
 
     is_paid = models.BooleanField(default=False)
+    paid_date = models.DateTimeField(null=True, blank=True)
+
     amount = models.IntegerField(default=0)
     internship_executors = models.ManyToManyField(Executor, related_name='internship_payments')
     initial_executors = models.ManyToManyField(Executor, related_name='initial_payments')
@@ -472,9 +474,9 @@ class PaymentForCurators(BaseModel):
 
     def get_absolute_url(self):
         return reverse('app')
+
     @property
     def get_status(self):
-        print(1)
         if self.is_paid:
             return {
                 'status': 'success',

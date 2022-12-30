@@ -31,7 +31,9 @@
     <div class="col-12">
         <div class="row">
             {% for period in periods %}
-                    <a href="{% url 'app:curator_payment_detail' curator.username period.id %}" class="p-3 m-2 {% if period.pk in paid_payments %} bg-success {% else %} bg-warning {% endif %}" style="
+                <a href="{% url 'app:curator_payment_detail' curator.username period.id %}"
+                   class="p-3 m-2 {% if period.pk in paid_payments %} bg-success {% else %} bg-warning {% endif %}"
+                   style="
                     background-color: grey;
                     color: white;
                     cursor: pointer;

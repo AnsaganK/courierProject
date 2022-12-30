@@ -429,20 +429,81 @@ def curator_payments(request, username):
         'curator': user,
         'periods': periods,
         # 'curator_payments': payments,
-        'paid_payments': paid_payments,
+        'paid_payments': paid_payments
     }
     context.update({'curator': user, 'is_curator_preview': True})
-    return render(request, 'app/staff/curator/payment.html', context)
+    return render(request, 'app/staff/curator/payment/list.html', context)
 
+
+# Refactor
 @login_required
 @check_role([ADMIN, ACCOUNTANT])
 def curator_payment_detail(request, username, period_id):
     period = get_object_or_404(Period, id=period_id)
-    user =get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username=username)
 
+    last_period = Period.objects.filter(final_date__lte=period.final_date).order_by('-final_date').last()
     curator_payment = PaymentForCurators.objects.filter(period_id=period_id, user__username=username).first()
+    config = ExecutorConfig.objects.first()
+    current_day_hours = DayHour.objects.filter(executor_hour__period=period)
+    previous_day_hours = DayHour.objects.filter(day__period__final_date__lt=period.final_date)
 
-    return redirect(reverse('app:home'))
+    internship_executors = Executor.objects.filter(
+        curator=user,
+        executor_hours__day_hours__in=current_day_hours
+    ).exclude(
+        executor_hours__day_hours__in=previous_day_hours
+    # ).filter(
+    #     executor_hours__period__final_date__lte=period.final_date
+    # ).annotate(
+    #     period_hours_sum=Sum('executor_hours__day_hours__hour', default=0)
+    # ).filter(
+    #     period_hours_sum__gt=config.internship_hours
+    ).distinct().order_by(
+        'last_name'
+    )
+
+    executor_less_hours = Executor.objects.filter(
+        curator=user,
+        executor_hours__period__final_date__lt=period.final_date
+    ).annotate(
+        last_period_hours_sum=Sum('executor_hours__day_hours__hour', default=0)
+    ).filter(
+        last_period_hours_sum__lt=config.initial_hours
+    )
+
+    initial_executors = Executor.objects.filter(
+        (Q(id__in=executor_less_hours) &
+         Q(executor_hours__period__final_date__lte=period.final_date))
+        |
+        (Q(curator=user) &
+         Q(executor_hours__day_hours__in=current_day_hours) &
+         ~Q(executor_hours__day_hours__in=previous_day_hours))
+    ).annotate(
+        current_period_hours_sum=Sum('executor_hours__day_hours__hour')
+    ).filter(
+        current_period_hours_sum__gte=config.initial_hours
+    ).distinct()
+
+    internship_payment = user.payment_info.payment_for_internship_hours
+    initial_payment = user.payment_info.payment_for_initial_hours
+
+    context = {
+        'period': period,
+        'internship_executors': internship_executors,
+        'initial_executors': initial_executors,
+        'config': config,
+
+        'internship_payment': internship_payment,
+        'initial_payment': initial_payment,
+        'internship_payment_sum': internship_payment * internship_executors.count(),
+        'initial_payment_sum': initial_payment * initial_executors.count(),
+
+        'week_days': WEEK_DAYS
+
+    }
+    context.update({'curator': user, 'is_curator_preview': True})
+    return render(request, 'app/staff/curator/payment/detail.html', context)
 
 
 @login_required

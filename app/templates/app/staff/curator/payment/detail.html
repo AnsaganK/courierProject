@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load executor_tags %}
+
+{% block title %}
+    Выплата куратору {{ curator.get_full_name }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <!-- Page Title -->
+    <div class="pagetitle">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+                <h1>{{ curator.get_full_name }} | <span class="text-black-50">Выплаты</span></h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'app:home' %}">Главная</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'app:curator_list' %}">Кураторы</a></li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'app:curator_detail' curator.username %}">
+                                {{ curator.get_full_name }}
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'app:curator_payments' curator.username %}">
+                                Выплаты
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">{{ period }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div><!-- End Page Title -->
+{% endblock %}
+
+{% block content %}
+    {% include 'include/executor/detail_modal.html' %}
+
+    <div class="col-12">
+        <div class="row">
+
+            <table class="table text-center">
+                <thead>
+                <tr>
+                    <th>№</th>
+                    <th>ФИО</th>
+                    <th class="text-start">Первый день</th>
+                    <th>За весь период</th>
+                    <th>Выплата</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+                    <th class="text-center p-3" colspan="5">
+                        Стажировка
+                    </th>
+                </tr>
+                {% for executor in internship_executors %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="text-start">
+                            <a href="#" class="col"
+                               data-bs-toggle="modal" data-bs-target="#detail_modal"
+                               data-detail-url="{{ executor.get_absolute_url }}"
+                               data-detail-api-url="{{ executor.get_api_url }}"
+                               data-executor-id="{{ executor.executor_id }}"
+                               data-name="{{ executor.get_full_name }}"
+                               onclick="objectDetail(this)">{{ executor.get_full_name }}</a>
+                        </td>
+                        <td class="text-start">
+                            {{ executor|get_first_day_hour_for_internship }}
+                        </td>
+                        <td>
+                            {{ executor|get_hours_for_period:period.id }}
+                        </td>
+                        <td>{{ internship_payment }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <th class="text-center p-3" colspan="5">
+                        Базовые часы
+                    </th>
+                </tr>
+                {% for executor in initial_executors %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="text-start">
+                            <a href="#" class="col"
+                               data-bs-toggle="modal" data-bs-target="#detail_modal"
+                               data-detail-url="{{ executor.get_absolute_url }}"
+                               data-detail-api-url="{{ executor.get_api_url }}"
+                               data-executor-id="{{ executor.executor_id }}"
+                               data-name="{{ executor.get_full_name }}"
+                               onclick="objectDetail(this)">{{ executor.get_full_name }}</a>
+                        </td>
+                        <td class="text-start">
+                            {{ executor|get_first_day_hour_for_initial }}
+                        </td>
+                        <td>
+                            {{ executor|get_hours_for_period:period.id }}
+                        </td>
+                        <td>{{ initial_payment }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <hr>
+            <p>Выплата за стажировку: {{ internship_payment_sum }}</p>
+            <p>Выплата за базовые часы: {{ initial_payment_sum }}</p>
+        </div>
+    </div>
+{% endblock %}
