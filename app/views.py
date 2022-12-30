@@ -442,11 +442,11 @@ def curator_payment_detail(request, username, period_id):
     period = get_object_or_404(Period, id=period_id)
     user = get_object_or_404(User, username=username)
 
-    last_period = Period.objects.filter(final_date__lte=period.final_date).order_by('-final_date').last()
+    last_period = Period.objects.filter(start_date__lte=period.start_date).order_by('-start_date').last()
     curator_payment = PaymentForCurators.objects.filter(period_id=period_id, user__username=username).first()
     config = ExecutorConfig.objects.first()
     current_day_hours = DayHour.objects.filter(executor_hour__period=period)
-    previous_day_hours = DayHour.objects.filter(executor_hour__period__final_date__lt=period.final_date)
+    previous_day_hours = DayHour.objects.filter(executor_hour__period__start_date__lt=period.start_date)
 
     internship_executors = Executor.objects.filter(
         curator=user,
@@ -465,7 +465,7 @@ def curator_payment_detail(request, username, period_id):
 
     executor_less_hours = Executor.objects.filter(
         curator=user,
-        executor_hours__period__final_date__lt=period.final_date
+        executor_hours__period__start_date__lt=period.start_date
     ).annotate(
         last_period_hours_sum=Sum('executor_hours__day_hours__hour', default=0)
     ).filter(
@@ -473,7 +473,7 @@ def curator_payment_detail(request, username, period_id):
     )
 
     initial_executors = Executor.objects.filter(
-        executor_hours__period__final_date__lte=period.final_date,
+        executor_hours__period__start_date__lte=period.start_date,
         executor_hours__day_hours__in=current_day_hours
     ).filter(
         (Q(id__in=executor_less_hours))
