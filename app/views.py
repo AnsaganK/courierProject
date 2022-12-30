@@ -473,18 +473,20 @@ def curator_payment_detail(request, username, period_id):
     )
 
     initial_executors = Executor.objects.filter(
-        executor_hours__period__final_date__lte=period.final_date
+        executor_hours__period__final_date__lte=period.final_date,
+        executor_hours__day_hours__in=current_day_hours
     ).filter(
         (Q(id__in=executor_less_hours))
         |
         (Q(curator=user) &
-         Q(executor_hours__day_hours__in=current_day_hours) &
          ~Q(executor_hours__day_hours__in=previous_day_hours))
     ).annotate(
         current_period_hours_sum=Sum('executor_hours__day_hours__hour')
     ).filter(
         current_period_hours_sum__gte=config.initial_hours
-    ).distinct()
+    ).distinct().order_by(
+        'last_name'
+    )
 
     internship_payment = user.payment_info.payment_for_internship_hours
     initial_payment = user.payment_info.payment_for_initial_hours
