@@ -453,12 +453,12 @@ def curator_payment_detail(request, username, period_id):
         executor_hours__day_hours__in=current_day_hours
     ).exclude(
         executor_hours__day_hours__in=previous_day_hours
-    # ).filter(
-    #     executor_hours__period__final_date__lte=period.final_date
-    # ).annotate(
-    #     period_hours_sum=Sum('executor_hours__day_hours__hour', default=0)
-    # ).filter(
-    #     period_hours_sum__gt=config.internship_hours
+        # ).filter(
+        #     executor_hours__period__final_date__lte=period.final_date
+        # ).annotate(
+        #     period_hours_sum=Sum('executor_hours__day_hours__hour', default=0)
+        # ).filter(
+        #     period_hours_sum__gt=config.internship_hours
     ).distinct().order_by(
         'last_name'
     )
@@ -472,13 +472,14 @@ def curator_payment_detail(request, username, period_id):
         last_period_hours_sum__lt=config.initial_hours
     )
 
-    initial_executors = Executor.objects.exclude(
-        executor_hours__day_hours__in=previous_day_hours).filter(
-        (Q(id__in=executor_less_hours) &
-         Q(executor_hours__period__final_date__lte=period.final_date))
+    initial_executors = Executor.objects.filter(
+        executor_hours__period__final_date__lte=period.final_date
+    ).filter(
+        (Q(id__in=executor_less_hours))
         |
         (Q(curator=user) &
-         Q(executor_hours__day_hours__in=current_day_hours))
+         Q(executor_hours__day_hours__in=current_day_hours) &
+         ~Q(executor_hours__day_hours__in=previous_day_hours))
     ).annotate(
         current_period_hours_sum=Sum('executor_hours__day_hours__hour')
     ).filter(
