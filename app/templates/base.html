@@ -271,9 +271,11 @@
 
 {% block sidebar %}
     {% if request.user|check_role:'curator' %}
-        {% include 'include/sidebar/curator.html' with curator=curator %}
-    {% elif  is_curator_preview  %}
+        {% include 'include/sidebar/curator.html' %}
+    {% elif  is_curator_preview %}
         {% include 'include/sidebar/curator_preview.html' %}
+    {% elif request.user|check_role:'accountant' %}
+        {% include 'include/sidebar/accountant.html' %}
     {% elif  request.user|check_role:'admin' %}
         {% include 'include/sidebar/admin.html' %}
     {% endif %}
@@ -775,7 +777,6 @@
         arrow.classList.toggle('bxs-down-arrow');
     }
 
-    document.getElementById('filter_icon').click();
 </script>
 {% block script %}
 

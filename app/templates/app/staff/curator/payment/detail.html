@@ -47,7 +47,18 @@
 
     <div class="col-12">
         <div class="row">
-
+            <div class="col-12">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <input type="number" class="form-control" placeholder="... ставка за стажировку"
+                               value="{{ internship_payment }}" oninput="changeInternshipPayments(this)">
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" class="form-control" placeholder="... базовая ставка"
+                               value="{{ initial_payment }}" oninput="changeInitialPayments()">
+                    </div>
+                </div>
+            </div>
             <table class="table text-center">
                 <thead>
                 <tr>
@@ -83,7 +94,7 @@
                         <td>
                             {{ executor|get_hours_for_period:period.id }}
                         </td>
-                        <td>{{ internship_payment }}</td>
+                        <td class="internship_payment">{{ internship_payment }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
@@ -109,7 +120,7 @@
                         <td>
                             {{ executor|get_hours_for_period:period.id }}
                         </td>
-                        <td>{{ initial_payment }}</td>
+                        <td class="initial_payment">{{ initial_payment }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -117,6 +128,34 @@
             <hr>
             <p>Выплата за стажировку: {{ internship_payment_sum }}</p>
             <p>Выплата за базовые часы: {{ initial_payment_sum }}</p>
+            {% if is_curator_preview %}
+                <form action="" method="post">
+                    <div class="row justify-content-lg-end justify-content-start">
+                        <div class="col-lg-4 col-8">
+                            <input type="number" class="form-control text-center" placeholder="... на оплату"
+                                   value="{{ internship_payment_sum|add:initial_payment_sum }}">
+                        </div>
+                        <div class="col-lg-2 col-4">
+                            <button type="submit" class="btn btn-success w-100">Оплачено</button>
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
         </div>
     </div>
+{% endblock %}
+
+
+{% block script %}
+    <script>
+        function changeInternshipPayments(elem) {
+            let internship_payments = document.querySelectorAll('.internship_payments');
+            internship_payments.forEach((payment) => {
+                payment.innerText = elem.value;
+            })
+        }
+
+        function changeInitialPayments() {
+        }
+    </script>
 {% endblock %}

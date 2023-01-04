@@ -1,0 +1,44 @@
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+        <hr>
+        <li class="nav-heading">Основное</li>
+        <hr>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path != '/' %}collapsed{% endif %}" href="{% url 'app:home' %}">
+                <i class="bi bi-grid"></i>
+                <span>Главная</span>
+            </a>
+        </li><!-- End Dashboard Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link {% if request.path != '/statistic' %}collapsed{% endif %}"
+               href="{% url 'app:statistic' %}">
+                <i class="bi bi-bar-chart"></i>
+                <span>Статистика</span>
+            </a>
+        </li><!-- End Dashboard Nav -->
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#">
+                <i class="bi bi-calculator"></i>
+                <span>Калькулятор</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/staff/curator' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:curator_list' %}">
+                <i class="bi bi-people-fill"></i><span>Кураторы</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if '/executor' not in request.path %}collapsed{% endif %}"
+               href="{% url 'app:executor_list' %}">
+                <i class="bi bi-people"></i>
+                <span>Исполнители</span>
+            </a>
+        </li>
+        <hr>
+    </ul>
+
+</aside><!-- End Sidebar-->

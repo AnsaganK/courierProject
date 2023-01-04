@@ -12,7 +12,7 @@ def get_executors_context_for_user(request, user: User = None):
         if not user.is_authenticated:
             return False
     profile = user.profile
-    if profile.role == Profile.RoleChoices.ADMIN:
+    if profile.role in [Profile.RoleChoices.ADMIN, Profile.RoleChoices.ACCOUNTANT]:
         executors = Executor.objects.all()
     else:
         executors = Executor.objects.filter(curator=user)

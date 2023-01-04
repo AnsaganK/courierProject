@@ -35,7 +35,7 @@ ACCOUNTANT = Profile.RoleChoices.ACCOUNTANT
 #                               Flat page views
 #
 @login_required
-@check_role([ADMIN], redirect_url='/executor')
+@check_role([ADMIN, ACCOUNTANT], redirect_url='/executor')
 def home(request):
     city_count = City.objects.count()
     ofc_count = OFC.objects.count()
@@ -64,7 +64,7 @@ def home(request):
 
 
 @login_required
-@check_role([ADMIN, CURATOR])
+@check_role([ADMIN, ACCOUNTANT, CURATOR])
 def statistic(request):
     executors = get_active_executors()
 
@@ -106,7 +106,7 @@ def profile(request):
 
 
 @login_required
-@check_role([ADMIN, CURATOR])
+@check_role([ADMIN, ACCOUNTANT, CURATOR])
 def statistic_json(request):
     executors = get_active_executors()
 
@@ -326,7 +326,7 @@ def user_create(request):
 
 
 @login_required
-@check_role([ADMIN])
+@check_role([ADMIN, ACCOUNTANT])
 def curator_list(request):
     curators = User.objects.filter(profile__role=Profile.RoleChoices.CURATOR).order_by('-pk')
     roles = Profile.RoleChoices.choices
@@ -377,7 +377,7 @@ def curator_update(request, username):
 
 
 @login_required
-@check_role([ADMIN])
+@check_role([ADMIN, ACCOUNTANT])
 def curator_preview_statistic(request, username):
     user = get_object_or_404(User, username=username)
     profile = user.profile
@@ -399,7 +399,7 @@ def curator_preview_statistic(request, username):
 
 
 @login_required
-@check_role([ADMIN])
+@check_role([ADMIN, ACCOUNTANT])
 def curator_preview_executor_list(request, username):
     user = get_object_or_404(User, username=username)
     context = get_executors_context_for_user(request, user)
@@ -408,7 +408,7 @@ def curator_preview_executor_list(request, username):
 
 
 @login_required
-@check_role([ADMIN])
+@check_role([ADMIN, ACCOUNTANT])
 def curator_preview_executor_free_list(request, username):
     user = get_object_or_404(User, username=username)
     executors = get_active_executors().filter(curator=None).order_by('-created_at')
@@ -620,7 +620,7 @@ def executor_create(request):
 
 
 @login_required
-@check_role([ADMIN, CURATOR])
+@check_role([ADMIN, ACCOUNTANT, CURATOR])
 def executor_list(request):
     user = request.user
     context = get_executors_context_for_user(request, user)
