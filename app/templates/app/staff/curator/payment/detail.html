@@ -47,18 +47,20 @@
 
     <div class="col-12">
         <div class="row">
-            <div class="col-12">
-                <div class="row justify-content-center">
-                    <div class="col-auto">
-                        <input type="number" class="form-control" placeholder="... ставка за стажировку"
-                               value="{{ internship_payment }}" oninput="changeInternshipPayments(this)">
-                    </div>
-                    <div class="col-auto">
-                        <input type="number" class="form-control" placeholder="... базовая ставка"
-                               value="{{ initial_payment }}" oninput="changeInitialPayments()">
+            {% if is_curator_preview %}
+                <div class="col-12">
+                    <div class="row justify-content-center">
+                        <div class="col-auto">
+                            <input type="number" class="form-control" placeholder="... ставка за стажировку"
+                                   value="{{ internship_payment }}" oninput="changeInternshipPayments(this)">
+                        </div>
+                        <div class="col-auto">
+                            <input type="number" class="form-control" placeholder="... базовая ставка"
+                                   value="{{ initial_payment }}" oninput="changeInitialPayments(this)">
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
             <table class="table text-center">
                 <thead>
                 <tr>
@@ -80,6 +82,9 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td class="text-start">
+                            <input class="m-0 p-0 align-middle me-4"
+                                   style="width: 20px !important; min-height: 20px !important;display: inline"
+                                   type="checkbox" checked>
                             <a href="#" class="col"
                                data-bs-toggle="modal" data-bs-target="#detail_modal"
                                data-detail-url="{{ executor.get_absolute_url }}"
@@ -106,6 +111,9 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td class="text-start">
+                            <input class="m-0 p-0 align-middle me-4"
+                                   style="width: 20px !important; min-height: 20px !important;display: inline"
+                                   type="checkbox" checked>
                             <a href="#" class="col"
                                data-bs-toggle="modal" data-bs-target="#detail_modal"
                                data-detail-url="{{ executor.get_absolute_url }}"
@@ -126,8 +134,12 @@
                 </tbody>
             </table>
             <hr>
-            <p>Выплата за стажировку: {{ internship_payment_sum }}</p>
-            <p>Выплата за базовые часы: {{ initial_payment_sum }}</p>
+            <p>Выплата за стажировку: <br> {{ internship_executors.count }} * <span
+                    class="internship_payment">{{ internship_payment }}</span> = {{ internship_payment_sum }}</p>
+            <p>Выплата за базовые часы: <br> {{ initial_executors.count }} * <span
+                    class="initial_payment">{{ initial_payment }}</span> = {{ initial_payment_sum }}</p>
+            <p>Общая сумма: <br> {{ internship_payment_sum|add:initial_payment_sum }} рублей</p>
+
             {% if is_curator_preview %}
                 <form action="" method="post">
                     <div class="row justify-content-lg-end justify-content-start">
@@ -149,13 +161,25 @@
 {% block script %}
     <script>
         function changeInternshipPayments(elem) {
-            let internship_payments = document.querySelectorAll('.internship_payments');
+            let internship_payments = document.querySelectorAll('.internship_payment');
             internship_payments.forEach((payment) => {
-                payment.innerText = elem.value;
+                if (elem.value !== '') {
+                    payment.innerText = elem.value;
+                } else {
+                    payment.innerText = 0;
+                }
             })
         }
 
-        function changeInitialPayments() {
+        function changeInitialPayments(elem) {
+            let initial_payments = document.querySelectorAll('.initial_payment');
+            initial_payments.forEach((payment) => {
+                if (elem.value !== '') {
+                    payment.innerText = elem.value;
+                } else {
+                    payment.innerText = 0;
+                }
+            })
         }
     </script>
 {% endblock %}
