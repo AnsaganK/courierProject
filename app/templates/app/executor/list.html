@@ -104,6 +104,7 @@
                             <th scope="col" class="additional">Дата рожд.</th>
                             <th scope="col" class="additional">ЦФЗ</th>
                             <th scope="col" class="additional">Номер тел.</th>
+                            <th scope="col" class="additional">Статус</th>
                             <th scope="col" class="additional">Всего часов</th>
                             <th scope="col">Действия</th>
                         </tr>
@@ -130,6 +131,7 @@
                                 <td class="text-start additional">{{ executor.birth_date|default:'-' }}</td>
                                 <td class="text-start additional">{{ executor.OFC|default:'-' }} {{ executor.OFC.id }}</td>
                                 <td class="additional">{{ executor.phone_number|default:'-' }}</td>
+                                <td class="additional">{{ executor.get_status.name|default:'-' }}</td>
                                 <td class="additional">{{ executor.get_all_hours_sum|default:'-' }}</td>
                                 <td>
                                     <div class="additional row justify-content-between">

@@ -18,7 +18,7 @@ def get_executors_context_for_user(request, user: User = None):
         executors = Executor.objects.filter(curator=user)
 
     executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour'), default=0)).order_by(
-        '-sum_hours')
+        '-created_at')
 
     context = {
         'executor_debtor_ids': Executor.objects.exclude(

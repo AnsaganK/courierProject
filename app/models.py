@@ -312,8 +312,8 @@ class Executor(BaseModel):
 
     @property
     def get_all_hours_sum(self):
-        day_hours = DayHour.objects.filter(executor_hour__executor=self).aggregate(hours_sum=Sum('hour'))
-        return day_hours['hours_sum']
+        day_hours = DayHour.objects.filter(executor_hour__executor=self).aggregate(hours_sum=Sum('hour', default=0.0, output_field=models.FloatField()))
+        return day_hours.get('hours_sum', 0)
 
     @property
     def get_active_hours_sum(self):
@@ -321,6 +321,40 @@ class Executor(BaseModel):
         day_hours = DayHour.objects.filter(day__period_id__in=last_periods, executor_hour__executor=self).aggregate(
             hours_sum=Sum('hour'))
         return day_hours['hours_sum']
+
+    @property
+    def get_status(self):
+        print(self.internship_payments.all().count())
+        print(self.get_all_hours_sum)
+        if not self.curator:
+            status = {
+                'name': 'Нет рекрутера'
+            }
+        else:
+            status = {
+                'name': 'Пошел на стажировку'
+            }
+
+        if 1 <= self.get_all_hours_sum < 50:
+            if self.internship_payments.all().count() < 1:
+                status = {
+                    'name': 'Прошел стажировку (не оплачено)'
+                }
+            else:
+                status = {
+                    'name': 'Прошел стажировку (оплачено)'
+                }
+
+        if self.get_all_hours_sum > 50:
+            if self.initial_payments.all().count() < 1:
+                status = {
+                    'name': 'Прошел базовые часы (не оплачено)'
+                }
+            else:
+                status = {
+                    'name': 'Прошел базовые часы (оплачено)'
+                }
+        return status
 
 
 class Contact(BaseModel):
