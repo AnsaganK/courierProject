@@ -55,7 +55,6 @@ def get_filtered_executors(request: HttpRequest, executors) -> dict:
     if bicycle_checkboxes:
         executors = executors.filter(bicycle__in=bicycle_checkboxes)
 
-
     executors = executors.annotate(sum_hours=Sum(F('executor_hours__day_hours__hour')))
     min_hours_input = data.get('min_hours')
     min_hours = min_hours_input[0] if type(min_hours_input) is list else ""
@@ -122,7 +121,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
                 'has_next': executors.has_next(),
                 'page': executors.number,
             }
-            # print(context)
+            
             return context
     citizenships = Citizenship.objects.all()
     cities = City.objects.all().order_by('name')

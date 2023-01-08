@@ -9,7 +9,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('profile', views.profile, name='profile'),
     path('statistic', views.statistic, name='statistic'),
-    path('statistic/json', views.statistic_json, name='statistic_json'),
+    path('statistic/api', views.statistic_api, name='statistic_api'),
     path('configuration', views.configuration, name='configuration'),
 
     # Staffs
@@ -27,7 +27,8 @@ urlpatterns = [
     path('staff/curator/<str:username>/update', views.curator_update, name='curator_update'),
     path('staff/curator/<str:username>/statistic', views.curator_preview_statistic, name='curator_preview_statistic'),
     path('staff/curator/<str:username>/payment', views.curator_preview_payments, name='curator_preview_payments'),
-    path('staff/curator/<str:username>/payment/<int:period_id>', views.curator_preview_payment_detail, name='curator_preview_payment_detail'),
+    path('staff/curator/<str:username>/payment/<int:period_id>', views.curator_preview_payment_detail,
+         name='curator_preview_payment_detail'),
     path('staff/curator/<str:username>/executors', views.curator_preview_executor_list,
          name='curator_preview_executor_list'),
     path('staff/curator/<str:username>/free', views.curator_preview_executor_free_list,
@@ -64,11 +65,12 @@ urlpatterns = [
     path('executor/free', views.executor_list_free, name='executor_list_free'),
     path('executor/debtors', views.executor_list_debtor, name='executor_list_debtor'),
     path('executor/<int:pk>/add', views.executor_add_for_curator, name='executor_add_for_curator'),
+    path('executor/<int:pk>/add/api', views.executor_add_for_curator_by_api, name='executor_add_for_curator_by_api'),
     path('executor/<path:executor_id>/update', views.executor_update, name='executor_update'),
     path('executor/<int:pk>/delete', views.executor_delete, name='executor_delete'),
     path('executor/<path:executor_id>/hours/export', views.executor_hours_export, name='executor_hours_export'),
     path('executor/<path:executor_id>/hours', views.executor_hours_detail, name='executor_hours_detail'),
-    path('executor/json/<path:executor_id>', views.executor_detail_json, name='executor_detail_json'),
+    path('executor/api/<path:executor_id>', views.executor_detail_api, name='executor_detail_api'),
     path('executor/<path:executor_id>', views.executor_detail, name='executor_detail'),
 
     # Cities

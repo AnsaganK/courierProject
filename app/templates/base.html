@@ -303,6 +303,8 @@
                     {% endfor %}
                 </div>
             {% endif %}
+
+            {% include 'include/executor/executor_add_modal.html' %}
             {% block content %}
             {% endblock %}
         </div>
@@ -548,6 +550,26 @@
 </script>
 
 <script>
+    async function addExecutorForCuratorByApi(elem) {
+        console.log(elem);
+        elem.innerHTML = `<div class="spinner-border text-primary file_preloader_status text-white" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>`;
+
+        let url = elem.dataset.addUrl;
+        let response = await fetch(url);
+        if (response.ok) {
+            let json = await response.json();
+            elem.classList.toggle('btn-success');
+            elem.classList.toggle('btn-outline-success');
+            elem.innerHTML = '<i class="bx bx-check me-2"></i>Добавлен'
+        } else {
+            elem.classList.toggle('btn-success');
+            elem.classList.toggle('btn-outline-danger');
+            elem.innerHTML = '<i class="bx bx-x me-2"></i>Занят'
+            console.log(response.status)
+        }
+    }
 
     function addExecutorForCurator(elem) {
         let add_url = elem.dataset.addUrl;
@@ -669,6 +691,31 @@
             for (let i = 0; i < executors.length; i++) {
                 let executor = executors[i];
                 let executor_url = executor_detail_url.replace('executor_id', executor.executor_id);
+
+                let add_link = ``
+                {% if request.user|check_role:'curator' %}
+                    let is_curator = executor.curator;
+                    if (is_curator === null) {
+                        let add_url = '{% url 'app:executor_add_for_curator_by_api' 1 %}'
+                        add_url = add_url.replace(1, executor.id)
+                        add_link = `<a href="#"
+                                       class="d-block p-1 mt-1 ms-auto btn btn-success" style="width:120px" title="Добавить исполнителя"
+                                       data-add-url="${add_url}"
+                                       onclick="addExecutorForCuratorByApi(this)">
+                                        <i class="bx bx-plus me-2"></i>Добавить
+                                    </a>`;
+                    } else if (is_curator === {{ request.user.id }}) {
+                        add_link = `<a href="#"
+                                       class="d-block p-1 mt-1 ms-auto btn btn-outline-success" style="width:120px" title="Статус">
+                                        <i class="bx bx-check me-2"></i>Добавлен
+                                    </a>`;
+                    } else {
+                        add_link = `<a href="#"
+                                       class="d-block p-1 mt-1 ms-auto btn btn-outline-danger" style="width:120px" title="Статус">
+                                        <i class="bx bx-x me-2"></i>Занят
+                                    </a>`;
+                    }
+                {% endif %}
                 let executor_card = `<div class="card text-custom mb-2 shadow-none border">
                             <div class="card-body pt-2 pb-2">
                                 <div class="row align-items-center justify-content-between">
@@ -678,6 +725,7 @@
                                     <div class="col-11 text-end">
                                         <a href="${executor_url}">${executor['last_name'] ?? ''} ${executor['first_name'] ?? ''} ${executor['patronymic'] ?? ''}</a> <br>
                                         <span class="text-black-50">${executor.executor_id}</span>
+                                        ${add_link}
                                     </div>
                                 </div>
                             </div>

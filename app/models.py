@@ -284,7 +284,7 @@ class Executor(BaseModel):
         return reverse('app:executor_detail', args=[self.executor_id])
 
     def get_api_url(self):
-        return reverse('app:executor_detail_json', args=[self.executor_id])
+        return reverse('app:executor_detail_api', args=[self.executor_id])
 
     @property
     def get_full_name(self):

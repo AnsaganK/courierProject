@@ -107,7 +107,7 @@ def profile(request):
 
 @login_required
 @check_role([ADMIN, ACCOUNTANT, CURATOR])
-def statistic_json(request):
+def statistic_api(request):
     executors = get_active_executors()
 
     username = request.GET.get('curator')
@@ -677,6 +677,22 @@ def executor_add_for_curator(request, pk):
 
 
 @login_required
+@check_role([CURATOR])
+def executor_add_for_curator_by_api(request, pk):
+    executor = get_object_or_404(Executor, pk=pk)
+    user = request.user
+    if not executor.curator:
+        executor.curator = user
+        executor.save()
+        return JsonResponse({
+            'message': 'Исполнитель добавлен'
+        }, status=200)
+    return JsonResponse({
+        'message': f'У данного исполнителя есть куратор: {executor.curator.get_full_name()}',
+    }, status=403)
+
+
+@login_required
 @check_role([ADMIN, CURATOR])
 def executor_list_my(request):
     executors = Executor.objects.filter(curator=request.user)
@@ -720,7 +736,7 @@ def executor_detail(request, executor_id):
 
 
 @login_required()
-def executor_detail_json(request, executor_id):
+def executor_detail_api(request, executor_id):
     executor = get_object_or_404(Executor, executor_id=executor_id)
     executor_hours = executor.executor_hours.all().order_by('period__final_date')
 
@@ -866,10 +882,9 @@ def executor_search(request):
             fullname=Concat(F('last_name'), Value(' '), F('first_name'), Value(' '), F('patronymic'))
         ).filter(
             Q(fullname__icontains=query) | Q(executor_id__icontains=query)
-            # Q(last_name__icontains=query) | Q(first_name__icontains=query) | Q(
-            #     patronymic__icontains=query) | Q(executor_id__icontains=query)
         ).order_by('-pk').values(
-            'executor_id', 'last_name', 'first_name', 'patronymic', 'id')[:5]
+            'executor_id', 'last_name', 'first_name', 'patronymic', 'id', 'curator', 'birth_date', 'phone_number'
+        )[:5]
         return JsonResponse({
             'executors': list(executors)
         })
