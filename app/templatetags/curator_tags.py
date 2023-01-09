@@ -15,10 +15,10 @@ def get_internship_curator_executors(user, request):
     today = datetime.now(tz=pytz.UTC)
 
     start_date = request.GET.get('start_date')
-    start_date = start_date[0] if type(start_date) is list else today - timedelta(days=7)
+    start_date = start_date if start_date else today - timedelta(days=7)
 
     final_date = request.GET.get('final_date')
-    final_date = final_date[0] if type(final_date) is list else today
+    final_date = final_date if final_date else today
 
     internship_executors_count = Executor.objects.filter(
         curator=user, internship_date__gte=start_date, internship_date__lte=final_date
