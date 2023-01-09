@@ -1,9 +1,44 @@
+{% load curator_tags %}
+
 {% if users %}
     <table class="table table-bordered text-center">
         <thead>
         <tr>
             <th scope="col">#</th>
             <th scope="col">ФИО</th>
+            {% if role == 'curator' %}
+                <th>
+                    Количество стажирующихся
+                    <i class="bx bx-filter-alt ms-3" style="cursor: pointer" onclick="toggleInternshipFilter()"></i>
+                    <div class="card d-none" id="internship_dates_form" style="position:absolute;display: block;
+                            height: 70px;
+                            margin-top: -100px;
+                            {#width: 90%;#}
+                            z-index: 997;
+                            margin-right: auto;
+                            margin-left: auto;
+                            }">
+                        <div class="card-body pt-3">
+                            <form action="" method="get">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <input type="date" class="form-control" name="start_date"
+                                               value="{{ start_date }}">
+                                    </div>
+                                    <i class="col bx bx-move-horizontal"></i>
+                                    <div class="col">
+                                        <input type="date" class="form-control" name="final_date"
+                                               value="{{ final_date }}">
+                                    </div>
+                                    <button type="submit" class="col btn btn-success w-auto">
+                                        Проверить
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </th>
+            {% endif %}
             <th scope="col">Почта</th>
             <th scope="col">Номер</th>
             <th scope="col">Логин</th>
@@ -23,6 +58,13 @@
                         {{ user.profile.get_full_name }}
                     {% endif %}
                 </td>
+
+                {% if user.profile.role == 'curator' %}
+                    <td>
+                        {{ user|get_internship_curator_executors:request }}
+                    </td>
+                {% endif %}
+
                 <td>{{ user.email|default:' - ' }}</td>
                 <td>{{ user.profile.phone_number|default:' - ' }}</td>
                 <td>{{ user.username }}</td>

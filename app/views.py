@@ -1,5 +1,7 @@
 import csv
+import datetime
 import json
+from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -331,10 +333,17 @@ def curator_list(request):
     curators = User.objects.filter(profile__role=Profile.RoleChoices.CURATOR).order_by('-pk')
     roles = Profile.RoleChoices.choices
     password = get_generated_password()
+
+    start_date = request.GET.get('start_date') if request.GET.get('start_date') else (datetime.datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d')
+    final_date = request.GET.get('final_date') if request.GET.get('final_date') else datetime.datetime.today().strftime('%Y-%m-%d')
+
     return render(request, 'app/staff/curator/list.html', {
         'curators': curators,
         'password': password,
-        'roles': roles
+        'roles': roles,
+        'start_date': start_date,
+        'final_date': final_date,
+        'role': Profile.RoleChoices.CURATOR
     })
 
 

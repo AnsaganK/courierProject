@@ -67,7 +67,7 @@ def set_executor_internship_dates(archive_file_id: int):
                 time = datetime.strptime(time, '%H:%M')
                 dt = datetime(year=date.year, month=date.month, day=date.day, hour=time.hour, minute=time.minute,
                               tzinfo=pytz.UTC)
-                print(dt)
+                # print(dt)
                 executors.update(internship_date=dt)
         set_status(archive_file, StatusChoices.SUCCESS)
     except Exception as e:

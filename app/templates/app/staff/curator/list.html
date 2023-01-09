@@ -37,6 +37,19 @@
     {% include 'include/staff/user_delete_modal.html' %}
 
     <div class="col">
+        <div class="text-black mb-2">
+            Дата стажировки: <span class="text-black-50">{{ start_date }} ~ {{ final_date }}</span>
+        </div>
         {% include 'include/staff/users_table.html' with users=curators %}
     </div>
+{% endblock %}
+
+
+{% block script %}
+    <script>
+        function toggleInternshipFilter() {
+            let internship_dates_form = document.getElementById('internship_dates_form');
+            internship_dates_form.classList.toggle('d-none');
+        }
+    </script>
 {% endblock %}

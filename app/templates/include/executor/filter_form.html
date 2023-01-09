@@ -220,6 +220,35 @@
                         </div>
                     </div>
                 </div>
+                <div class="mb-3">
+                                    <span class="row justify-content-between align-items-center {% if internship_start_date or internship_final_date %} text-custom {% endif %}"
+                                          data-toggle="collapse"
+                                          data-collapse="internship_date_collapse"
+                                          role="button" aria-expanded="false" aria-controls="hours_collapse">
+                                        <span class="col-auto">Дата стажировки</span>
+                                        {% if internship_start_date or internship_final_date %}
+                                            <i class="col-auto bx bxs-down-arrow"></i>
+                                        {% else %}
+                                            <i class="col-auto bx bxs-left-arrow"></i>
+                                        {% endif %}
+                                    </span>
+                    <hr>
+                    <div class="collapse {% if internship_start_date or internship_final_date %} show {% endif %}"
+                         id="internship_date_collapse">
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="date" name="internship_start_date" class="form-control"
+                                        {% if internship_start_date %}
+                                       value="{{ internship_start_date }}" {% endif %}>
+                            </div>
+                            <div class="col-6">
+                                <input type="date" name="internship_final_date" class="form-control"
+                                        {% if internship_final_date %}
+                                       value="{{ internship_final_date }}" {% endif %}>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row justify-content-center">
                     <div class="col-auto">
                         <a href="{{ request.path }}" type="submit" class="btn btn-secondary">

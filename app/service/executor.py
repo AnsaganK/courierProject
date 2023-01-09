@@ -24,7 +24,11 @@ def get_filtered_executors(request: HttpRequest, executors) -> dict:
         if parameter == 'min_hours' and data.get('min_hours')[0]:
             is_filter += 1
         if parameter == 'max_hours' and data.get('max_hours')[0]:
-            print(parameter, data.get('max_hours'))
+            is_filter += 1
+
+        if parameter == 'internship_start_date' and data.get('internship_start_date')[0]:
+            is_filter += 1
+        if parameter == 'internship_final_date' and data.get('internship_final_date')[0]:
             is_filter += 1
 
     phone_number_checkboxes = data.get('phone_number', [])
@@ -66,6 +70,16 @@ def get_filtered_executors(request: HttpRequest, executors) -> dict:
     if max_hours:
         executors = executors.filter(sum_hours__lte=int(max_hours))
 
+    internship_start_date_input = data.get('internship_start_date')
+    internship_start_date = internship_start_date_input[0] if type(internship_start_date_input) is list else None
+    if internship_start_date:
+        executors = executors.filter(internship_date__gte=internship_start_date)
+
+    internship_final_date_input = data.get('internship_final_date')
+    internship_final_date = internship_final_date_input[0] if type(internship_final_date_input) is list else None
+    if internship_final_date:
+        executors = executors.filter(internship_date__lte=internship_final_date)
+
     sort_type = data.get('sort_type')
     sort_type = sort_type[0] if type(sort_type) is list else ""
     if sort_type == 'name_asc':
@@ -87,6 +101,9 @@ def get_filtered_executors(request: HttpRequest, executors) -> dict:
     if (min_hours and max_hours) and (int(min_hours) > int(max_hours)):
         messages.warning(request, 'Часы: наименьшее не может быть больше наибольшего')
 
+    if (internship_start_date and internship_final_date) and (internship_start_date > internship_final_date):
+        messages.warning(request, 'Дата стажировки: неправильно построенный диапазон')
+
     return {
         'executors': executors,
         'phone_number_checkboxes': phone_number_checkboxes,
@@ -99,6 +116,9 @@ def get_filtered_executors(request: HttpRequest, executors) -> dict:
 
         'min_hours': min_hours,
         'max_hours': max_hours,
+
+        'internship_start_date': internship_start_date,
+        'internship_final_date': internship_final_date,
 
         'is_filter': is_filter
     }
