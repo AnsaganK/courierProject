@@ -20,7 +20,7 @@ from app.service.export import generate_file_for_executors
 from app.service.period import get_last_periods
 from app.service.staff import get_executors_context_for_user
 from app.tasks import create_executors_for_file_task, create_cities_for_file_task, create_executor_hours_for_file_task, \
-    create_executor_phones_for_file_task
+    create_executor_phones_for_file_task, create_executor_internship_date_for_file_task
 from app.utils import check_role, WEEK_DAYS
 from constants import HOST
 from utils import show_form_errors, get_generated_password, get_paginator
@@ -894,6 +894,37 @@ def executor_search(request):
 @login_required
 def executor_salary_calculator(request):
     pass
+
+
+#
+#                                   Executor Internships (Samokat) Files
+#
+def executor_internships_file_list(request):
+    files = ArchiveFile.objects.filter(type=ArchiveFile.TypeChoices.INTERNSHIP_SAMOKAT)
+    files = get_paginator(request, files, 20)
+    return render(request, 'app/executor/internship/samokat/list.html', {
+        'files': files
+    })
+
+
+def executor_internships_file_create(request):
+    if request.method == 'POST':
+        form = ArchiveFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = form.save()
+            file.type = ArchiveFile.TypeChoices.INTERNSHIP_SAMOKAT
+            file.save()
+            messages.success(request, f'Файл {file.filename} сохранен')
+        else:
+            show_form_errors(request, form.errors)
+    return redirect(reverse('app:executor_internships_file_list'))
+
+
+def executor_internships_file_parse(request, pk):
+    file = get_object_or_404(ArchiveFile, pk=pk)
+    create_executor_internship_date_for_file_task.delay(pk)
+    messages.success(request, f'Начата выгрузка стажировок исполнителей из файла "{file.filename}" ')
+    return redirect(reverse('app:executor_internships_file_list'))
 
 
 #

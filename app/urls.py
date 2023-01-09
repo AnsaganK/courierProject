@@ -40,6 +40,13 @@ urlpatterns = [
     path('profile/payment/<int:period_id>', views.curator_payment_detail,
          name='curator_payment_detail'),
 
+    # Executor Internship Files
+    path('executor/internship/file', views.executor_internships_file_list, name='executor_internships_file_list'),
+    path('executor/internship/file/create', views.executor_internships_file_create,
+         name='executor_internships_file_create'),
+    path('executor/internship/file/<int:pk>/parse', views.executor_internships_file_parse,
+         name='executor_internships_file_parse'),
+
     # Executor phone Files
     path('executor/phones/file', views.executor_phones_file_list, name='executor_phones_file_list'),
     path('executor/phones/file/create', views.executor_phones_file_create, name='executor_phones_file_create'),

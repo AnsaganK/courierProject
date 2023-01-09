@@ -4,6 +4,7 @@ from app.models import ArchiveFile, City, OFC, StatusChoices
 from app.service.city import add_city_for_ofc
 from app.service.file import get_file_data, set_executors_file_data, \
     set_executor_hours_file_data, set_executor_phones_file_data
+from app.service.samokat import set_executor_internship_dates
 from utils import set_status
 
 
@@ -46,3 +47,7 @@ def create_executor_hours_for_file_task(pk: int):
 @shared_task
 def create_executor_phones_for_file_task(pk: int):
     set_executor_phones_file_data(archive_file_id=pk)
+
+@shared_task
+def create_executor_internship_date_for_file_task(pk: int):
+    set_executor_internship_dates(archive_file_id=pk)

@@ -179,6 +179,11 @@
                         </div>
 
                         <div class="row">
+                            <div class="col-lg-3 col-md-4 label">Дата стажировки</div>
+                            <div class="col-lg-9 col-md-8">{{ executor.internship_date|default:'-' }}</div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-lg-3 col-md-4 label">Куратор(рекрутер)</div>
                             <div class="col-lg-9 col-md-8">{{ executor.curator.get_full_name|default:'-' }}</div>
                         </div>

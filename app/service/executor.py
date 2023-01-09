@@ -121,7 +121,7 @@ def get_query_parameters(request: HttpRequest, executors: list, paginate: bool =
                 'has_next': executors.has_next(),
                 'page': executors.number,
             }
-            
+
             return context
     citizenships = Citizenship.objects.all()
     cities = City.objects.all().order_by('name')

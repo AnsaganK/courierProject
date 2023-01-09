@@ -19,7 +19,7 @@
                     </ol>
                 </nav>
             </div>
-            {% if request.user|check_role:'admin' and not is_curator_preview%}
+            {% if request.user|check_role:'admin' and not is_curator_preview %}
                 <div class="col-auto">
                     <a href="{% url 'app:executor_hours_file_list' %}" class="btn btn-primary mb-2"
                        title="Файлы с часами">
@@ -34,6 +34,11 @@
                     <a href="{% url 'app:executor_phones_file_list' %}" class="btn btn-primary mb-2"
                        title="Файлы с номерами телефонов">
                         <i class="bi bi-phone"></i>
+                        {#                        Файлы с исполнителями#}
+                    </a>
+                    <a href="{% url 'app:executor_internships_file_list' %}" class="btn btn-primary mb-2"
+                       title="Файлы со стажировками">
+                        <i class="bx bx-walk"></i>
                         {#                        Файлы с исполнителями#}
                     </a>
                     <a href="{% url 'app:executor_list_debtor' %}" class="btn btn-danger mb-2" title="Список должников">

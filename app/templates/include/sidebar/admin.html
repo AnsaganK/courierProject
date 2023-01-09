@@ -113,11 +113,44 @@
         <li class="nav-heading">Прочее</li>
         <hr>
         <li class="nav-item">
-            <a class="nav-link {% if '/archive' not in request.path %}collapsed{% endif %}"
-               href="{% url 'app:archive_file_list' %}">
-                <i class="bx bx-archive"></i>
-                <span>Архив</span>
+            <a class="nav-link
+                        {% if '/archive' in request.path %}{% else %}collapsed{% endif %}"
+               data-bs-target="#forms-file-nav"
+               data-bs-toggle="collapse" href="#">
+                <i class="bi bi-cursor-fill"></i>
+                <span>Архив</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
+            <ul id="forms-file-nav" class="nav-content
+                    {% if '/archive' in request.path %}{% else %}collapse{% endif %} "
+                data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="{% url 'app:archive_file_list' %}"
+                       class="{% if '/archive' in request.path %}active{% endif %}">
+                        <i class="bi bi-circle"></i><span>Все</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'app:executor_file_list' %}" class="">
+                        <i class="bi bi-circle"></i><span>Исполнители</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'app:executor_hours_file_list' %}" class="">
+                        <i class="bi bi-circle"></i><span>Часы</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'app:executor_phones_file_list' %}" class="">
+                        <i class="bi bi-circle"></i><span>Телефоны</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'app:executor_internships_file_list' %}" class="">
+                        <i class="bi bi-circle"></i><span>Стажировка (Самокат)</span>
+                    </a>
+                </li>
+            </ul>
+
         </li>
         <li class="nav-item">
             <a class="nav-link {% if '/citizenship' != request.path %}collapsed{% endif %}"

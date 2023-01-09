@@ -272,6 +272,8 @@ class Executor(BaseModel):
 
     bicycle = models.ForeignKey(Bicycle, on_delete=models.SET_NULL, null=True, blank=True, related_name='executors')
 
+    internship_date = models.DateTimeField(null=True, blank=True, verbose_name='Дата начала стажировки')
+
     class Meta:
         verbose_name = 'Исполнитель'
         verbose_name_plural = 'Исполнители'
@@ -312,7 +314,8 @@ class Executor(BaseModel):
 
     @property
     def get_all_hours_sum(self):
-        day_hours = DayHour.objects.filter(executor_hour__executor=self).aggregate(hours_sum=Sum('hour', default=0.0, output_field=models.FloatField()))
+        day_hours = DayHour.objects.filter(executor_hour__executor=self).aggregate(
+            hours_sum=Sum('hour', default=0.0, output_field=models.FloatField()))
         return day_hours.get('hours_sum', 0)
 
     @property
@@ -384,6 +387,7 @@ class ArchiveFile(BaseModel):
         OFC = 'ofc', 'ЦФЗ'
         TRANSPORT = 'transport', 'Транспорт'
         PHONE = 'phone', 'Номера тел.'
+        INTERNSHIP_SAMOKAT = 'internship_samokat', 'Стажировка(САМОКАТ)'
 
     file = models.FileField(upload_to='archive_files', verbose_name='Файл')
     type = models.CharField(max_length=64, choices=TypeChoices.choices, null=True, blank=True, verbose_name='Тип')
