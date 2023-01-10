@@ -35,6 +35,8 @@
     {% include 'include/staff/user_update_modal.html' %}
     <!-- Delete Curator Modal -->
     {% include 'include/staff/user_delete_modal.html' %}
+    <!-- Curator Internship Executors Modal -->
+    {% include 'include/staff/curator_internship_executors.html' %}
 
     <div class="col">
         <div class="text-black mb-2">
@@ -50,6 +52,55 @@
         function toggleInternshipFilter() {
             let internship_dates_form = document.getElementById('internship_dates_form');
             internship_dates_form.classList.toggle('d-none');
+        }
+    </script>
+
+    <script>
+        async function getInternshipExecutors(elem) {
+            let preloader = `<div class="spinner-border text-primary file_preloader_status" role="status" style="text-align: center;
+    display: block;
+    height: 80px !important;
+    width: 80px !important;
+    margin: 30px auto;">
+            <span class="visually-hidden">Loading...</span>
+        </div>`;
+            let internship_executors_modal = document.getElementById('internship_executors');
+            let modal_body = internship_executors_modal.querySelector('.modal-body');
+            modal_body.innerHTML = preloader;
+
+            let modal_curator_name = internship_executors_modal.querySelector('#modal_curator_name');
+            modal_curator_name.innerHTML = `${elem.dataset.curatorFullname}`
+
+            let modal_period = internship_executors_modal.querySelector('#modal_period');
+            modal_period.innerHTML = '{{ start_date }} ~ {{ final_date }}';
+
+            let url = elem.dataset.url;
+
+            let response = await fetch(url);
+            if (response.ok) {
+                let json = await response.json();
+                let executors = json.executors;
+
+                let executor_block;
+                let executor_detail_url = '{% url 'app:executor_detail' 'example_id' %}';
+                if (executors.length > 0) {
+                    executor_block = ''
+                    executors.forEach((executor, index) => {
+                        index += 1;
+                        let executor_element = `<a href="${executor_detail_url.replaceAll('example_id', executor.executor_id)}" target="_blank" class="link d-block m-2">
+<span class="text-black-50">${index}.</span>
+${executor['executor_id'] ?? ''} | ${executor['last_name'] ?? ''} ${executor['first_name'] ?? ''} ${executor['patronymic'] ?? ''} <br>
+<span class="text-black-50">${executor.internship_date.replace('T', ' ').replace('Z', ' ')}</span>
+</a>`;
+                        executor_block += executor_element;
+                    })
+                } else {
+                    executor_block = '<span class="text-center d-block m-auto">Не найдено</span>';
+                }
+
+                executor_block = `<div class="d-flex flex-column justify-content-center h-100">${executor_block}</div>`
+                modal_body.innerHTML = executor_block;
+            }
         }
     </script>
 {% endblock %}

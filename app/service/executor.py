@@ -1,5 +1,7 @@
+from datetime import datetime, timedelta
 from typing import List
 
+import pytz
 from django.contrib import messages
 from django.db.models import Sum, F, Count
 from django.http import HttpRequest
@@ -220,3 +222,18 @@ def delete_duplicate_whatsapp_for_executor(many: bool = True):
         contacts = executor.contacts.filter(type=Contact.TypeChoices.WHATSAPP)
         for contact in contacts:
             print(contact)
+
+
+def get_internship_executors_by_date(user, request):
+    today = datetime.now(tz=pytz.UTC).date()
+
+    start_date = request.GET.get('start_date')
+    start_date = start_date if start_date else today - timedelta(days=7)
+
+    final_date = request.GET.get('final_date')
+    final_date = final_date if final_date else today
+
+    internship_executors = Executor.objects.filter(
+        curator=user, internship_date__gte=start_date, internship_date__lte=final_date
+    )
+    return internship_executors

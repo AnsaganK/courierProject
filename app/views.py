@@ -17,7 +17,7 @@ from app.forms import CityForm, UserCreateForm, ProfileForm, ProfileCreateForm, 
     ExecutorConfigForm, CuratorUpdateForm, CuratorProfileUpdateForm, CuratorPaymentForm
 from app.models import Executor, City, OFC, Bicycle, Profile, Citizenship, CitizenshipType, ArchiveFile, DayHour, \
     Contact, Period, Transport, ExecutorConfig, PaymentForCurators
-from app.service.executor import get_query_parameters, get_active_executors
+from app.service.executor import get_query_parameters, get_active_executors, get_internship_executors_by_date
 from app.service.export import generate_file_for_executors
 from app.service.period import get_last_periods
 from app.service.staff import get_executors_context_for_user
@@ -334,8 +334,10 @@ def curator_list(request):
     roles = Profile.RoleChoices.choices
     password = get_generated_password()
 
-    start_date = request.GET.get('start_date') if request.GET.get('start_date') else (datetime.datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d')
-    final_date = request.GET.get('final_date') if request.GET.get('final_date') else datetime.datetime.today().strftime('%Y-%m-%d')
+    start_date = request.GET.get('start_date') if request.GET.get('start_date') else (
+            datetime.datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d')
+    final_date = request.GET.get('final_date') if request.GET.get('final_date') else datetime.datetime.today().strftime(
+        '%Y-%m-%d')
 
     return render(request, 'app/staff/curator/list.html', {
         'curators': curators,
@@ -405,6 +407,19 @@ def curator_preview_statistic(request, username):
     context.update(get_query_parameters(request, executors, paginate=True))
     context.update({'curator': user, 'is_curator_preview': True})
     return render(request, 'app/page/statistic.html', context)
+
+
+@login_required
+@check_role([ADMIN, ACCOUNTANT])
+def curator_preview_internship_executor_list(request, username):
+    user = get_object_or_404(User, username=username)
+    internship_executors = get_internship_executors_by_date(user, request).values(
+        'last_name', 'first_name', 'patronymic', 'executor_id', 'id', 'internship_date'
+    )
+    return JsonResponse({
+        'executors': list(internship_executors),
+        'count': internship_executors.count()
+    }, status=200)
 
 
 @login_required
@@ -783,8 +798,6 @@ def executor_detail_api(request, executor_id):
             'executor_id': executor_hour.executor.executor_id,
             'day_hours': day_hours
         })
-    print(executor_json)
-    print(executor_hours_objects)
     return JsonResponse({
         'executor': executor_json,
         'executor_hours': executor_hours_objects,

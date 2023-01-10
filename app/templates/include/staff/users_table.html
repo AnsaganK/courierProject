@@ -61,7 +61,14 @@
 
                 {% if user.profile.role == 'curator' %}
                     <td>
-                        {{ user|get_internship_curator_executors:request }}
+                        <a href="" data-bs-toggle="modal" data-bs-target="#internship_executors"
+                           class="w-100 h-100 d-block"
+                           data-curator-username="{{ user.username }}"
+                           data-curator-fullname="{{ user.profile.get_full_name }}"
+                           data-url="{% url 'app:curator_preview_internship_executor_list' user %}?start_date={{ start_date }}&final_date={{ final_date }}"
+                           onclick="getInternshipExecutors(this)">
+                            {{ user|get_internship_curator_executors:request }}
+                        </a>
                     </td>
                 {% endif %}
 

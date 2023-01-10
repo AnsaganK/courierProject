@@ -29,6 +29,8 @@ urlpatterns = [
     path('staff/curator/<str:username>/payment', views.curator_preview_payments, name='curator_preview_payments'),
     path('staff/curator/<str:username>/payment/<int:period_id>', views.curator_preview_payment_detail,
          name='curator_preview_payment_detail'),
+    path('staff/curator/<str:username>/executors/internship', views.curator_preview_internship_executor_list,
+         name='curator_preview_internship_executor_list'),
     path('staff/curator/<str:username>/executors', views.curator_preview_executor_list,
          name='curator_preview_executor_list'),
     path('staff/curator/<str:username>/free', views.curator_preview_executor_free_list,
